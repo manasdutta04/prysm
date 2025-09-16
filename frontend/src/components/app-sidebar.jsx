@@ -29,8 +29,8 @@ import {
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Manas",
+    email: "manas@prysm.io",
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
@@ -40,7 +40,7 @@ const data = {
       plan: "Enterprise",
     },
     {
-      name: "Acme Corp.",
+      name: "Civic Corp.",
       logo: AudioWaveform,
       plan: "Startup",
     },
@@ -52,7 +52,7 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Dashboard",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
@@ -72,7 +72,7 @@ const data = {
       ],
     },
     {
-      title: "Models",
+      title: "Connect Apps",
       url: "#",
       icon: Bot,
       items: [
@@ -91,7 +91,7 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Custom Data",
       url: "#",
       icon: BookOpen,
       items: [
@@ -114,7 +114,7 @@ const data = {
       ],
     },
     {
-      title: "Settings",
+      title: "History",
       url: "#",
       icon: Settings2,
       items: [
@@ -139,17 +139,17 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Report a Bug",
       url: "#",
       icon: Frame,
     },
     {
-      name: "Sales & Marketing",
+      name: "Help & Support",
       url: "#",
       icon: PieChart,
     },
     {
-      name: "Travel",
+      name: "Documentation",
       url: "#",
       icon: Map,
     },
