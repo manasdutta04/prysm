@@ -73,23 +73,7 @@ const data = {
       icon: Settings2,
     },
   ],
-  projects: [
-    {
-      name: "Report a Bug",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Help & Support",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Documentation",
-      url: "#",
-      icon: Map,
-    },
-  ],
+  projects: [],
 }
 
 export function AppSidebar({
