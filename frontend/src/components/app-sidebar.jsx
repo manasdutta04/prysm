@@ -12,6 +12,8 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  LifeBuoy,
+  FileText,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -88,6 +90,17 @@ export function AppSidebar({
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
+      
+      <div className="flex flex-col gap-1 px-2 py-2 text-sm">
+        <a href="/help-support" className="flex items-center gap-2 px-3 py-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
+          <LifeBuoy size={18} className="lucide" />
+          <span>Help & Support</span>
+        </a>
+        <a href="/docs" className="flex items-center gap-2 px-3 py-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
+          <FileText size={18} className="lucide" />
+          <span>Documentation</span>
+        </a>
+      </div>
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>

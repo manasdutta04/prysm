@@ -4,10 +4,13 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
+
 import DashboardPage from "./pages/dashboard"
 import ConnectAppsPage from "./pages/connect-apps"
 import CustomDataPage from "./pages/custom-data"
 import HistoryPage from "./pages/history"
+import HelpSupportPage from "./pages/help-support"
+import DocsPage from "./pages/docs"
 
 
 
@@ -35,6 +38,8 @@ function App() {
                 <Route path="/connect-apps" element={<ConnectAppsPage />} />
                 <Route path="/custom-data" element={<CustomDataPage />} />
                 <Route path="/history" element={<HistoryPage />} />
+                <Route path="/help-support" element={<HelpSupportPage />} />
+                <Route path="/docs" element={<DocsPage />} />
               </Routes>
             </div>
           </SidebarInset>
