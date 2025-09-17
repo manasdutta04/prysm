@@ -53,23 +53,23 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: SquareTerminal,
       isActive: true,
     },
     {
       title: "Connect Apps",
-      url: "#",
+      url: "/connect-apps",
       icon: Bot,
     },
     {
       title: "Custom Data",
-      url: "#",
+      url: "/custom-data",
       icon: BookOpen,
     },
     {
       title: "History",
-      url: "#",
+      url: "/history",
       icon: Settings2,
     },
   ],
