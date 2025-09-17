@@ -31,8 +31,14 @@ function AvatarImage({
 
 function AvatarFallback({
   className,
+  name,
+  children,
   ...props
 }) {
+  let fallback = children;
+  if (!fallback && name && typeof name === "string") {
+    fallback = name.trim().charAt(0).toUpperCase();
+  }
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
@@ -40,7 +46,10 @@ function AvatarFallback({
         "bg-muted flex size-full items-center justify-center rounded-full",
         className
       )}
-      {...props} />
+      {...props}
+    >
+      {fallback}
+    </AvatarPrimitive.Fallback>
   );
 }
 

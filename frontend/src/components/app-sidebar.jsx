@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
+import { useLocation, Link } from "react-router-dom"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
@@ -31,25 +32,25 @@ import {
 // This is sample data.
 const data = {
   user: {
-    name: "Manas",
+    name: "Manas Dutta",
     email: "manas@prysm.io",
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Nexus Inc",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      plan: "Free Plan",
     },
     {
       name: "Civic Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
+      logo: GalleryVerticalEnd,
+      plan: "Free Plan",
     },
     {
       name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      logo: GalleryVerticalEnd,
+      plan: "Free Plan",
     },
   ],
   navMain: [
@@ -78,9 +79,13 @@ const data = {
   projects: [],
 }
 
-export function AppSidebar({
-  ...props
-}) {
+// ...existing code...
+export function AppSidebar(props) {
+  const location = useLocation();
+  const isHelpActive = location.pathname === "/help-support";
+  const isDocsActive = location.pathname === "/docs";
+  const baseLinkClass = "flex items-center gap-2 px-3 py-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors";
+  const activeClass = "bg-sidebar-accent text-sidebar-accent-foreground font-medium";
   return (
     <Sidebar collapsible="none" {...props}>
       <SidebarHeader>
@@ -90,16 +95,15 @@ export function AppSidebar({
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
-      
       <div className="flex flex-col gap-1 px-2 py-2 text-sm">
-        <a href="/help-support" className="flex items-center gap-2 px-3 py-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
+        <Link to="/help-support" className={`${baseLinkClass} ${isHelpActive ? activeClass : ""}`}>
           <LifeBuoy size={18} className="lucide" />
           <span>Help & Support</span>
-        </a>
-        <a href="/docs" className="flex items-center gap-2 px-3 py-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
+        </Link>
+        <Link to="/docs" className={`${baseLinkClass} ${isDocsActive ? activeClass : ""}`}>
           <FileText size={18} className="lucide" />
           <span>Documentation</span>
-        </a>
+        </Link>
       </div>
       <SidebarFooter>
         <NavUser user={data.user} />
