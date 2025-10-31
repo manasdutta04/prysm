@@ -1,12 +1,202 @@
+/* ===== Scrollable Page ===== */
 .help-support-page {
-  padding: 2rem 0 0 0;
+  background: #0f0f10;
   color: #fff;
+  padding: 2rem 3rem 4rem;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #2b2b2b #0f0f10; /* thumb color | track color */
+}
+
+/* Scrollbar - Chrome, Edge, Safari */
+.help-support-page::-webkit-scrollbar {
+  width: 10px;
+}
+
+.help-support-page::-webkit-scrollbar-track {
+  background: #0f0f10;
+}
+
+.help-support-page::-webkit-scrollbar-thumb {
+  background: #2b2b2b;
+  border-radius: 6px;
+}
+
+.help-support-page::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}
+
+/* Prevent double scrollbars */
+body,
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+/* ===== Header ===== */
+.page-header {
+  margin-bottom: 2rem;
+  text-align: center;
 }
 .page-title {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 600;
 }
-.page-content {
-  margin-top: 1rem;
+.page-subtitle {
+  color: #ccc;
   font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* ===== FAQ Section ===== */
+.faq-container {
+  background: #010a1a;
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
+.faq-container h2 {
+  margin-bottom: 1.5rem;
+  color: #1a73e8;
+}
+.faq-item {
+  border-bottom: 1px solid #1f2937;
+  padding: 1rem 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.faq-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.faq-icon {
+  color: #1a73e8;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+.faq-answer {
+  overflow: hidden;
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  transition: max-height 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+/* ===== Query Form ===== */
+.query-form {
+  background: #010a1a;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
+.query-form h2 {
+  color: #1a73e8;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.query-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.form-row input {
+  flex: 1 1 30%;
+  min-width: 120px;
+}
+.query-form input,
+.query-form select,
+.query-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 6px;
+  border: none;
+  background: #1a1a2e;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+}
+.query-form input:focus,
+.query-form textarea:focus,
+.query-form select:focus {
+  border: 1px solid #1a73e8;
+}
+
+/* Make "Select Category" text light gray when it's the chosen value */
+.query-form select {
+  color: #bbb;
+}
+
+.query-form select:has(option[value=""]:checked),
+.query-form select[value=""] {
+  color: #aaa; /* light gray placeholder color */
+}
+
+/* ===== Buttons ===== */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.query-form button {
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.query-form button:hover {
+  background: #155bb5;
+}
+
+/* Red Clear button */
+.clear-btn.red {
+  background: #d9534f;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.clear-btn.red:hover {
+  background: #b52a25;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .help-support-page {
+    padding: 1.5rem;
+  }
+  .form-row {
+    flex-direction: column;
+  }
+  .page-title {
+    font-size: 1.7rem;
+  }
+  .form-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
