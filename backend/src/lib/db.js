@@ -8,3 +8,11 @@ export const connectDB = async () => {
     console.error("MonmgoDB connection error:", error);
   }
 };
+
+// import mongoose from "mongoose";
+
+// async function connectDB(url) {
+//   return mongoose.connect(url);
+// }
+
+// export default connectDB;
