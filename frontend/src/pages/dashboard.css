@@ -12,11 +12,23 @@
 .dashboard-widget {
   aspect-ratio: 16/9;
   border-radius: 0.75rem;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
 }
 .dashboard-content {
   min-height: 100vh;
   flex: 1;
   border-radius: 0.75rem;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
+}
+.logout-button {
+  padding: 0.7rem 1.5rem;
+  background-color: #ff0000; /* bright red */
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
 }
