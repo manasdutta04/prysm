@@ -102,7 +102,19 @@ export default function DashboardPage() {
   const handleFetchData = async () => {
     setIsFetching(true);
     setIsLoading(true);
-    toast.loading("Fetching latest feedback data...", { id: "fetching" });
+
+    // Check for connected apps
+    const savedApps = localStorage.getItem("connectedApps");
+    const connectedApps = savedApps ? JSON.parse(savedApps) : {};
+    const connectedAppNames = Object.values(connectedApps)
+      .filter(app => app.isConnected)
+      .map(app => app.appName);
+
+    if (connectedAppNames.length > 0) {
+      toast.loading(`Fetching data...`);
+    } else {
+      toast.loading("Fetching latest feedback data...", { id: "fetching" });
+    }
 
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -112,6 +124,17 @@ export default function DashboardPage() {
     const now = Date.now();
     setLastFetchedTime(now);
     localStorage.setItem("lastFetchedTime", now.toString());
+
+    // Update sync time for connected apps
+    if (Object.keys(connectedApps).length > 0) {
+      const updatedApps = { ...connectedApps };
+      Object.keys(updatedApps).forEach(key => {
+        if (updatedApps[key].isConnected) {
+          updatedApps[key].lastSync = now;
+        }
+      });
+      localStorage.setItem("connectedApps", JSON.stringify(updatedApps));
+    }
 
     setIsFetching(false);
     setIsLoading(false);
