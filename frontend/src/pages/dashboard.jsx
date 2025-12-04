@@ -103,16 +103,16 @@ export default function DashboardPage() {
     setIsFetching(true);
     setIsLoading(true);
     toast.loading("Fetching latest feedback data...", { id: "fetching" });
-    
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    
+
     // Update with fresh data (in real app, this would come from API)
     setData(sampleData);
     const now = Date.now();
     setLastFetchedTime(now);
     localStorage.setItem("lastFetchedTime", now.toString());
-    
+
     setIsFetching(false);
     setIsLoading(false);
     toast.success("Data fetched successfully!", { id: "fetching" });
@@ -172,7 +172,7 @@ export default function DashboardPage() {
       return `${x},${y}`;
     });
 
-    const areaPath = `M ${padding},${height} L ${points[0]} ${points.map((p, i) => `L ${p}`).join(' ')} L ${width - padding},${height} Z`;
+    const areaPath = `M ${padding},${height} L ${points[0]} ${points.map((p) => `L ${p}`).join(' ')} L ${width - padding},${height} Z`;
     const linePath = `M ${points.join(' L ')}`;
 
     return (
@@ -202,9 +202,9 @@ export default function DashboardPage() {
                 Shows things to improve and overall feedback insights
               </p>
             </div>
-            
+
           </div>
-          
+
           {isLoading ? (
             <SkeletonLoader />
           ) : data ? (
@@ -248,7 +248,7 @@ export default function DashboardPage() {
           <div className="last-fetched">
             Last Fetched time → {getTimeAgo(lastFetchedTime)}
           </div>
-          
+
           {/* Sentiment Distribution Matrix */}
           {isLoading ? (
             <GaugeSkeleton />
@@ -266,7 +266,7 @@ export default function DashboardPage() {
                       strokeWidth="20"
                       strokeLinecap="round"
                     />
-                    
+
                     {/* Positive segment */}
                     <path
                       d={`M 20 100 A 80 80 0 0 1 ${20 + (160 * data.summary.positiveSentiment / 100)} ${100 - Math.sqrt(6400 - Math.pow(160 * data.summary.positiveSentiment / 100 - 80, 2))}`}
@@ -276,7 +276,7 @@ export default function DashboardPage() {
                       strokeLinecap="round"
                       className="gauge-segment"
                     />
-                    
+
                     {/* Negative segment */}
                     <path
                       d={`M ${20 + (160 * data.summary.positiveSentiment / 100)} ${100 - Math.sqrt(6400 - Math.pow(160 * data.summary.positiveSentiment / 100 - 80, 2))} A 80 80 0 0 1 ${20 + (160 * (data.summary.positiveSentiment + data.summary.negativeSentiment) / 100)} ${100 - Math.sqrt(6400 - Math.pow(160 * (data.summary.positiveSentiment + data.summary.negativeSentiment) / 100 - 80, 2))}`}
@@ -286,7 +286,7 @@ export default function DashboardPage() {
                       strokeLinecap="round"
                       className="gauge-segment"
                     />
-                    
+
                     {/* Neutral segment */}
                     <path
                       d={`M ${20 + (160 * (data.summary.positiveSentiment + data.summary.negativeSentiment) / 100)} ${100 - Math.sqrt(6400 - Math.pow(160 * (data.summary.positiveSentiment + data.summary.negativeSentiment) / 100 - 80, 2))} A 80 80 0 0 1 180 100`}
@@ -296,7 +296,7 @@ export default function DashboardPage() {
                       strokeLinecap="round"
                       className="gauge-segment"
                     />
-                    
+
                     {/* Center text */}
                     <text x="100" y="85" textAnchor="middle" className="gauge-center-number">
                       {data.summary.totalFeedback}
@@ -305,7 +305,7 @@ export default function DashboardPage() {
                       Total Feedbacks
                     </text>
                   </svg>
-                  
+
                   {/* Legend */}
                   <div className="gauge-legend">
                     <div className="legend-item">
@@ -325,8 +325,8 @@ export default function DashboardPage() {
               </div>
             </>
           ) : null}
-          
-          
+
+
           <Button
             onClick={handleDownloadPDF}
             className="action-button download-button"
@@ -423,19 +423,19 @@ export default function DashboardPage() {
             <div className="widget-card-content">
               {/* Metric Tabs */}
               <div className="metric-tabs">
-                <button 
+                <button
                   className={`metric-tab ${activeMetricTab === 'satisfaction' ? 'active' : ''}`}
                   onClick={() => setActiveMetricTab('satisfaction')}
                 >
                   Satisfaction
                 </button>
-                <button 
+                <button
                   className={`metric-tab ${activeMetricTab === 'response' ? 'active' : ''}`}
                   onClick={() => setActiveMetricTab('response')}
                 >
                   Response Time
                 </button>
-                <button 
+                <button
                   className={`metric-tab ${activeMetricTab === 'volume' ? 'active' : ''}`}
                   onClick={() => setActiveMetricTab('volume')}
                 >
@@ -503,7 +503,7 @@ export default function DashboardPage() {
                           +{Math.round(
                             ((data.metrics.feedbackVolume - data.metrics.previousVolume) /
                               data.metrics.previousVolume) *
-                              100
+                            100
                           )}%
                         </span>
                       </div>
@@ -535,7 +535,7 @@ export default function DashboardPage() {
         ) : data ? (
           <div className="chart-container">
             <LineChart
-              xAxis={[{ 
+              xAxis={[{
                 data: data.feedbackSources.months,
                 scaleType: 'point',
               }]}
