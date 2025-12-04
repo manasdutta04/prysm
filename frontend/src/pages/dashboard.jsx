@@ -195,7 +195,7 @@ export default function DashboardPage() {
       return `${x},${y}`;
     });
 
-    const areaPath = `M ${padding},${height} L ${points[0]} ${points.map((p, i) => `L ${p}`).join(' ')} L ${width - padding},${height} Z`;
+    const areaPath = `M ${padding},${height} L ${points[0]} ${points.map((p) => `L ${p}`).join(' ')} L ${width - padding},${height} Z`;
     const linePath = `M ${points.join(' L ')}`;
 
     return (
