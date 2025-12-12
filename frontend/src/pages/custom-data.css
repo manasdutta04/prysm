@@ -1,8 +1,191 @@
 .custom-data-page {
-  padding: 2rem 0 0 0;
+  padding: 2rem;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #fff;
+  align-self: flex-start;
+}
+
+.upload-container {
+  display: flex;
+  gap: 2rem;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  max-width: 900px;
+}
+
+.dropzone {
+  flex: 1;
+  border: 2px dashed #4b5563;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #1f2937;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropzone:hover,
+.dropzone.dragging {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dropzone-icon {
+  margin-bottom: 0.5rem;
+}
+
+.dropzone-text {
+  font-size: 1rem;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+.drag-text {
+  font-weight: 600;
   color: #fff;
 }
-.page-title {
-  font-size: 1.5rem;
+
+.browse-link {
+  color: #3b82f6;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.browse-link:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+.dropzone-hint {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Instructions Inline */
+.instructions-inline {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #374151;
+  text-align: left;
+  width: 100%;
+  max-width: 250px;
+}
+
+.instructions-inline .instructions-title {
+  font-size: 1rem;
   font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #9ca3af;
+}
+
+.instructions-inline .instructions-subtitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #9ca3af;
+}
+
+.instructions-inline .instructions-list {
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+.instructions-inline .instructions-list li {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-name {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.remove-file {
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.remove-file:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* Instructions Section */
+.instructions-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  min-width: 250px;
+  max-width: 280px;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.instructions-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: #111;
+}
+
+.instructions-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #111;
+}
+
+.instructions-list {
+  padding-left: 1.25rem;
+  margin: 0;
+  list-style: none;
+}
+
+.instructions-list li {
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.instructions-list li::before {
+  content: none;
 }
