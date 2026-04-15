@@ -55,7 +55,7 @@ function App() {
             </header>
             <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
               <Routes>
-                {/* <Route
+                <Route
                   path="/"
                   element={
                     authUser ? <DashboardPage /> : <Navigate to="/login" />
@@ -94,10 +94,10 @@ function App() {
                 <Route
                   path="/login"
                   element={!authUser ? <Login /> : <Navigate to="/" />}
-                /> */}
+                />
 
                 {/* without authentication version */}
-                <Route path="/" element={<DashboardPage />} />
+                {/* <Route path="/" element={<DashboardPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/connect-apps" element={<ConnectAppsPage />} />
                 <Route path="/custom-data" element={<CustomDataPage />} />
@@ -105,7 +105,7 @@ function App() {
                 <Route path="/help-support" element={<HelpSupportPage />} />
                 <Route path="/docs" element={<DocsPage />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
+                <Route path="/login" element={<Login />} /> */}
               </Routes>
             </div>
           </SidebarInset>

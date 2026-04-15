@@ -2,6 +2,8 @@ import React from "react";
 import "./dashboard.css";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import ConnectGmailButton from "../components/ConnectGmailButton";
+import FetchEmailsButton from "../components/FetchEmailsButton";
 
 export default function DashboardPage() {
   const { logout } = useAuthStore();
@@ -18,6 +20,11 @@ export default function DashboardPage() {
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
+        {/* <div>
+          <h1>Gmail Integration Test</h1>
+          <ConnectGmailButton />
+          <FetchEmailsButton />
+        </div> */}
       </div>
       <div className="dashboard-widgets">
         <div className="dashboard-widget" />

@@ -1,28 +1,30 @@
 import React from "react";
 import "./connect-apps.css";
+import ConnectGmailButton from "../components/ConnectGmailButton";
+import FetchEmailsButton from "../components/FetchEmailsButton";
 
 export default function ConnectAppsPage() {
   const apps = [
     {
       name: "Gmail",
       logo: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
-      description: "Connect your Gmail account"
+      description: "Connect your Gmail account",
     },
     {
       name: "X",
       logo: "https://static.vecteezy.com/system/resources/previews/027/714/631/non_2x/sankt-petersburg-russia-24-08-2023-twitter-new-logo-twitter-icons-twitter-x-logo-free-png.png",
-      description: "Connect your X account"
+      description: "Connect your X account",
     },
     {
       name: "Play Store",
       logo: "https://cdn.freebiesupply.com/logos/large/2x/google-play-store-logo-png-transparent.png",
-      description: "Connect your Google Play Store"
+      description: "Connect your Google Play Store",
     },
     {
       name: "App Store",
       logo: "https://upload.wikimedia.org/wikipedia/commons/6/67/App_Store_%28iOS%29.svg",
-      description: "Connect your Apple App Store"
-    }
+      description: "Connect your Apple App Store",
+    },
   ];
 
   const handleConnect = (appName) => {
@@ -34,7 +36,9 @@ export default function ConnectAppsPage() {
     <div className="connect-apps-page">
       <div className="page-header">
         <h1 className="page-title">Connect Apps</h1>
-        <p className="page-subtitle">Connect your apps to sync data seamlessly</p>
+        <p className="page-subtitle">
+          Connect your apps to sync data seamlessly
+        </p>
       </div>
       <div className="connect-apps-grid">
         {apps.map((app, index) => (
@@ -46,7 +50,7 @@ export default function ConnectAppsPage() {
               <h3 className="app-name">{app.name}</h3>
               <p className="app-description">{app.description}</p>
             </div>
-            <button 
+            <button
               className="connect-button"
               onClick={() => handleConnect(app.name)}
             >
@@ -54,6 +58,11 @@ export default function ConnectAppsPage() {
             </button>
           </div>
         ))}
+      </div>
+      <div>
+        <h1>Gmail Integration Test</h1>
+        <ConnectGmailButton />
+        <FetchEmailsButton />
       </div>
     </div>
   );
