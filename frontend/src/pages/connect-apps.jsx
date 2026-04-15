@@ -95,7 +95,7 @@ export default function ConnectAppsPage() {
       );
       setDisconnectModal({ isOpen: false, appName: null });
     } catch (error) {
-      toast.error("Failed to disconnect");
+      toast.error("Failed to disconnect", error);
     } finally {
       setIsDisconnecting(false);
     }

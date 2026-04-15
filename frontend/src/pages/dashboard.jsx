@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./dashboard.css";
-import { useAuthStore } from "../store/useAuthStore";
-import { useNavigate } from "react-router-dom";
+// import { useAuthStore } from "../store/useAuthStore";
+// import { useNavigate } from "react-router-dom";
 import ConnectGmailButton from "../components/ConnectGmailButton";
 import FetchEmailsButton from "../components/FetchEmailsButton";
 import { Button } from "@/components/ui/button";
