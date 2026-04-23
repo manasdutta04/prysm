@@ -55,6 +55,7 @@ function Login() {
             padding: "0.75rem",
             borderRadius: "4px",
             border: "1px solid #ccc",
+            color: "black",
           }}
         />
         <button

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./connect-apps.css";
+import ConnectGmailButton from "../components/ConnectGmailButton";
+import FetchEmailsButton from "../components/FetchEmailsButton";
 import { AppStoreConnectModal } from "@/components/app-store-connect-modal";
 import {
   Dialog,
@@ -19,7 +21,10 @@ export default function ConnectAppsPage() {
     return saved ? JSON.parse(saved) : {};
   });
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
-  const [disconnectModal, setDisconnectModal] = useState({ isOpen: false, appName: null });
+  const [disconnectModal, setDisconnectModal] = useState({
+    isOpen: false,
+    appName: null,
+  });
   const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   React.useEffect(() => {
@@ -30,23 +35,23 @@ export default function ConnectAppsPage() {
     {
       name: "Gmail",
       logo: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
-      description: "Connect your Gmail account"
+      description: "Connect your Gmail account",
     },
     {
       name: "X",
       logo: "https://static.vecteezy.com/system/resources/previews/027/714/631/non_2x/sankt-petersburg-russia-24-08-2023-twitter-new-logo-twitter-icons-twitter-x-logo-free-png.png",
-      description: "Connect your X account"
+      description: "Connect your X account",
     },
     {
       name: "Play Store",
       logo: "https://cdn.freebiesupply.com/logos/large/2x/google-play-store-logo-png-transparent.png",
-      description: "Connect your Google Play Store"
+      description: "Connect your Google Play Store",
     },
     {
       name: "App Store",
       logo: "https://upload.wikimedia.org/wikipedia/commons/6/67/App_Store_%28iOS%29.svg",
-      description: "Connect your Apple App Store"
-    }
+      description: "Connect your Apple App Store",
+    },
   ];
 
   const handleConnectClick = (appName) => {
@@ -58,14 +63,14 @@ export default function ConnectAppsPage() {
   };
 
   const handleAppStoreConnected = (appData) => {
-    setConnectedApps(prev => ({
+    setConnectedApps((prev) => ({
       ...prev,
       "App Store": {
         isConnected: true,
         appName: appData.name,
         appIcon: appData.icon,
-        lastSync: Date.now()
-      }
+        lastSync: Date.now(),
+      },
     }));
   };
 
@@ -77,32 +82,39 @@ export default function ConnectAppsPage() {
     setIsDisconnecting(true);
     try {
       // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      setConnectedApps(prev => {
+      setConnectedApps((prev) => {
         const newState = { ...prev };
         delete newState[disconnectModal.appName];
         return newState;
       });
 
-      toast.success(`Disconnected — ${connectedApps[disconnectModal.appName]?.appName || disconnectModal.appName}`);
+      toast.success(
+        `Disconnected — ${connectedApps[disconnectModal.appName]?.appName || disconnectModal.appName}`,
+      );
       setDisconnectModal({ isOpen: false, appName: null });
     } catch (error) {
-      toast.error("Failed to disconnect");
+      toast.error("Failed to disconnect", error);
     } finally {
       setIsDisconnecting(false);
     }
   };
 
   const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
     <div className="connect-apps-page">
       <div className="page-header">
         <h1 className="page-title">Connect Apps</h1>
-        <p className="page-subtitle">Connect your apps to sync data seamlessly</p>
+        <p className="page-subtitle">
+          Connect your apps to sync data seamlessly
+        </p>
       </div>
       <div className="connect-apps-grid">
         {apps.map((app, index) => {
@@ -114,43 +126,39 @@ export default function ConnectAppsPage() {
               <div className="app-logo">
                 <img src={app.logo} alt={`${app.name} logo`} />
               </div>
+
               <div className="app-info">
                 <h3 className="app-name">{app.name}</h3>
                 <p className="app-description">{app.description}</p>
+
                 {isConnected && (
                   <div className="mt-4 p-3 bg-secondary/50 rounded-lg border border-border flex items-center gap-3 w-full">
                     <div className="h-10 w-10 rounded-md bg-background flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
                       {connectedData.appIcon ? (
-                        <img src={connectedData.appIcon} alt={connectedData.appName} className="h-full w-full object-cover" />
+                        <img
+                          src={connectedData.appIcon}
+                          alt={connectedData.appName}
+                        />
                       ) : (
-                        <span className="text-lg font-bold text-primary">
-                          {connectedData.appName.charAt(0)}
-                        </span>
+                        <span>{connectedData.appName.charAt(0)}</span>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0 text-left">
-                      <p className="text-sm font-medium truncate text-foreground">
-                        {connectedData.appName}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        Synced: {formatTime(connectedData.lastSync)}
-                      </p>
+
+                    <div className="flex-1">
+                      <p>{connectedData.appName}</p>
+                      <p>Synced: {formatTime(connectedData.lastSync)}</p>
                     </div>
-                    <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" title="Connected" />
                   </div>
                 )}
               </div>
 
               {isConnected ? (
-                <div className="flex flex-col gap-2 w-full mt-4">
-                  <Button
-                    variant="destructive"
-                    className="w-full"
-                    onClick={() => handleDisconnectClick(app.name)}
-                  >
-                    Disconnect
-                  </Button>
-                </div>
+                <Button
+                  variant="destructive"
+                  onClick={() => handleDisconnectClick(app.name)}
+                >
+                  Disconnect
+                </Button>
               ) : (
                 <button
                   className="connect-button"
@@ -162,6 +170,11 @@ export default function ConnectAppsPage() {
             </div>
           );
         })}
+        <div>
+          <h1>Gmail Integration Test</h1>
+          <ConnectGmailButton />
+          <FetchEmailsButton />
+        </div>
       </div>
 
       <AppStoreConnectModal
@@ -172,19 +185,26 @@ export default function ConnectAppsPage() {
 
       <Dialog
         open={disconnectModal.isOpen}
-        onOpenChange={(open) => !isDisconnecting && setDisconnectModal({ isOpen: open, appName: null })}
+        onOpenChange={(open) =>
+          !isDisconnecting &&
+          setDisconnectModal({ isOpen: open, appName: null })
+        }
       >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Disconnect {disconnectModal.appName}?</DialogTitle>
             <DialogDescription>
-              Disconnecting will stop scheduled imports for {connectedApps[disconnectModal.appName]?.appName}. Historical data will remain archived.
+              Disconnecting will stop scheduled imports for{" "}
+              {connectedApps[disconnectModal.appName]?.appName}. Historical data
+              will remain archived.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
               variant="secondary"
-              onClick={() => setDisconnectModal({ isOpen: false, appName: null })}
+              onClick={() =>
+                setDisconnectModal({ isOpen: false, appName: null })
+              }
               disabled={isDisconnecting}
             >
               Cancel
