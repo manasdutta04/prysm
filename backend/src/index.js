@@ -7,6 +7,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import googleRoutes from "./routes/google.route.js";
+import xRoutes from "./routes/x.route.js";
 
 dotenv.config();
 const app = express();
@@ -33,6 +34,8 @@ app.use(
 app.use("/api/auth", authRoutes);
 
 app.use("/api/auth/google", googleRoutes);
+
+app.use("/api/x", xRoutes);
 
 app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);

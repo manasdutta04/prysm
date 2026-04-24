@@ -3,6 +3,7 @@ import "./connect-apps.css";
 import ConnectGmailButton from "../components/ConnectGmailButton";
 import FetchEmailsButton from "../components/FetchEmailsButton";
 import { AppStoreConnectModal } from "@/components/app-store-connect-modal";
+import { XConnectModal } from "@/components/x-connect-modal";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ export default function ConnectAppsPage() {
     return saved ? JSON.parse(saved) : {};
   });
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [isXModalOpen, setIsXModalOpen] = useState(false);
   const [disconnectModal, setDisconnectModal] = useState({
     isOpen: false,
     appName: null,
@@ -57,6 +59,8 @@ export default function ConnectAppsPage() {
   const handleConnectClick = (appName) => {
     if (appName === "App Store") {
       setIsConnectModalOpen(true);
+    } else if (appName === "X") {
+      setIsXModalOpen(true);
     } else {
       toast("Integration coming soon!", { icon: "🚧" });
     }
@@ -66,6 +70,18 @@ export default function ConnectAppsPage() {
     setConnectedApps((prev) => ({
       ...prev,
       "App Store": {
+        isConnected: true,
+        appName: appData.name,
+        appIcon: appData.icon,
+        lastSync: Date.now(),
+      },
+    }));
+  };
+
+  const handleXConnected = (appData) => {
+    setConnectedApps((prev) => ({
+      ...prev,
+      X: {
         isConnected: true,
         appName: appData.name,
         appIcon: appData.icon,
@@ -181,6 +197,12 @@ export default function ConnectAppsPage() {
         isOpen={isConnectModalOpen}
         onClose={() => setIsConnectModalOpen(false)}
         onConnect={handleAppStoreConnected}
+      />
+
+      <XConnectModal
+        isOpen={isXModalOpen}
+        onClose={() => setIsXModalOpen(false)}
+        onConnect={handleXConnected}
       />
 
       <Dialog
