@@ -1,23 +1,39 @@
-# Prysm: AI-Driven Customer Feedback Analyzer - Agent Guide
+# Prysm: AI-Driven Customer Feedback Analyzer - Agent Configuration and Development Guide
 
-Welcome, Agent! This document provides the necessary context and technical guidelines for working on the **Prysm** codebase.
+This document provides the canonical technical context, architectural decisions, and specific instructions for AI agents working on the Prysm repository.
 
-## 🚀 Project Overview
-Prysm is a tool designed to ingest customer feedback from multiple sources (Social Media, App Stores, etc.) and use AI to cluster them into topics and generate actionable insights.
+## 1. Project Overview and Product Vision
 
-### Core Features
-- **Data Ingestion**: Real-time "OG" scraping of X (Twitter) and App Store (iOS) data without official API keys.
-- **Dashboard**: High-level overview of sentiment, emerging issues, and feedback trends.
-- **Connect Apps**: A modular system for linking external feedback sources.
-- **AI Processing**: (Planned) Sentiment analysis and topic clustering.
+Prysm is an AI-driven platform designed to automate the customer feedback analysis pipeline. It ingests massive volumes of unstructured feedback from diverse channels (social media, app reviews, support tickets) and utilizes AI to categorize data, detect trends, and extract actionable insights in real-time. 
 
-## 🛠 Tech Stack
-- **Frontend**: React.js, Vite, Tailwind CSS, Lucide Icons, Shadcn UI.
-- **Backend**: Node.js, Express, MongoDB (Mongoose), Axios.
-- **Scraping**: `rss-parser` (Nitter mirrors for X), `app-store-scraper` (Apple App Store).
-- **State Management**: Zustand (Auth, Dashboard state).
+Instead of presenting raw sentiment scores, Prysm pinpoints specific issues and prioritizes them for product managers and customer success teams.
 
-## 📁 Repository Structure
+### Core Features (Current & Planned)
+*   **Data Ingestion**: Aggregation of data via real-time public scraping ("OG" data) and API connectors.
+*   **AI Processing**: Sentiment analysis, topic clustering, and insight generation using LLMs.
+*   **Real-Time Alerts**: Proactive notifications for "emerging issues" before they escalate.
+*   **Dashboard**: Centralized, department-specific reports and visualizations.
+
+## 2. Technology Stack and Architecture
+
+### Frontend
+*   **Core**: React.js, Vite
+*   **Styling**: Tailwind CSS, generic UI components (Shadcn UI patterns), Lucide Icons
+*   **State Management**: Zustand
+*   **Data Visualization**: (Planned) Chart.js or Recharts
+*   **Real-time Communication**: (Planned) Socket.io client
+
+### Backend
+*   **Core**: Node.js, Express.js
+*   **Database**: MongoDB (via Mongoose)
+*   **Data Ingestion Modules**:
+    *   **X (Twitter)**: Utilizes `rss-parser` to scrape data from Nitter instances (`src/lib/xScraper.js`). This avoids official API rate limits and key requirements.
+    *   **Apple App Store**: Utilizes the `app-store-scraper` package (`src/lib/appStoreScraper.js`) for direct review and app metadata ingestion.
+*   **AI Orchestration**: (Planned) LangChain.js for multi-step AI tasks.
+*   **Real-time Communication**: (Planned) Socket.io server.
+
+## 3. Repository Structure
+
 ```text
 prysm/
 ├── frontend/             # React Application
@@ -35,41 +51,31 @@ prysm/
 └── agents.md             # This guide
 ```
 
-## 🔑 Key Workflows
-### Connecting X (Twitter)
-- **Scraper**: Uses `backend/src/lib/xScraper.js` which rotates through multiple Nitter instances.
-- **Logic**: Fetches RSS feeds for public handles to avoid API rate limits and costs.
+## 4. Agent Development Instructions and Constraints
 
-### Connecting App Store
-- **Scraper**: Uses `backend/src/lib/appStoreScraper.js` via the `app-store-scraper` NPM package.
-- **Logic**: Search-based discovery of apps and review ingestion.
+When writing code or implementing features, AI agents must adhere to the following rules:
 
-## 📝 Development Guidelines
-1. **Design Aesthetics**: Prysm aims for a premium, Apple-style UI. Use glassmorphism, subtle gradients, and smooth transitions.
-2. **Mocking**: During development without a live MongoDB, the `useAuthStore` uses a mock session (admin@prysm.ai / password123).
-3. **Linting**: Ensure all code passes `npm run lint` in the `frontend` directory before pushing. CI will fail on unused variables or directives.
-4. **Branching**: Use descriptive branch names like `X-connect` or `app-store-connect`.
+### Data Ingestion and Integrations
+*   **Scraping First**: Prioritize public scraping methods over official API integrations that require complex authentication or paid tiers. The architecture relies on "OG" data fetching (e.g., Nitter for X, `app-store-scraper` for iOS).
+*   **Resiliency**: Scrapers must implement fallbacks. For example, the `xScraper.js` must iterate through an array of known Nitter instances if one fails.
 
-## ⚙️ Running the Project
-### Backend
-```bash
-cd backend
-npm install
-npm run dev # Runs on http://localhost:5000
-```
-*Requires `.env` with `MONGO_URI` and `JWT_SECRET`.*
+### Authentication and State
+*   **Mock Environment**: The application currently relies on a mock authentication bypass within `frontend/src/store/useAuthStore.js` to facilitate rapid frontend development without a live MongoDB connection. 
+    *   **Mock Credentials**: `admin@prysm.ai` / `password123`.
+    *   **Persistence**: Session state is persisted using `localStorage`.
+*   **Future RBAC**: Ensure that any new dashboard routes or backend endpoints are structured to support future Role-Based Access Control (RBAC) via JWTs.
 
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev # Runs on http://localhost:5173
-```
+### UI/UX and Design Standards
+*   **Premium Aesthetics**: Prysm targets enterprise users. The UI must utilize modern design principles: glassmorphism, subtle gradients, clean typography, and smooth transitions. Avoid default browser styling.
+*   **Component Modularity**: Build reusable components in `frontend/src/components/`. The integration modals (e.g., `app-store-connect-modal.jsx`, `x-connect-modal.jsx`) serve as the standard pattern for adding new data sources.
 
-## 🎯 Current Objectives
-- Implement Google/Gmail real-time ingestion.
-- Integrate LangChain for sentiment analysis of the scraped feedback.
-- Build the "Emerging Issues" alert system.
+### Code Quality
+*   **Linting**: All frontend code must pass `npm run lint` cleanly. Unused variables and unnecessary eslint-disable directives will cause CI failures.
 
----
-*Happy Coding, Agent!*
+## 5. Current Implementation Roadmap
+
+Agents should be aware of the following immediate development priorities:
+
+1.  **AI Pipeline Integration**: Implement the preprocessing and LangChain.js orchestration layer to cluster the raw data currently being fetched by the X and App Store scrapers.
+2.  **Live Dashboard Updates**: Integrate Socket.io to push real-time scraping results and AI insights directly to the frontend dashboard.
+3.  **Alerting Logic**: Develop the trend detection algorithm to trigger alerts based on specific percentage increases in negative sentiment topics.
