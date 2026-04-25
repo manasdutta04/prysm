@@ -60,8 +60,9 @@ When writing code or implementing features, AI agents must adhere to the followi
 *   **Resiliency**: Scrapers must implement fallbacks. For example, the `xScraper.js` must iterate through an array of known Nitter instances if one fails.
 
 ### Authentication and State
+*   **Global Auth Modal**: The application uses a unified `AuthModal` component over the root dashboard for login/registration instead of dedicated routes (`/login` or `/register`).
 *   **Mock Environment**: The application currently relies on a mock authentication bypass within `frontend/src/store/useAuthStore.js` to facilitate rapid frontend development without a live MongoDB connection. 
-    *   **Mock Credentials**: `admin@prysm.ai` / `password123`.
+    *   **Demo Credentials** are used (e.g. `admin@prysm.ai` / `password123`) but removed from the UI for production feel.
     *   **Persistence**: Session state is persisted using `localStorage`.
 *   **Future RBAC**: Ensure that any new dashboard routes or backend endpoints are structured to support future Role-Based Access Control (RBAC) via JWTs.
 
@@ -72,7 +73,20 @@ When writing code or implementing features, AI agents must adhere to the followi
 ### Code Quality
 *   **Linting**: All frontend code must pass `npm run lint` cleanly. Unused variables and unnecessary eslint-disable directives will cause CI failures.
 
-## 5. Current Implementation Roadmap
+## 5. Deployment Architecture
+
+Prysm utilizes a decoupled deployment architecture optimized for performance and long-running background tasks.
+
+*   **Frontend (Vercel)**: Hosted on Vercel's Edge Network for fast static delivery.
+    *   **Env Variables**: `VITE_API_URL` (Must point to the Render backend URL, e.g., `https://prysm-backend.onrender.com/api`).
+*   **Backend (Render)**: Hosted on Render as a persistent Web Service. Render is chosen over Vercel serverless functions because scraping tasks can exceed Vercel's 10-second timeout, and Render supports persistent WebSockets for future real-time updates.
+    *   **Env Variables**: 
+        *   `FRONTEND_URL` (Must point to the Vercel URL, e.g., `https://prysm.vercel.app` for CORS validation).
+        *   `MONGO_URI` (Database connection string).
+        *   `JWT_SECRET` (For future RBAC implementation).
+*   **Infrastructure as Code**: The backend deployment is defined via `render.yaml` in the root directory.
+
+## 6. Current Implementation Roadmap
 
 Agents should be aware of the following immediate development priorities:
 
