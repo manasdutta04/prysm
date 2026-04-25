@@ -61,9 +61,7 @@ When writing code or implementing features, AI agents must adhere to the followi
 
 ### Authentication and State
 *   **Global Auth Modal**: The application uses a unified `AuthModal` component over the root dashboard for login/registration instead of dedicated routes (`/login` or `/register`).
-*   **Mock Environment**: The application currently relies on a mock authentication bypass within `frontend/src/store/useAuthStore.js` to facilitate rapid frontend development without a live MongoDB connection. 
-    *   **Demo Credentials** are used (e.g. `admin@prysm.ai` / `password123`) but removed from the UI for production feel.
-    *   **Persistence**: Session state is persisted using `localStorage`.
+*   **Authentication Flow**: The application interfaces directly with the Render backend via `useAuthStore.js` for JWT-based session management.
 *   **Future RBAC**: Ensure that any new dashboard routes or backend endpoints are structured to support future Role-Based Access Control (RBAC) via JWTs.
 
 ### UI/UX and Design Standards
