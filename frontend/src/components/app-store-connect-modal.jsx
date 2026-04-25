@@ -71,7 +71,7 @@ export function AppStoreConnectModal({ isOpen, onClose, onConnect }) {
       setSearchTerm("");
       setFoundApps([]);
       setSelectedApp(null);
-    } catch (err) {
+    } catch {
       toast.error("Failed to connect app. Check your connection.");
     } finally {
       setIsLoading(false);
