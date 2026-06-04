@@ -5,10 +5,12 @@ import authRoutes from "./routes/auth.route.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import fs from "fs";
 
 import googleRoutes from "./routes/google.route.js";
 import xRoutes from "./routes/x.route.js";
 import appStoreRoutes from "./routes/appstore.route.js";
+import customDataRoutes from "./routes/customData.route.js";
 
 dotenv.config();
 const app = express();
@@ -39,8 +41,17 @@ app.use("/api/auth/google", googleRoutes);
 app.use("/api/x", xRoutes);
 
 app.use("/api/appstore", appStoreRoutes);
+app.use("/api/custom-data", customDataRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  // ensure upload tmp directory exists
+  const tmpDir = `${process.cwd()}/tmp_uploads`;
+  try {
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir);
+  } catch (e) {
+    console.warn("Could not create tmp_uploads folder", e.message);
+  }
+
   connectDB();
 });
