@@ -61,7 +61,7 @@ export const usePlaystoreStore = create((set) => ({
   fetchReviews: async () => {
     set({ isFetching: true });
     try {
-      const res = await axiosInstance.get("/playstore/reviews");
+      const res = await axiosInstance.post("/playstore/reviews");
       toast.success(res.data.message);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch reviews");

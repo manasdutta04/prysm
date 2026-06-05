@@ -19,6 +19,6 @@ router.post("/connect", protectRoute, connectPlaystore);
 router.post("/disconnect", protectRoute, disconnectPlaystore);
 
 // Fetch & save reviews
-router.get("/reviews", protectRoute, fetchAndSaveReviews);
+router.post("/reviews", protectRoute, fetchAndSaveReviews);
 
 export default router;

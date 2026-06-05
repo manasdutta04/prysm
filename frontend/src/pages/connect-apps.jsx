@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./connect-apps.css";
 import { AppStoreConnectModal } from "@/components/app-store-connect-modal";
-import { PlaystoreConnectModal } from "@/components/playstore-connect-modal";
+import { PlaystoreConnectModal } from "@/components/playstore-connect-model";
 import {
   Dialog,
   DialogContent,

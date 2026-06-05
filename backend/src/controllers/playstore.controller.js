@@ -1,5 +1,5 @@
 import gplay from "google-play-scraper";
-import Feedback from "../models/raw_feedback/feedback.models.js";
+import Feedback from "../models/raw_feedbacks/feedback.model.js";
 import PlaystoreUser from "../models/users/playstoreUser.model.js";
 
 /**
@@ -95,6 +95,7 @@ export const fetchAndSaveReviews = async (req, res) => {
             userId,
             source: "playstore",
             externalId: review.id,
+            // "metadata.appId": appId 
             content: review.text,
             timestamp: new Date(review.date),
             metadata: {
