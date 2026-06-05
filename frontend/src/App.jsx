@@ -15,6 +15,8 @@ import CustomDataPage from "./pages/custom-data";
 import HistoryPage from "./pages/history";
 import HelpSupportPage from "./pages/help-support";
 import DocsPage from "./pages/docs";
+import SettingsPage from "./pages/settings";
+import AccountPage from "./pages/account";
 import { AuthModal } from "./components/auth-modal";
 
 import { useAuthStore } from "./store/useAuthStore";
@@ -104,6 +106,8 @@ function App() {
                     <Route path="/history" element={<HistoryPage />} />
                     <Route path="/help-support" element={<HelpSupportPage />} />
                     <Route path="/docs" element={<DocsPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/account" element={<AccountPage />} />
                     <Route path="*" element={<Navigate to="/" />} />
                   </Routes>
                 </div>

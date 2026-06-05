@@ -102,3 +102,45 @@ export const checkAuth = (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+/**
+ * @route PUT /auth/update-profile
+ */
+export const updateProfile = async (req, res) => {
+  const { fullName, email, password } = req.body;
+  const userId = req.user._id;
+
+  try {
+    const updates = {};
+    if (fullName) updates.fullName = fullName;
+    
+    if (email) {
+      if (email !== req.user.email) {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          return res.status(400).json({ message: "Email already exists" });
+        }
+      }
+      updates.email = email;
+    }
+
+    if (password) {
+      if (password.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters long" });
+      }
+      updates.password = await bcrypt.hash(password, 10);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, {
+      new: true,
+    }).select("-password");
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("❌ Error in updateProfile controller:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
