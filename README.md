@@ -40,8 +40,8 @@ graph TD
         Controller --> Query[Query DB: Load Feedbacks in Date Range]
         Query --> Batcher[Aggregator & Batcher: Segment Feedbacks]
         
-        Batcher --> AIOrchestrator[AI Orchestration: LangChain.js]
-        AIOrchestrator --> LLM[Dynamic Model Initialization: ChatGoogleGenerativeAI, ChatOpenAI, ChatAnthropic]
+        Batcher --> AIOrchestrator[Direct API Connectors: Axios Drivers]
+        AIOrchestrator --> LLM[Dynamic API Invocations: OpenAI, Gemini, Claude, Groq, Ollama]
         
         LLM --> Analysis[Compute Sentiment, Group Topics, Extract Insights]
         Analysis --> HistoryStore[Save Results to AnalysisHistory Model]
@@ -61,6 +61,30 @@ The system follows a structured workflow:
 
 
 ## Getting Started
+
+### Running with Docker (Recommended)
+
+You can run both the frontend and backend of Prysm in a single unified Docker environment.
+
+#### Prerequisites
+* [Docker](https://docs.docker.com/get-docker/) installed on your machine.
+* [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+#### Steps to Run
+1. Clone the repository and navigate to the project root directory.
+2. Build and run the services using Docker Compose:
+   ```bash
+   docker compose up --build
+   ```
+3. Once the containers are running:
+   * Access the **Prysm Frontend** at `http://localhost:8080` in your web browser.
+   * The **Backend API** will run at `http://localhost:5000` (requests are automatically proxied via Nginx from the frontend container).
+4. To stop the application:
+   ```bash
+   docker compose down
+   ```
+
+### Manual Installation & Local Dev Setup
 
 ### User Registration
 
