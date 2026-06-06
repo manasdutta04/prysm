@@ -2,6 +2,7 @@ import Feedback from "../models/raw feedbacks/feedback.model.js";
 import { fetchXFeedback } from "../lib/xScraper.js";
 import { fetchAppStoreReviews } from "../lib/appStoreScraper.js";
 import AnalysisHistory from "../models/analysis/analysisHistory.model.js";
+import axios from "axios";
 
 // Helper keyword dictionaries for rule-based analysis
 const POSITIVE_KEYWORDS = [
@@ -43,9 +44,135 @@ const TOPICS = [
   }
 ];
 
+function cleanJsonResponse(text) {
+  let cleaned = text.trim();
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\n?/i, "").replace(/\n?```$/, "");
+  }
+  return JSON.parse(cleaned.trim());
+}
+
+async function analyzeFeedbacksWithLLM(feedbacks, provider, apiKey, localUrl, modelName) {
+  const truncatedFeedbacks = feedbacks.slice(0, 300).map((f, index) => {
+    const text = (f.content || "").substring(0, 300).replace(/[\r\n]+/g, " ");
+    return `${index + 1}. Source: ${f.source} | Content: ${text}`;
+  }).join("\n");
+
+  const prompt = `You are a product feedback analysis assistant. Analyze the following list of customer feedbacks.
+Categorize each feedback's sentiment as either positive, negative, or neutral.
+Count the number of feedbacks belonging to each sentiment.
+
+Also extract:
+- keyInsights: A list of 3-5 high-level insights summarizing what users are saying.
+- improvements: A list of 2-4 actionable areas to improve.
+- positivePoints: Up to 5 specific positive aspects mentioned by users, along with the approximate count of users/feedbacks mentioning them, in the format: [{"point": "description", "mentions": count}].
+- negativePoints: Up to 5 specific negative aspects/complaints mentioned by users, along with the approximate count of users/feedbacks mentioning them, in the format: [{"point": "description", "mentions": count}].
+
+Return your analysis as a valid JSON object matching the following structure EXACTLY:
+{
+  "positiveCount": number,
+  "negativeCount": number,
+  "neutralCount": number,
+  "keyInsights": ["string"],
+  "improvements": ["string"],
+  "positivePoints": [
+    {"point": "string", "mentions": number}
+  ],
+  "negativePoints": [
+    {"point": "string", "mentions": number}
+  ]
+}
+
+Make sure the sum of positiveCount, negativeCount, and neutralCount equals the total number of feedbacks analyzed (${feedbacks.slice(0, 300).length}).
+
+Customer Feedbacks to analyze:
+${truncatedFeedbacks}`;
+
+  let responseText = "";
+  const selectedModel = modelName || (provider === "gemini" ? "gemini-2.0-flash" :
+                         provider === "openai" ? "gpt-4o-mini" :
+                         provider === "claude" ? "claude-3-5-sonnet-20241022" :
+                         provider === "groq" ? "llama-3.3-70b-versatile" :
+                         "llama3");
+
+  if (provider === "gemini") {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+    const response = await axios.post(url, {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: "application/json"
+      }
+    }, {
+      headers: { "Content-Type": "application/json" }
+    });
+    responseText = response.data.candidates[0].content.parts[0].text;
+  } else if (provider === "openai") {
+    const url = "https://api.openai.com/v1/chat/completions";
+    const response = await axios.post(url, {
+      model: selectedModel,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" }
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      }
+    });
+    responseText = response.data.choices[0].message.content;
+  } else if (provider === "claude") {
+    const url = "https://api.anthropic.com/v1/messages";
+    const response = await axios.post(url, {
+      model: selectedModel,
+      max_tokens: 4000,
+      messages: [{ role: "user", content: prompt }]
+    }, {
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01"
+      }
+    });
+    responseText = response.data.content[0].text;
+  } else if (provider === "groq") {
+    const url = "https://api.groq.com/openai/v1/chat/completions";
+    const response = await axios.post(url, {
+      model: selectedModel,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" }
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      }
+    });
+    responseText = response.data.choices[0].message.content;
+  } else if (provider === "ollama") {
+    const baseUrl = (localUrl || "http://localhost:11434").replace(/\/$/, "");
+    const url = `${baseUrl}/api/chat`;
+    const response = await axios.post(url, {
+      model: selectedModel,
+      messages: [{ role: "user", content: prompt }],
+      format: "json",
+      stream: false
+    }, {
+      headers: { "Content-Type": "application/json" }
+    });
+    responseText = response.data.message.content;
+  } else {
+    throw new Error(`Unsupported LLM provider: ${provider}`);
+  }
+
+  return cleanJsonResponse(responseText);
+}
+
 export const fetchAndAnalyzeData = async (req, res) => {
   const { startDate, endDate, connectedApps = {}, skipScraping = false } = req.body;
   const userId = req.user._id;
+
+  const llmProvider = req.headers["x-llm-provider"] || req.get("x-llm-provider");
+  const llmKey = req.headers["x-llm-key"] || req.get("x-llm-key");
+  const llmLocalUrl = req.headers["x-llm-local-url"] || req.get("x-llm-local-url") || "http://localhost:11434";
+  const llmModel = req.headers["x-llm-model"] || req.get("x-llm-model");
 
   try {
     const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -178,110 +305,144 @@ export const fetchAndAnalyzeData = async (req, res) => {
       });
     }
 
-    // 3) Rule-Based Sentiment Analysis & Clustering
+    // 3) Sentiment Analysis & Clustering (BYOK LLM with Rule-Based Fallback)
     let positiveCount = 0;
     let negativeCount = 0;
     let neutralCount = 0;
+    let keyInsights = [];
+    let improvements = [];
+    let positivePoints = [];
+    let negativePoints = [];
 
-    const topicStats = TOPICS.map(t => ({ ...t, positiveMentions: 0, negativeMentions: 0, mentions: 0 }));
+    const isProviderValid = llmProvider && llmProvider !== "null" && llmProvider !== "undefined" && llmProvider !== "";
+    const isKeyValid = llmKey && llmKey !== "null" && llmKey !== "undefined" && llmKey !== "";
+    const isOllama = llmProvider === "ollama";
 
-    const lowercase = (txt) => (txt || "").toLowerCase();
+    let useLLM = isProviderValid && (isOllama || isKeyValid);
+    let llmResult = null;
 
-    for (const fb of feedbacks) {
-      const content = lowercase(fb.content);
-      
-      // Calculate Sentiment score
-      let posScore = 0;
-      let negScore = 0;
-
-      for (const w of POSITIVE_KEYWORDS) {
-        if (content.includes(w)) posScore++;
+    if (useLLM) {
+      try {
+        console.log(`Analyzing feedback using LLM provider: ${llmProvider} and model: ${llmModel || "default"}`);
+        llmResult = await analyzeFeedbacksWithLLM(feedbacks, llmProvider, llmKey, llmLocalUrl, llmModel);
+        console.log("LLM Analysis Successful.");
+        
+        positiveCount = typeof llmResult.positiveCount === "number" ? llmResult.positiveCount : 0;
+        negativeCount = typeof llmResult.negativeCount === "number" ? llmResult.negativeCount : 0;
+        neutralCount = typeof llmResult.neutralCount === "number" ? llmResult.neutralCount : 0;
+        keyInsights = Array.isArray(llmResult.keyInsights) ? llmResult.keyInsights : [];
+        improvements = Array.isArray(llmResult.improvements) ? llmResult.improvements : [];
+        positivePoints = Array.isArray(llmResult.positivePoints) ? llmResult.positivePoints : [];
+        negativePoints = Array.isArray(llmResult.negativePoints) ? llmResult.negativePoints : [];
+      } catch (err) {
+        console.error("LLM Analysis failed, falling back to rule-based analysis:", err.message);
+        useLLM = false;
       }
-      for (const w of NEGATIVE_KEYWORDS) {
-        if (content.includes(w)) negScore++;
-      }
+    }
 
-      if (posScore > negScore) {
-        positiveCount++;
-      } else if (negScore > posScore) {
-        negativeCount++;
-      } else {
-        neutralCount++;
-      }
+    if (!useLLM) {
+      // Rule-Based Sentiment Analysis & Clustering
+      const topicStats = TOPICS.map(t => ({ ...t, positiveMentions: 0, negativeMentions: 0, mentions: 0 }));
+      const lowercase = (txt) => (txt || "").toLowerCase();
 
-      // Check Topics
-      for (const t of topicStats) {
-        let matchesTopic = false;
-        for (const kw of t.keywords) {
-          if (content.includes(kw)) {
-            matchesTopic = true;
-            break;
+      for (const fb of feedbacks) {
+        const content = lowercase(fb.content);
+        
+        // Calculate Sentiment score
+        let posScore = 0;
+        let negScore = 0;
+
+        for (const w of POSITIVE_KEYWORDS) {
+          if (content.includes(w)) posScore++;
+        }
+        for (const w of NEGATIVE_KEYWORDS) {
+          if (content.includes(w)) negScore++;
+        }
+
+        if (posScore > negScore) {
+          positiveCount++;
+        } else if (negScore > posScore) {
+          negativeCount++;
+        } else {
+          neutralCount++;
+        }
+
+        // Check Topics
+        for (const t of topicStats) {
+          let matchesTopic = false;
+          for (const kw of t.keywords) {
+            if (content.includes(kw)) {
+              matchesTopic = true;
+              break;
+            }
+          }
+          if (matchesTopic) {
+            t.mentions++;
+            if (posScore > negScore) t.positiveMentions++;
+            if (negScore > posScore) t.negativeMentions++;
           }
         }
-        if (matchesTopic) {
-          t.mentions++;
-          if (posScore > negScore) t.positiveMentions++;
-          if (negScore > posScore) t.negativeMentions++;
+      }
+
+      const ruleTotal = feedbacks.length;
+      const rulePosPct = Math.round((positiveCount / ruleTotal) * 100);
+      const ruleNegPct = Math.round((negativeCount / ruleTotal) * 100);
+      const ruleNeuPct = 100 - rulePosPct - ruleNegPct;
+
+      // Filter and build dynamic points lists
+      const sortedTopics = [...topicStats].sort((a, b) => b.mentions - a.mentions);
+      
+      positivePoints = sortedTopics
+        .filter(t => t.positiveMentions > 0)
+        .slice(0, 5)
+        .map(t => ({ point: t.positiveSummary, mentions: t.positiveMentions }));
+
+      negativePoints = sortedTopics
+        .filter(t => t.negativeMentions > 0)
+        .slice(0, 5)
+        .map(t => ({ point: t.negativeSummary, mentions: t.negativeMentions }));
+
+      if (rulePosPct > 50) {
+        keyInsights.push(`Customer satisfaction is high, with ${rulePosPct}% positive feedback overall.`);
+      } else {
+        keyInsights.push(`Customer sentiment is mixed; only ${rulePosPct}% of feedback is positive.`);
+      }
+
+      if (sortedTopics[0] && sortedTopics[0].mentions > 0) {
+        const topT = sortedTopics[0];
+        if (topT.negativeMentions > topT.positiveMentions) {
+          improvements.push(`Address critical ${lowercase(topT.name)} issues (mentioned by ${topT.mentions} users).`);
+          keyInsights.push(`Primary customer complaints relate to ${topT.name}.`);
+        } else {
+          keyInsights.push(`Strong customer appreciation for ${topT.name} stability.`);
         }
       }
+
+      if (sortedTopics[1] && sortedTopics[1].mentions > 0) {
+        const secondT = sortedTopics[1];
+        if (secondT.negativeMentions > secondT.positiveMentions) {
+          improvements.push(`Improve response and features in ${lowercase(secondT.name)} (mentioned in ${secondT.mentions} entries).`);
+        } else {
+          keyInsights.push(`Positive feedback received for recent updates on ${secondT.name}.`);
+        }
+      }
+
+      // Default fallbacks for insights/improvements if sparse
+      if (keyInsights.length < 3) {
+        keyInsights.push(`Data imported across ${[...new Set(feedbacks.map(f => f.source))].length} different channel(s).`);
+        keyInsights.push("Review feedback spikes by adjusting the timeframe filter.");
+      }
+      if (improvements.length === 0) {
+        improvements.push("Analyze neutral feedback items to discover subtle friction points.");
+        improvements.push("Ensure regular app reviews synchronization to track daily sentiment swings.");
+      }
     }
 
-    const total = feedbacks.length;
-    const posPct = Math.round((positiveCount / total) * 100);
-    const negPct = Math.round((negativeCount / total) * 100);
+    const totalCount = positiveCount + negativeCount + neutralCount || feedbacks.length || 1;
+    const posPct = Math.round((positiveCount / totalCount) * 100);
+    const negPct = Math.round((negativeCount / totalCount) * 100);
     const neuPct = 100 - posPct - negPct;
-
-    // Filter and build dynamic points lists
-    const sortedTopics = [...topicStats].sort((a, b) => b.mentions - a.mentions);
-    
-    const positivePoints = sortedTopics
-      .filter(t => t.positiveMentions > 0)
-      .slice(0, 5)
-      .map(t => ({ point: t.positiveSummary, mentions: t.positiveMentions }));
-
-    const negativePoints = sortedTopics
-      .filter(t => t.negativeMentions > 0)
-      .slice(0, 5)
-      .map(t => ({ point: t.negativeSummary, mentions: t.negativeMentions }));
-
-    // Dynamic key insights and areas of improvement based on top feedback topics
-    const keyInsights = [];
-    const improvements = [];
-
-    if (posPct > 50) {
-      keyInsights.push(`Customer satisfaction is high, with ${posPct}% positive feedback overall.`);
-    } else {
-      keyInsights.push(`Customer sentiment is mixed; only ${posPct}% of feedback is positive.`);
-    }
-
-    if (sortedTopics[0] && sortedTopics[0].mentions > 0) {
-      const topT = sortedTopics[0];
-      if (topT.negativeMentions > topT.positiveMentions) {
-        improvements.push(`Address critical ${lowercase(topT.name)} issues (mentioned by ${topT.mentions} users).`);
-        keyInsights.push(`Primary customer complaints relate to ${topT.name}.`);
-      } else {
-        keyInsights.push(`Strong customer appreciation for ${topT.name} stability.`);
-      }
-    }
-
-    if (sortedTopics[1] && sortedTopics[1].mentions > 0) {
-      const secondT = sortedTopics[1];
-      if (secondT.negativeMentions > secondT.positiveMentions) {
-        improvements.push(`Improve response and features in ${lowercase(secondT.name)} (mentioned in ${secondT.mentions} entries).`);
-      } else {
-        keyInsights.push(`Positive feedback received for recent updates on ${secondT.name}.`);
-      }
-    }
-
-    // Default fallbacks for insights/improvements if sparse
-    if (keyInsights.length < 3) {
-      keyInsights.push(`Data imported across ${[...new Set(feedbacks.map(f => f.source))].length} different channel(s).`);
-      keyInsights.push("Review feedback spikes by adjusting the timeframe filter.");
-    }
-    if (improvements.length === 0) {
-      improvements.push("Analyze neutral feedback items to discover subtle friction points.");
-      improvements.push("Ensure regular app reviews synchronization to track daily sentiment swings.");
-    }
+    const currentScore = Number(((positiveCount / totalCount) * 5).toFixed(1));
 
     // Calculate dynamic satisfaction history (split timeframe into 8 chunks)
     const timeDiff = end.getTime() - start.getTime();
@@ -302,7 +463,7 @@ export const fetchAndAnalyzeData = async (req, res) => {
       for (const fb of chunkFeedbacks) {
         let posScore = 0;
         let negScore = 0;
-        const content = lowercase(fb.content);
+        const content = (fb.content || "").toLowerCase();
         for (const w of POSITIVE_KEYWORDS) if (content.includes(w)) posScore++;
         for (const w of NEGATIVE_KEYWORDS) if (content.includes(w)) negScore++;
         if (posScore > negScore) chunkPos++;
@@ -317,8 +478,6 @@ export const fetchAndAnalyzeData = async (req, res) => {
       responseTimeHistory.push(Number((3.8 - (i * 0.2)).toFixed(1)));
       volumeHistory.push(chunkTotal);
     }
-
-    const currentScore = Number(((positiveCount / total) * 5).toFixed(1));
 
     // Calculate dynamic source distributions
     const sourceDistribution = {
@@ -415,5 +574,113 @@ export const getAnalysisHistory = async (req, res) => {
   } catch (error) {
     console.error("Error in getAnalysisHistory:", error.message);
     res.status(500).json({ message: error.message || "Failed to load history" });
+  }
+};
+
+export const testLlmConnection = async (req, res) => {
+  const llmProvider = req.headers["x-llm-provider"] || req.get("x-llm-provider");
+  const llmKey = req.headers["x-llm-key"] || req.get("x-llm-key");
+  const llmLocalUrl = req.headers["x-llm-local-url"] || req.get("x-llm-local-url") || "http://localhost:11434";
+  const llmModel = req.headers["x-llm-model"] || req.get("x-llm-model");
+
+  if (!llmProvider) {
+    return res.status(400).json({ message: "No LLM provider specified." });
+  }
+  if (llmProvider !== "ollama" && !llmKey) {
+    return res.status(400).json({ message: "API key is required." });
+  }
+
+  const selectedModel = llmModel || (llmProvider === "gemini" ? "gemini-2.0-flash" :
+                         llmProvider === "openai" ? "gpt-4o-mini" :
+                         llmProvider === "claude" ? "claude-3-5-sonnet-20241022" :
+                         llmProvider === "groq" ? "llama-3.3-70b-versatile" :
+                         "llama3");
+
+  try {
+    if (llmProvider === "gemini") {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${llmKey}`;
+      await axios.post(url, {
+        contents: [{ parts: [{ text: "Hello. Respond with one word: 'ok'." }] }]
+      }, {
+        headers: { "Content-Type": "application/json" },
+        timeout: 5000
+      });
+    } else if (llmProvider === "openai") {
+      const url = "https://api.openai.com/v1/chat/completions";
+      await axios.post(url, {
+        model: selectedModel,
+        messages: [{ role: "user", content: "Hello" }],
+        max_tokens: 5
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${llmKey}`
+        },
+        timeout: 5000
+      });
+    } else if (llmProvider === "claude") {
+      const url = "https://api.anthropic.com/v1/messages";
+      await axios.post(url, {
+        model: selectedModel,
+        max_tokens: 5,
+        messages: [{ role: "user", content: "Hello" }]
+      }, {
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": llmKey,
+          "anthropic-version": "2023-06-01"
+        },
+        timeout: 5000
+      });
+    } else if (llmProvider === "groq") {
+      const url = "https://api.groq.com/openai/v1/chat/completions";
+      await axios.post(url, {
+        model: selectedModel,
+        messages: [{ role: "user", content: "Hello" }],
+        max_tokens: 5
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${llmKey}`
+        },
+        timeout: 5000
+      });
+    } else if (llmProvider === "ollama") {
+      const baseUrl = llmLocalUrl.replace(/\/$/, "");
+      const url = `${baseUrl}/api/chat`;
+      await axios.post(url, {
+        model: selectedModel,
+        messages: [{ role: "user", content: "Hello" }],
+        stream: false
+      }, {
+        headers: { "Content-Type": "application/json" },
+        timeout: 5000
+      });
+    } else {
+      return res.status(400).json({ message: "Unsupported LLM provider." });
+    }
+
+    return res.status(200).json({ success: true, message: "Connection successful!" });
+  } catch (error) {
+    console.error("Test connection error:", error.message);
+    const details = error.response?.data?.error?.message || error.response?.data?.message || error.message;
+    return res.status(500).json({ success: false, message: `Connection failed: ${details}` });
+  }
+};
+
+export const getOllamaModels = async (req, res) => {
+  const localUrl = req.headers["x-llm-local-url"] || req.get("x-llm-local-url") || "http://localhost:11434";
+
+  try {
+    const baseUrl = localUrl.replace(/\/$/, "");
+    const response = await axios.get(`${baseUrl}/api/tags`, { timeout: 3000 });
+
+    const models = response.data?.models || [];
+    const modelNames = models.map(m => m.name);
+
+    return res.status(200).json({ success: true, models: modelNames });
+  } catch (error) {
+    console.warn("Failed to fetch Ollama local models:", error.message);
+    return res.status(200).json({ success: false, message: "Ollama local service is not active or unreachable." });
   }
 };

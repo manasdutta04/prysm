@@ -42,11 +42,23 @@ export default function DashboardPage() {
       const savedApps = localStorage.getItem("connectedApps");
       const connectedApps = savedApps ? JSON.parse(savedApps) : {};
 
+      const savedProvider = localStorage.getItem("prysm_llm_provider") || "";
+      const savedKey = localStorage.getItem("prysm_llm_key") || "";
+      const savedUrl = localStorage.getItem("prysm_llm_local_url") || "";
+      const savedModel = localStorage.getItem("prysm_llm_model") || "";
+
       const res = await axiosInstance.post("/dashboard/fetch-and-analyze", {
         startDate,
         endDate,
         connectedApps,
         skipScraping: skipScrape
+      }, {
+        headers: {
+          "X-LLM-Provider": savedProvider,
+          "X-LLM-Key": savedKey,
+          "X-LLM-Local-Url": savedUrl,
+          "X-LLM-Model": savedModel
+        }
       });
 
       setData(res.data);
