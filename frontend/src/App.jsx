@@ -12,6 +12,8 @@ import { Loader2 } from "lucide-react";
 
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/login";
+import TermsPage from "./pages/terms";
+import PrivacyPage from "./pages/privacy";
 import DashboardPage from "./pages/dashboard";
 import ConnectAppsPage from "./pages/connect-apps";
 import CustomDataPage from "./pages/custom-data";
@@ -67,6 +69,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       ) : (
@@ -114,6 +118,8 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
                     <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/connect-apps" element={<ConnectAppsPage />} />
                     <Route path="/custom-data" element={<CustomDataPage />} />

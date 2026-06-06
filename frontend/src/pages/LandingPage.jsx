@@ -26,6 +26,17 @@ export default function LandingPage() {
           </Link>
         </div>
       </div>
+
+      {/* Footer Links */}
+      <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center gap-6 text-xs text-muted-foreground">
+        <Link to="/terms" className="hover:text-primary transition-colors">
+          Terms of Service
+        </Link>
+        <span>&bull;</span>
+        <Link to="/privacy" className="hover:text-primary transition-colors">
+          Privacy Policy
+        </Link>
+      </div>
     </div>
   );
 }
