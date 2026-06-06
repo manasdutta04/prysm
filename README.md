@@ -17,18 +17,46 @@ Conventional feedback analysis often involves manual reading and categorization 
 
 ## System Overview
 
-Prysm functions as a web-based analytical dashboard that integrates modern AI and data visualization technologies. It consolidates feedback from multiple communication channels, processes it using NLP models, and presents summarized insights through an interactive dashboard.
+Prysm functions as a web-based analytical dashboard that integrates modern AI and data visualization technologies. It consolidates feedback from multiple communication channels, stores inputs persistently in MongoDB, processes them using LLMs, and presents summaries via an interactive dashboard.
 
-The system follows a structured workflow comprising the following stages:
+### Technical Ingestion & In-Memory Analysis Architecture
 
-1. **Data Ingestion**: Collects feedback from multiple integrated sources such as Gmail, Slack, Twitter, and App Store reviews.
-2. **Preprocessing**: Cleans and normalizes text, removing noise such as emojis, URLs, and duplicate entries.
-3. **AI Processing**: Performs sentiment analysis, topic clustering, and summarization using OpenAI or HuggingFace APIs.
-4. **Trend Detection**: Tracks changes in feedback patterns over time to identify rising or declining customer issues.
-5. **Visualization**: Displays analyzed data through real-time charts, graphs, and AI-generated summaries.
-6. **Alert Generation**: Notifies teams when critical trends or issues emerge, allowing timely action.
+```mermaid
+graph TD
+    subgraph Client [React Frontend Client]
+        UI[Dashboard UI] --> Selector[Timeframe Selector: Date Ranges]
+        UI --> Fetch[Fetch Data Trigger]
+        Settings[Settings Page] --> LocalStorage[(LocalStorage: API Keys & LLM Provider)]
+        Fetch --> Headers[Inject Request Headers: X-LLM-Provider, X-LLM-Key]
+    end
 
-Through this pipeline, Prysm provides clear and actionable intelligence across departments, improving both efficiency and decision-making.
+    subgraph Server [Express.js Backend API]
+        Headers --> Router[Dashboard Router: POST /fetch-and-analyze]
+        Router --> Controller[Dashboard Controller]
+        
+        Controller --> Scrapers[Scraper Engines: X Nitter RSS / App Store Pages]
+        Scrapers --> DBStore[Save Raw Feedbacks to MongoDB]
+        
+        Controller --> Query[Query DB: Load Feedbacks in Date Range]
+        Query --> Batcher[Aggregator & Batcher: Segment Feedbacks]
+        
+        Batcher --> AIOrchestrator[AI Orchestration: LangChain.js]
+        AIOrchestrator --> LLM[Dynamic Model Initialization: ChatGoogleGenerativeAI, ChatOpenAI, ChatAnthropic]
+        
+        LLM --> Analysis[Compute Sentiment, Group Topics, Extract Insights]
+        Analysis --> HistoryStore[Save Results to AnalysisHistory Model]
+        Analysis --> Response[Send JSON Payload to Dashboard UI]
+    end
+```
+
+The system follows a structured workflow:
+
+1. **Data Ingestion**: Collects customer feedback from five distinct channels (X, App Store, Play Store, Gmail, and CSV files).
+2. **Persistence**: Saves raw comments persistently to MongoDB to prevent API timeouts and support historical timeframe searches.
+3. **Bring Your Own Key (BYOK) Processing**: Uses client-supplied provider keys (passed in headers) to dynamically initialize LangChain.js AI models (Gemini, Claude, GPT, or local engines) on the backend.
+4. **Sentiment & Clustering Analysis**: Processes feedbacks in batches to classify sentiment, detect spikes, and group similar concerns.
+5. **Dashboard Visualization**: Renders comparison trend charts and lists based on dynamic database computations.
+6. **Collapsible Session History**: Stores completed summary sessions in `AnalysisHistory` for later retrieval on the History tab.
 
 
 
