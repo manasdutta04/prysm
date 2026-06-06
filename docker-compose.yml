@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   backend:
     build: ./backend
     container_name: prysm-backend
     ports:
-      - "5000:5000"
+      - "5001:5000"
     environment:
       - NODE_ENV=production
       - PORT=5000
