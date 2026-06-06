@@ -27,8 +27,8 @@ graph TD
         Controller --> Query[Query DB: Load Feedbacks in Date Range]
         Query --> Batcher[Aggregator & Batcher: Segment Feedbacks]
         
-        Batcher --> AIOrchestrator[AI Orchestration: LangChain.js]
-        AIOrchestrator --> LLM[Dynamic Model Initialization: ChatGoogleGenerativeAI, ChatOpenAI, ChatAnthropic]
+        Batcher --> AIOrchestrator[Direct API Connectors: Axios Drivers]
+        AIOrchestrator --> LLM[Dynamic API Invocations: OpenAI, Gemini, Claude, Groq, Ollama]
         
         LLM --> Analysis[Compute Sentiment, Group Topics, Extract Insights]
         Analysis --> HistoryStore[Save Results to AnalysisHistory Model]

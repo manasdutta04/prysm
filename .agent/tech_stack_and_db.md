@@ -21,10 +21,10 @@ prysm/
 ├── .agent/               # AI Agent documentation files
 ├── frontend/             # Vite React client
 │   ├── src/
-│   │   ├── components/   # Modals (x-connect, app-sidebar, auth-modal)
-│   │   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History
-│   │   ├── store/        # Zustand stores
-│   │   └── lib/          # axios.js instance pointing to backend
+│   ├── components/   # Modals (x-connect, app-sidebar)
+│   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Login, Terms, Privacy
+│   ├── store/        # Zustand stores
+│   └── lib/          # axios.js instance pointing to backend
 ├── backend/              # Express API server
 │   ├── src/
 │   │   ├── controllers/  # auth, customData, google, appstore, dashboard controllers
@@ -77,28 +77,15 @@ Saves the results of analysis runs for the History view.
 
 ## 4. Bring Your Own Key (BYOK) Backend Integrations
 
-The backend dynamically maps user-provided API credentials from headers to individual model classes in LangChain.js.
+The backend dynamically maps user-provided API credentials from headers to direct API connectors to analyze reviews and comments.
 
-### A. Core AI Dependencies
-The Node.js server uses the following LangChain adapter modules:
-* `@langchain/openai` for GPT family models.
-* `@langchain/google-genai` for Gemini family models.
-* `@langchain/anthropic` for Claude family models.
+### A. API Connectors
+The Node.js server uses standard HTTP request clients (via `axios`) to connect directly to provider endpoints:
+* **OpenAI API**: For GPT models.
+* **Gemini API**: For Gemini models.
+* **Anthropic API**: For Claude models.
+* **Groq API**: For LLaMA models.
+* **Ollama API**: For local models (e.g. `llama3`, `mistral`, etc.) installed on the user's host.
 
-### B. Dynamic Model Factory Pattern
-The backend router dynamically instantiates the LLM engine per request using the client request headers:
-```javascript
-import { ChatOpenAI } from "@langchain/openai";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-
-const provider = req.headers["x-llm-provider"];
-const apiKey = req.headers["x-llm-key"];
-
-let modelInstance;
-if (provider === "gemini") {
-  modelInstance = new ChatGoogleGenerativeAI({ apiKey, model: "gemini-1.5-flash" });
-} else if (provider === "openai") {
-  modelInstance = new ChatOpenAI({ openAIApiKey: apiKey, modelName: "gpt-4o" });
-}
-```
-This instance is then fed the prompt template to return structured output matching the `AnalysisHistory` schema.
+### B. Dynamic Connector Request Pattern
+The backend controller selects the appropriate adapter and executes a POST request with the user's API Key and model settings directly to the provider endpoint. It requests a structured JSON response to match the `AnalysisHistory` schema, falling back to local rule-based parsing if the request fails or credentials are unset.

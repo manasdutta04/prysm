@@ -32,3 +32,14 @@ The following files are managed by another teammate. Under no circumstances shou
 
 ### C. Cost Restrictions
 * Do not introduce paid APIs (such as OpenAI or paid scrapers) in default branches. All operations must run using free scrapers, local rule-based analysis tools, or "Bring Your Own API Key" settings configurations where LLM costs are borne by the user's personal keys.
+
+---
+
+## 3. Route Protection & Layout Rules
+
+### A. Layout Separation
+* **Authenticated vs Public**: Unauthenticated routes (`/`, `/login`, `/terms`, `/privacy`) must be kept completely separate from the authenticated sidebar layout wrapper. Any layout leaks (such as the sidebar appearing on the landing page) are prohibited.
+* **Redirection Rules**:
+  * Unauthenticated users hitting `/` see the Landing Page, `/login` see the LoginPage, `/terms` see the TermsPage, `/privacy` see the PrivacyPage. Any other route redirects to `/`.
+  * Authenticated users hitting `/` or `/login` are automatically redirected to `/dashboard`. Any invalid subpath redirects to `/dashboard`.
+* **Sidebar Integrity**: The sidebar footer must dynamically fetch active session data from `useAuthStore` rather than relying on static placeholders. Sizing of the sidebar container is fixed via `className="w-64 shrink-0"` to prevent dynamic layout shifts caused by user email/name text length.
