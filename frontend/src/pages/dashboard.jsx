@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./dashboard.css";
 // import { useAuthStore } from "../store/useAuthStore";
 // import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import FetchEmailsButton from "../components/FetchEmailsButton";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { LineChart } from "@mui/x-charts/LineChart";
+import axiosInstance from "../lib/axios";
 import {
   RefreshCw,
   Download,
@@ -20,142 +21,82 @@ import {
   ArrowDown,
 } from "lucide-react";
 
-// Sample data
-const sampleData = {
-  summary: {
-    totalFeedback: 1247,
-    positiveSentiment: 62,
-    negativeSentiment: 28,
-    neutralSentiment: 10,
-    keyInsights: [
-      "Customer satisfaction increased by 15% compared to last month",
-      "Login issues have been reduced by 40% after recent update",
-      "Payment processing concerns decreased significantly",
-      "Feature requests for dark mode increased by 25%",
-    ],
-    improvements: [
-      "Enhance mobile app performance based on 234 feedback entries",
-      "Improve customer support response time (mentioned in 156 reviews)",
-      "Add more payment gateway options (requested by 89 users)",
-    ],
-  },
-  positivePoints: [
-    { point: "Excellent user interface and smooth navigation", mentions: 342 },
-    { point: "Fast loading times and responsive design", mentions: 289 },
-    { point: "Helpful customer support team", mentions: 198 },
-    { point: "Regular feature updates", mentions: 167 },
-    { point: "Seamless integration with other tools", mentions: 152 },
-  ],
-  negativePoints: [
-    { point: "Mobile app crashes occasionally", mentions: 145 },
-    { point: "Payment gateway issues during checkout", mentions: 98 },
-    { point: "Slow response time from support", mentions: 87 },
-    { point: "Limited customization options", mentions: 64 },
-    { point: "Lack of advanced reporting features", mentions: 56 },
-  ],
-  metrics: {
-    satisfactionScore: 4.2,
-    previousScore: 3.9,
-    improvement: 7.7,
-    responseTime: "2.4 hrs",
-    previousResponseTime: "3.8 hrs",
-    feedbackVolume: 1247,
-    previousVolume: 986,
-    trend: "up",
-    history: {
-      satisfaction: [3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2],
-      responseTime: [4.2, 4.0, 3.8, 3.6, 3.4, 3.2, 2.8, 2.4],
-      volume: [850, 900, 920, 950, 986, 1050, 1150, 1247],
-    },
-  },
-  feedbackSources: {
-    months: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
-    sources: {
-      twitter: [45, 52, 48, 61, 58, 67, 72, 68, 75, 82, 78, 85],
-      playstore: [120, 135, 142, 156, 168, 175, 182, 195, 205, 218, 225, 235],
-      appstore: [85, 92, 98, 105, 112, 118, 125, 132, 138, 145, 152, 160],
-      email: [35, 42, 38, 45, 48, 52, 55, 58, 62, 65, 68, 72],
-      customData: [28, 32, 35, 38, 42, 45, 48, 52, 55, 58, 62, 65],
-    },
-  },
-};
-
 export default function DashboardPage() {
   const [lastFetchedTime, setLastFetchedTime] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeMetricTab, setActiveMetricTab] = useState("satisfaction");
+  
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    return date.toISOString().split("T")[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
+
+  const loadDashboardData = useCallback(async (skipScrape = true) => {
+    setIsLoading(true);
+    try {
+      const savedApps = localStorage.getItem("connectedApps");
+      const connectedApps = savedApps ? JSON.parse(savedApps) : {};
+
+      const res = await axiosInstance.post("/dashboard/fetch-and-analyze", {
+        startDate,
+        endDate,
+        connectedApps,
+        skipScraping: skipScrape
+      });
+
+      setData(res.data);
+    } catch (error) {
+      console.error("Dashboard Load Error:", error);
+      toast.error("Failed to load dashboard data");
+      setData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [startDate, endDate]);
 
   useEffect(() => {
-    // Get last fetched time from localStorage or set initial time
     const savedTime = localStorage.getItem("lastFetchedTime");
     if (savedTime) {
       setLastFetchedTime(parseInt(savedTime, 10));
     }
-    // Simulate initial data load
-    const loadData = async () => {
-      setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setData(sampleData);
-      setIsLoading(false);
-    };
-    loadData();
   }, []);
+
+  useEffect(() => {
+    loadDashboardData(true);
+  }, [loadDashboardData]);
 
   const handleFetchData = async () => {
     setIsFetching(true);
-    setIsLoading(true);
+    toast.loading("Fetching latest feedback data...", { id: "fetching" });
 
-    // Check for connected apps
-    const savedApps = localStorage.getItem("connectedApps");
-    const connectedApps = savedApps ? JSON.parse(savedApps) : {};
-    const connectedAppNames = Object.values(connectedApps)
-      .filter((app) => app.isConnected)
-      .map((app) => app.appName);
+    try {
+      await loadDashboardData(false);
+      const now = Date.now();
+      setLastFetchedTime(now);
+      localStorage.setItem("lastFetchedTime", now.toString());
 
-    if (connectedAppNames.length > 0) {
-      toast.loading(`Fetching data...`);
-    } else {
-      toast.loading("Fetching latest feedback data...", { id: "fetching" });
+      const savedApps = localStorage.getItem("connectedApps");
+      if (savedApps) {
+        const connectedApps = JSON.parse(savedApps);
+        Object.keys(connectedApps).forEach((key) => {
+          if (connectedApps[key].isConnected) {
+            connectedApps[key].lastSync = now;
+          }
+        });
+        localStorage.setItem("connectedApps", JSON.stringify(connectedApps));
+      }
+      toast.success("Feedback synced successfully!", { id: "fetching" });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch fresh reviews", { id: "fetching" });
+    } finally {
+      setIsFetching(false);
     }
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Update with fresh data (in real app, this would come from API)
-    setData(sampleData);
-    const now = Date.now();
-    setLastFetchedTime(now);
-    localStorage.setItem("lastFetchedTime", now.toString());
-
-    // Update sync time for connected apps
-    if (Object.keys(connectedApps).length > 0) {
-      const updatedApps = { ...connectedApps };
-      Object.keys(updatedApps).forEach((key) => {
-        if (updatedApps[key].isConnected) {
-          updatedApps[key].lastSync = now;
-        }
-      });
-      localStorage.setItem("connectedApps", JSON.stringify(updatedApps));
-    }
-
-    setIsFetching(false);
-    setIsLoading(false);
-    toast.success("Data fetched successfully!", { id: "fetching" });
   };
 
   const handleDownloadPDF = () => {
@@ -289,6 +230,27 @@ export default function DashboardPage() {
 
         {/* Action Buttons Section */}
         <div className="dashboard-actions">
+          <div className="timeframe-picker">
+            <div className="date-input-wrapper">
+              <label className="date-label">From</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="date-picker-input"
+              />
+            </div>
+            <div className="date-input-wrapper">
+              <label className="date-label">To</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="date-picker-input"
+              />
+            </div>
+          </div>
+
           <Button
             onClick={handleFetchData}
             disabled={isFetching}

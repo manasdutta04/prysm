@@ -73,6 +73,7 @@ export default function ConnectAppsPage() {
         isConnected: true,
         appName: appData.name,
         appIcon: appData.icon,
+        appId: appData.id,
         lastSync: Date.now(),
       },
     }));
