@@ -28,14 +28,10 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useAuthStore } from "@/store/useAuthStore"
 
 // This is sample data.
 const data = {
-  user: {
-    name: "Manas Dutta",
-    email: "manas@prysm.io",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Nexus Inc",
@@ -82,12 +78,20 @@ const data = {
 // ...existing code...
 export function AppSidebar(props) {
   const location = useLocation();
+  const { authUser } = useAuthStore();
   const isHelpActive = location.pathname === "/help-support";
   const isDocsActive = location.pathname === "/docs";
   const baseLinkClass = "flex items-center gap-2 px-3 py-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors";
   const activeClass = "bg-sidebar-accent text-sidebar-accent-foreground font-medium";
+
+  const currentUser = {
+    name: authUser?.fullName || "Guest",
+    email: authUser?.email || "",
+    avatar: authUser?.profilePic || "",
+  };
+
   return (
-    <Sidebar collapsible="none" {...props}>
+    <Sidebar collapsible="none" className="w-64 shrink-0" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
@@ -106,7 +110,7 @@ export function AppSidebar(props) {
         </Link>
       </div>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={currentUser} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
