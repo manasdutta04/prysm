@@ -1,5 +1,6 @@
 import React from "react";
-import { AuthModal } from "@/components/auth-modal";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
   return (
@@ -7,16 +8,24 @@ export default function LandingPage() {
       {/* Background decoration */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px] opacity-50" />
       
-      <div className="z-10 text-center mb-32">
-        <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400 mb-6" style={{ fontFamily: "Borel, cursive" }}>
+      <div className="z-10 text-center flex flex-col items-center gap-6 max-w-[600px] px-4">
+        <h1 
+          className="text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400 select-none cursor-default" 
+          style={{ fontFamily: "Borel, cursive" }}
+        >
           prysm
         </h1>
-        <p className="text-xl text-muted-foreground max-w-[600px] mx-auto px-4">
-          The AI-driven customer feedback analyzer. Transform scattered feedback into actionable product insights.
+        <p className="text-lg text-muted-foreground leading-relaxed max-w-[500px]">
+          Transform scattered customer feedback into structured, actionable insights powered by custom LLM orchestration.
         </p>
+        <div className="mt-4">
+          <Link to="/login">
+            <Button size="lg" className="px-8 py-6 text-base font-semibold rounded-xl transition-all duration-300 hover:scale-105 active:scale-95">
+              Access Dashboard
+            </Button>
+          </Link>
+        </div>
       </div>
-
-      <AuthModal isOpen={true} />
     </div>
   );
 }

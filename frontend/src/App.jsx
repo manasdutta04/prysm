@@ -8,7 +8,10 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
+import { Loader2 } from "lucide-react";
 
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/login";
 import DashboardPage from "./pages/dashboard";
 import ConnectAppsPage from "./pages/connect-apps";
 import CustomDataPage from "./pages/custom-data";
@@ -17,15 +20,22 @@ import HelpSupportPage from "./pages/help-support";
 import DocsPage from "./pages/docs";
 import SettingsPage from "./pages/settings";
 import AccountPage from "./pages/account";
-import { AuthModal } from "./components/auth-modal";
 
 import { useAuthStore } from "./store/useAuthStore";
 
 function App() {
-  const { authUser, checkAuth } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -53,13 +63,16 @@ function App() {
         }}
       />
 
-      {!authUser && <AuthModal isOpen={true} />}
-      <div 
-        className={!authUser ? "blur-md pointer-events-none select-none transition-all duration-300" : "transition-all duration-300"}
-        style={{ display: "flex", height: "100vh", overflow: "hidden" }}
-      >
-        <SidebarProvider>
-          <AppSidebar />
+      {!authUser ? (
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      ) : (
+        <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+          <SidebarProvider>
+            <AppSidebar />
             <div
               style={{
                 flex: 1,
@@ -99,7 +112,8 @@ function App() {
                   }}
                 >
                   <Routes>
-                    <Route path="/" element={<DashboardPage />} />
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/login" element={<Navigate to="/dashboard" replace />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/connect-apps" element={<ConnectAppsPage />} />
                     <Route path="/custom-data" element={<CustomDataPage />} />
@@ -108,14 +122,16 @@ function App() {
                     <Route path="/docs" element={<DocsPage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/account" element={<AccountPage />} />
-                    <Route path="*" element={<Navigate to="/" />} />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   </Routes>
                 </div>
               </SidebarInset>
             </div>
           </SidebarProvider>
         </div>
+      )}
     </>
   );
 }
+
 export default App;
