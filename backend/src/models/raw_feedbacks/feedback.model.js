@@ -7,7 +7,7 @@ const FeedbackSchema = new mongoose.Schema({
   // 2) Source of feedback
   source: {
     type: String,
-    enum: ["gmail", "x", "playstore", "appstore"],
+    enum: ["gmail", "x", "playstore", "appstore", "custom"],  // ← added "custom"
     required: true,
   },
 
@@ -19,12 +19,13 @@ const FeedbackSchema = new mongoose.Schema({
 
   // 5) Flexible metadata (varies by platform)
   metadata: {
-    type: mongoose.Schema.Types.Mixed, // allows JSON object
+    type: mongoose.Schema.Types.Mixed,
     default: {},
   },
 
   // 6) Timestamp (feedback creation time)
   timestamp: { type: Date, required: true, default: Date.now },
 });
+
 const Feedback = mongoose.model("Feedback", FeedbackSchema);
 export default Feedback;

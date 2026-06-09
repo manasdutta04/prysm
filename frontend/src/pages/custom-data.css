@@ -1,47 +1,213 @@
 .custom-data-page {
-  padding: 2rem 0 0 0;
+  padding: 2rem;
   color: #fff;
 }
+
 .page-title {
   font-size: 1.5rem;
   font-weight: 600;
+  margin-bottom: 1.5rem;
 }
 
-.custom-data-page.grid {
-  padding: 2rem;
-}
 .custom-data-page .content {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
 }
+
+/* Upload area — glassmorphic */
 .upload-area {
-  background: #0b1220;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
   padding: 24px;
   width: 640px;
   min-height: 360px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px dashed rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease, background 0.3s ease;
 }
-.upload-inner .upload-title { font-weight: 600; margin-bottom: 12px }
+
+.upload-area:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Drag active state */
+.upload-area.dragging {
+  background: rgba(124, 192, 255, 0.08);
+  border-color: rgba(124, 192, 255, 0.5);
+  border-style: dashed;
+}
+
+.upload-inner {
+  width: 100%;
+}
+
+.upload-inner .upload-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  color: #e2e8f0;
+}
+
+/* Drop box */
 .drop-box {
-  background: #071022;
-  border-radius: 6px;
-  padding: 32px;
+  background: rgba(7, 16, 34, 0.6);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 40px 32px;
   text-align: center;
   color: #88a0c8;
+  transition: all 0.3s ease;
 }
-.browse-label { color: #7cc0ff; cursor: pointer }
+
+.drop-box.drag-active {
+  border-color: #7cc0ff;
+  background: rgba(124, 192, 255, 0.05);
+  color: #7cc0ff;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.drop-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #b0c4de;
+  margin-bottom: 6px;
+}
+
+.browse-label {
+  color: #7cc0ff;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.browse-label:hover {
+  color: #a8d8ff;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: #556a8a;
+  margin-top: 10px;
+}
+
+/* Uploading spinner state */
+.uploading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #7cc0ff;
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+  color: #7cc0ff;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* File name & status */
+.file-name {
+  margin-top: 14px;
+  color: #a8d5ff;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  background: rgba(124, 192, 255, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(124, 192, 255, 0.15);
+}
+
+.status {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.status-success {
+  color: #86efac;
+  background: rgba(134, 239, 172, 0.08);
+  border: 1px solid rgba(134, 239, 172, 0.2);
+}
+
+.status-error {
+  color: #fca5a5;
+  background: rgba(252, 165, 165, 0.08);
+  border: 1px solid rgba(252, 165, 165, 0.2);
+}
+
+/* Instructions card */
 .instructions {
-  background: #fff;
-  color: #111;
-  padding: 32px;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #e2e8f0;
+  padding: 28px 32px;
+  border-radius: 12px;
   width: 320px;
+  transition: border-color 0.3s ease;
 }
-.instructions h3 { margin-top: 0 }
-.file-name { margin-top: 10px; color: #a8d5ff }
-.status { margin-top: 8px; color: #bfe6b6 }
+
+.instructions:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.instructions h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.instructions ol {
+  padding-left: 1.2rem;
+  color: #94a3b8;
+  line-height: 2;
+}
+
+.instructions ol strong {
+  color: #7cc0ff;
+}
+
+.instructions-note {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.instructions-note strong {
+  color: #86efac;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .custom-data-page .content {
+    flex-direction: column;
+  }
+  .upload-area {
+    width: 100%;
+  }
+  .instructions {
+    width: 100%;
+  }
+}
