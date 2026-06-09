@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "../help-support.css";
-import { MdOutlineClear } from "react-icons/md";
-import { IoMdDoneAll } from "react-icons/io";
+import { Send, RotateCcw } from "lucide-react";
 
 export default function PersonalSpace() {
   const [formData, setFormData] = useState({
@@ -69,85 +68,109 @@ export default function PersonalSpace() {
   };
 
   return (
-    <div className="query-form">
-      <h2>Have other queries? Tell us</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-row">
+    <div className="query-form-card">
+      <h2 className="section-title">Submit a Support Ticket</h2>
+      <form onSubmit={handleSubmit} className="support-form">
+        <div className="form-grid-3">
+          <div className="form-group">
+            <label className="form-label">First Name *</label>
+            <input
+              type="text"
+              name="firstName"
+              placeholder="John"
+              value={formData.firstName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Middle Name</label>
+            <input
+              type="text"
+              name="middleName"
+              placeholder="optional"
+              value={formData.middleName}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Last Name *</label>
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Doe"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-grid-2">
+          <div className="form-group">
+            <label className="form-label">Email Address *</label>
+            <input
+              type="text" // use text instead of email for custom validation
+              name="email"
+              placeholder="john.doe@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Category *</label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              className={!formData.category ? "select-placeholder" : ""}
+            >
+              <option value="" hidden disabled>
+                Select a category
+              </option>
+              <option value="billing">Billing & Subscriptions</option>
+              <option value="technical">Technical Issue</option>
+              <option value="account">Account Management</option>
+              <option value="feedback">General Feedback</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Subject *</label>
           <input
             type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="middleName"
-            placeholder="Middle Name (optional)"
-            value={formData.middleName}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
+            name="subject"
+            placeholder="Brief summary of your query"
+            value={formData.subject}
             onChange={handleChange}
             required
           />
         </div>
 
-        <div className="form-row">
-          <input
-            type="text" // use text instead of email for custom validation
-            name="email"
-            placeholder="Email Address"
-            value={formData.email}
+        <div className="form-group">
+          <label className="form-label">Message *</label>
+          <textarea
+            rows="5"
+            name="message"
+            placeholder="Please detail your question or issue here..."
+            value={formData.message}
             onChange={handleChange}
             required
-          />
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-            className={!formData.category ? "placeholder" : ""}
-          >
-            <option value="" hidden disabled>
-              --Select a Category--
-            </option>
-            <option value="billing">Billing</option>
-            <option value="technical">Technical Issue</option>
-            <option value="account">Account Management</option>
-            <option value="feedback">Feedback</option>
-            <option value="other">Other</option>
-          </select>
+          ></textarea>
         </div>
 
-        <input
-          type="text"
-          name="subject"
-          placeholder="Subject"
-          value={formData.subject}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          rows="5"
-          name="message"
-          placeholder="Describe your issue..."
-          value={formData.message}
-          onChange={handleChange}
-          required
-        ></textarea>
-
-        <div className="form-buttons">
-          <button type="submit">
-            <IoMdDoneAll />
+        <div className="form-actions">
+          <button type="submit" className="submit-btn">
+            <Send size={16} />
+            <span>Submit Ticket</span>
           </button>
-          <button type="button" className="clear-btn red" onClick={handleClear}>
-            <MdOutlineClear />
+          <button type="button" className="clear-btn" onClick={handleClear}>
+            <RotateCcw size={16} />
+            <span>Reset</span>
           </button>
         </div>
       </form>

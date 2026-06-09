@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    gmail: {
+      accessToken: String,
+      refreshToken: String,
+      tokenExpiry: Date,
+    },
   },
   { timestamps: true }
 );

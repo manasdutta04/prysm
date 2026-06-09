@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./connect-apps.css";
+import ConnectGmailButton from "../components/ConnectGmailButton";
+import FetchEmailsButton from "../components/FetchEmailsButton";
 import { AppStoreConnectModal } from "@/components/app-store-connect-modal";
-import { PlaystoreConnectModal } from "@/components/playstore-connect-model";
+import { PlaystoreConnectModal } from "@/components/playstore-connect-modal";
+import { XConnectModal } from "@/components/x-connect-modal";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +26,7 @@ export default function ConnectAppsPage() {
 
   const [isAppStoreModalOpen, setIsAppStoreModalOpen] = useState(false);
   const [isPlaystoreModalOpen, setIsPlaystoreModalOpen] = useState(false);
+  const [isXModalOpen, setIsXModalOpen] = useState(false);
   const [disconnectModal, setDisconnectModal] = useState({
     isOpen: false,
     appName: null,
@@ -77,7 +81,7 @@ export default function ConnectAppsPage() {
     },
     {
       name: "X",
-      logo: "https://static.vecteezy.com/system/resources/previews/027/714/631/non_2x/twitter-new-logo-twitter-icons-twitter-x-logo-free-png.png",
+      logo: "https://static.vecteezy.com/system/resources/previews/027/714/631/non_2x/sankt-petersburg-russia-24-08-2023-twitter-new-logo-twitter-icons-twitter-x-logo-free-png.png",
       description: "Connect your X account",
     },
     {
@@ -97,6 +101,8 @@ export default function ConnectAppsPage() {
       setIsAppStoreModalOpen(true);
     } else if (appName === "Play Store") {
       setIsPlaystoreModalOpen(true);
+    } else if (appName === "X") {
+      setIsXModalOpen(true);
     } else {
       toast("Integration coming soon!", { icon: "🚧" });
     }
@@ -109,6 +115,7 @@ export default function ConnectAppsPage() {
         isConnected: true,
         appName: appData.name,
         appIcon: appData.icon,
+        appId: appData.id,
         lastSync: Date.now(),
       },
     }));
@@ -126,6 +133,18 @@ export default function ConnectAppsPage() {
     }));
   };
 
+  const handleXConnected = (appData) => {
+    setConnectedApps((prev) => ({
+      ...prev,
+      X: {
+        isConnected: true,
+        appName: appData.name,
+        appIcon: appData.icon,
+        lastSync: Date.now(),
+      },
+    }));
+  };
+
   const handleDisconnectClick = (appName) => {
     setDisconnectModal({ isOpen: true, appName });
   };
@@ -136,7 +155,6 @@ export default function ConnectAppsPage() {
       if (disconnectModal.appName === "Play Store") {
         await disconnectPlaystore();
       } else {
-        // Mock for other apps
         await new Promise((resolve) => setTimeout(resolve, 1500));
         setConnectedApps((prev) => {
           const newState = { ...prev };
@@ -152,7 +170,7 @@ export default function ConnectAppsPage() {
       }
       setDisconnectModal({ isOpen: false, appName: null });
     } catch (error) {
-      toast.error("Failed to disconnect");
+      toast.error("Failed to disconnect", error);
     } finally {
       setIsDisconnecting(false);
     }
@@ -259,27 +277,40 @@ export default function ConnectAppsPage() {
             </div>
           );
         })}
+        <div>
+          <h1>Gmail Integration Test</h1>
+          <ConnectGmailButton />
+          <FetchEmailsButton />
+        </div>
       </div>
 
-      {/* App Store Modal — unchanged */}
+      {/* App Store Modal */}
       <AppStoreConnectModal
         isOpen={isAppStoreModalOpen}
         onClose={() => setIsAppStoreModalOpen(false)}
         onConnect={handleAppStoreConnected}
       />
 
-      {/* Play Store Modal — new */}
+      {/* Play Store Modal */}
       <PlaystoreConnectModal
         isOpen={isPlaystoreModalOpen}
         onClose={() => setIsPlaystoreModalOpen(false)}
         onConnect={handlePlaystoreConnected}
       />
 
-      {/* Disconnect confirmation dialog — unchanged */}
+      {/* X Modal */}
+      <XConnectModal
+        isOpen={isXModalOpen}
+        onClose={() => setIsXModalOpen(false)}
+        onConnect={handleXConnected}
+      />
+
+      {/* Disconnect confirmation dialog */}
       <Dialog
         open={disconnectModal.isOpen}
         onOpenChange={(open) =>
-          !isDisconnecting && setDisconnectModal({ isOpen: open, appName: null })
+          !isDisconnecting &&
+          setDisconnectModal({ isOpen: open, appName: null })
         }
       >
         <DialogContent>
@@ -287,8 +318,8 @@ export default function ConnectAppsPage() {
             <DialogTitle>Disconnect {disconnectModal.appName}?</DialogTitle>
             <DialogDescription>
               Disconnecting will stop scheduled imports for{" "}
-              {connectedApps[disconnectModal.appName]?.appName}.
-              Historical data will remain archived.
+              {connectedApps[disconnectModal.appName]?.appName}. Historical data
+              will remain archived.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

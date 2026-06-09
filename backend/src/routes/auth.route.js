@@ -4,6 +4,7 @@ import {
   login,
   checkAuth,
   logout,
+  updateProfile,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 
@@ -20,5 +21,8 @@ router.post("/logout", logout);
 
 // Verify Token
 router.get("/check", protectRoute, checkAuth);
+
+// Update Profile Details
+router.put("/update-profile", protectRoute, updateProfile);
 
 export default router;

@@ -26,5 +26,5 @@ const FeedbackSchema = new mongoose.Schema({
   // 6) Timestamp (feedback creation time)
   timestamp: { type: Date, required: true, default: Date.now },
 });
-
-export default mongoose.model("Feedback", FeedbackSchema);
+const Feedback = mongoose.model("Feedback", FeedbackSchema);
+export default Feedback;

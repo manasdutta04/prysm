@@ -1,0 +1,394 @@
+/* ===== Settings Page Container ===== */
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2.5rem;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  color: #fff;
+  background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.07) 0%, transparent 65%);
+}
+
+/* ===== Header ===== */
+.settings-page .page-header {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.settings-page .page-title {
+  font-size: 2.5rem;
+  font-weight: 850;
+  background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.settings-page .page-subtitle {
+  font-size: 1rem;
+  color: #a1a1aa;
+  margin: 0;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* Centered Form Layout */
+.settings-container-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Settings Card */
+.settings-card {
+  width: 100%;
+  max-width: 550px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(139, 92, 246, 0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(139, 92, 246, 0.08), 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.card-header-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.header-icon.blue {
+  color: #8b5cf6;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
+}
+
+.settings-card .card-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.settings-card .card-desc {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Form Controls */
+.setting-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.control-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+}
+
+.flex-align {
+  display: flex;
+  align-items: center;
+}
+
+.gap-05 {
+  gap: 0.5rem;
+}
+
+.control-hint {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.4;
+  margin-top: 0.25rem;
+}
+
+.control-hint.highlight {
+  color: #a78bfa;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.control-hint.highlight::before {
+  content: "●";
+  color: #8b5cf6;
+  font-size: 0.5rem;
+  margin-right: 0.2rem;
+}
+
+/* Inputs & Dropdowns */
+.settings-select,
+.settings-text-input {
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.settings-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255, 255, 255, 0.55)' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-position: right 1.25rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 3rem; /* Give room for the arrow */
+  cursor: pointer;
+}
+
+.settings-select:focus,
+.settings-text-input:focus {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.settings-select option {
+  background: #0d0e12;
+  color: #ffffff;
+  padding: 0.75rem;
+}
+
+/* Utilities */
+.block {
+  display: block;
+}
+
+.mb-05 {
+  margin-bottom: 0.35rem;
+}
+
+/* Connection Status Box */
+.connection-status-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 0.85rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.connection-status-box.success {
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.08);
+}
+
+.connection-status-box.error {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.08);
+}
+
+.status-icon {
+  flex-shrink: 0;
+}
+
+.status-icon.success-icon {
+  color: #22c55e;
+}
+
+.status-icon.error-icon {
+  color: #ef4444;
+}
+
+.status-message {
+  line-height: 1.4;
+}
+
+/* Save / Test Buttons */
+.settings-footer-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.btn-save-settings,
+.btn-test-settings {
+  flex: 1;
+  border: none;
+  padding: 0.95rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.btn-save-settings {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #ffffff;
+  box-shadow: 0 4px 18px rgba(139, 92, 246, 0.3);
+}
+
+.btn-save-settings:hover:not(:disabled) {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.45);
+}
+
+.btn-test-settings {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.btn-test-settings:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(139, 92, 246, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+}
+
+.btn-save-settings:active,
+.btn-test-settings:active {
+  transform: translateY(0);
+}
+
+.btn-save-settings:disabled,
+.btn-test-settings:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-icon {
+  transition: transform 0.3s ease;
+}
+
+.animate-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+/* Ollama Suggestions Box */
+.ollama-suggestions-box {
+  background: rgba(139, 92, 246, 0.02);
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  border-radius: 0.85rem;
+  padding: 1.1rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.suggestions-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #a78bfa;
+  letter-spacing: -0.01em;
+}
+
+.suggestions-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.code-snippets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.code-snippets-container code {
+  background: rgba(0, 0, 0, 0.45);
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  font-family: Menlo, Monaco, Consolas, "Fira Code", monospace;
+  font-size: 0.8rem;
+  color: #d8b4fe;
+  border: 1px solid rgba(139, 92, 246, 0.08);
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.6;
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .settings-page {
+    padding: 1.25rem;
+  }
+  .settings-card {
+    padding: 1.75rem;
+  }
+  .settings-footer-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

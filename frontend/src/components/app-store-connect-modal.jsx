@@ -1,262 +1,185 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from "react";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-    DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, AlertCircle, CheckCircle2, Loader2, Smartphone } from "lucide-react";
+import {
+  Search,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  Smartphone,
+} from "lucide-react";
 import toast from "react-hot-toast";
+import axiosInstance from "../lib/axios";
 
 export function AppStoreConnectModal({ isOpen, onClose, onConnect }) {
-    const [step, setStep] = useState('credentials'); // credentials, select
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [credentials, setCredentials] = useState({
-        issuerId: '',
-        keyId: '',
-        p8File: null
-    });
-    const [foundApps, setFoundApps] = useState([]);
-    const [selectedAppId, setSelectedAppId] = useState(null);
-    const fileInputRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [foundApps, setFoundApps] = useState([]);
+  const [selectedApp, setSelectedApp] = useState(null);
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (!file.name.endsWith('.p8')) {
-                setError("Please upload a valid .p8 file");
-                return;
-            }
-            setCredentials(prev => ({ ...prev, p8File: file }));
-            setError(null);
-        }
-    };
+  const handleSearch = async (e) => {
+    e?.preventDefault();
+    if (!searchTerm) return;
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setCredentials(prev => ({ ...prev, [name]: value }));
+    setIsLoading(true);
+    setError(null);
+    setFoundApps([]);
+    setSelectedApp(null);
+
+    try {
+      const res = await axiosInstance.get(`/appstore/search?term=${encodeURIComponent(searchTerm)}`);
+      setFoundApps(res.data);
+      if (res.data.length === 0) {
+        setError("No apps found. Try a different search term.");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to search App Store");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConnect = async () => {
+    if (!selectedApp) return;
+
+    setIsLoading(true);
+    try {
+      // Fetch initial reviews to verify
+      const res = await axiosInstance.get(`/appstore/reviews/${selectedApp.id}`);
+      
+      onConnect({
+        id: selectedApp.id,
+        name: selectedApp.name,
+        icon: selectedApp.icon,
+        bundleId: selectedApp.bundleId,
+        reviewsCount: res.data.length
+      });
+      
+      onClose();
+      toast.success(`Connected — ${selectedApp.name}. Synced ${res.data.length} recent reviews.`);
+      
+      // Reset state
+      setSearchTerm("");
+      setFoundApps([]);
+      setSelectedApp(null);
+    } catch {
+      toast.error("Failed to connect app. Check your connection.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetModal = () => {
+    if (!isLoading) {
+      onClose();
+      setTimeout(() => {
         setError(null);
-    };
+        setSearchTerm("");
+        setFoundApps([]);
+        setSelectedApp(null);
+      }, 300);
+    }
+  };
 
-    const handleValidate = async () => {
-        if (!credentials.p8File || !credentials.issuerId || !credentials.keyId) {
-            setError("All fields are required");
-            return;
-        }
+  return (
+    <Dialog open={isOpen} onOpenChange={resetModal}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            Connect App Store
+          </DialogTitle>
+          <DialogDescription>
+            Search for your app on the App Store to sync customer reviews.
+          </DialogDescription>
+        </DialogHeader>
 
-        setIsLoading(true);
-        setError(null);
+        <div className="grid gap-4 py-4">
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search app name (e.g. WhatsApp, Slack)"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+                autoFocus
+              />
+            </div>
+            <Button type="submit" disabled={isLoading || !searchTerm}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
+            </Button>
+          </form>
 
-        try {
-            // Mock API call to validate
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Mock validation logic
-            if (credentials.issuerId.length < 5) {
-                throw new Error("Issuer ID seems wrong. Check your App Store Connect account.");
-            }
-
-            // Mock success with found apps
-            const mockApps = [
-                { id: '1', name: 'Prysm App', bundleId: 'io.prysm.app', icon: null },
-                // Uncomment to test multiple apps
-                // { id: '2', name: 'Prysm Beta', bundleId: 'io.prysm.beta', icon: null }
-            ];
-
-            setFoundApps(mockApps);
-
-            if (mockApps.length === 1) {
-                setSelectedAppId(mockApps[0].id);
-                setStep('confirm'); // Skip selection if only one app
-            } else {
-                setStep('select');
-            }
-
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleConnect = async () => {
-        setIsLoading(true);
-        try {
-            // Mock API call to connect
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            const app = foundApps.find(a => a.id === selectedAppId);
-            onConnect(app);
-            onClose();
-            toast.success(`Connected — ${app.name}. First sync scheduled.`);
-
-            // Reset state
-            setStep('credentials');
-            setCredentials({ issuerId: '', keyId: '', p8File: null });
-            setFoundApps([]);
-            setSelectedAppId(null);
-
-        } catch (err) {
-            toast.error("Failed to connect app");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const resetModal = () => {
-        if (!isLoading) {
-            onClose();
-            setTimeout(() => {
-                setStep('credentials');
-                setError(null);
-                setCredentials({ issuerId: '', keyId: '', p8File: null });
-            }, 300);
-        }
-    };
-
-    return (
-        <Dialog open={isOpen} onOpenChange={resetModal}>
-            <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                    <DialogTitle>Connect App Store</DialogTitle>
-                    <DialogDescription>
-                        Enter your App Store Connect credentials to sync your app data.
-                        <br />
-                        <span
-                            className="text-primary cursor-pointer hover:underline text-xs"
-                            onClick={() => {
-                                setCredentials({
-                                    issuerId: 'demo-issuer-id-123',
-                                    keyId: 'demo-key-id-456',
-                                    p8File: { name: 'AuthKey_DEMO123.p8' }
-                                });
-                                setError(null);
-                            }}
-                        >
-                            Don't have keys? Try with demo data
-                        </span>
-                    </DialogDescription>
-                </DialogHeader>
-
-                {step === 'credentials' && (
-                    <div className="grid gap-4 py-4">
-                        <div
-                            className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-accent/50 transition-colors"
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                className="hidden"
-                                accept=".p8"
-                                onChange={handleFileChange}
-                            />
-                            <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                            <div className="text-sm font-medium">
-                                {credentials.p8File ? credentials.p8File.name : "Upload .p8 file"}
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                                Drag & drop or click to upload
-                            </div>
-                        </div>
-
-                        <div className="grid gap-2">
-                            <label htmlFor="issuerId" className="text-sm font-medium">Issuer ID</label>
-                            <Input
-                                id="issuerId"
-                                name="issuerId"
-                                placeholder="Enter Issuer ID"
-                                value={credentials.issuerId}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <label htmlFor="keyId" className="text-sm font-medium">Key ID</label>
-                            <Input
-                                id="keyId"
-                                name="keyId"
-                                placeholder="Enter Key ID"
-                                value={credentials.keyId}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-
-                        {error && (
-                            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-                                <AlertCircle className="h-4 w-4" />
-                                <span>{error}</span>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {(step === 'select' || step === 'confirm') && (
-                    <div className="py-4">
-                        <div className="text-sm font-medium mb-4">
-                            {step === 'confirm' ? "We found your app:" : "Select an app to connect:"}
-                        </div>
-
-                        <div className="space-y-2">
-                            {foundApps.map(app => (
-                                <div
-                                    key={app.id}
-                                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${selectedAppId === app.id
-                                        ? "border-primary bg-primary/5 ring-1 ring-primary"
-                                        : "hover:bg-accent"
-                                        }`}
-                                    onClick={() => step === 'select' && setSelectedAppId(app.id)}
-                                >
-                                    <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                                        <Smartphone className="h-5 w-5 text-muted-foreground" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="font-medium">{app.name}</div>
-                                        <div className="text-xs text-muted-foreground">{app.bundleId}</div>
-                                    </div>
-                                    {selectedAppId === app.id && (
-                                        <CheckCircle2 className="h-5 w-5 text-primary" />
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                <DialogFooter>
-                    <Button variant="outline" onClick={resetModal} disabled={isLoading}>
-                        Cancel
-                    </Button>
-                    {step === 'credentials' ? (
-                        <Button onClick={handleValidate} disabled={isLoading}>
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Verifying...
-                                </>
-                            ) : (
-                                "Validate & Connect"
-                            )}
-                        </Button>
+          {foundApps.length > 0 && (
+            <div className="space-y-2 max-h-[300px] overflow-auto pr-1">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Select your app:</p>
+              {foundApps.map((app) => (
+                <div
+                  key={app.id}
+                  className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                    selectedApp?.id === app.id
+                      ? "border-primary bg-primary/5 ring-1 ring-primary"
+                      : "hover:bg-accent border-border"
+                  }`}
+                  onClick={() => setSelectedApp(app)}
+                >
+                  <div className="h-12 w-12 rounded-xl bg-muted shrink-0 overflow-hidden border border-border/50">
+                    {app.icon ? (
+                      <img src={app.icon} alt={app.name} className="w-full h-full object-cover" />
                     ) : (
-                        <Button onClick={handleConnect} disabled={isLoading || !selectedAppId}>
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Connecting...
-                                </>
-                            ) : (
-                                "Confirm & Connect"
-                            )}
-                        </Button>
+                      <Smartphone className="h-6 w-6 text-muted-foreground m-auto mt-3" />
                     )}
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold truncate">{app.name}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {app.developer} • {app.bundleId}
+                    </div>
+                  </div>
+                  {selectedApp?.id === app.id && (
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {error && (
+            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={resetModal} disabled={isLoading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConnect}
+            disabled={isLoading || !selectedApp}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Connecting...
+              </>
+            ) : (
+              "Connect & Sync"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }

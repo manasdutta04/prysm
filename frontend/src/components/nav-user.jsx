@@ -40,7 +40,7 @@ export function NavUser({
 
   const handleLogout = async () => {
     await logout()
-    navigate("/login")
+    navigate("/")
   }
 
   return (
@@ -81,18 +81,18 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
                 <Settings />
                 Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/account")}>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
                 <Bell />
                 Notifications
               </DropdownMenuItem>
