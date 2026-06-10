@@ -1,4 +1,4 @@
-import Feedback from "../models/raw feedbacks/feedback.model.js";
+import Feedback from "../models/raw_feedbacks/feedback.model.js";
 import { fetchXFeedback } from "../lib/xScraper.js";
 import { fetchAppStoreReviews } from "../lib/appStoreScraper.js";
 import AnalysisHistory from "../models/analysis/analysisHistory.model.js";
