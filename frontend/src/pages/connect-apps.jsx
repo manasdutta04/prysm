@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./connect-apps.css";
 import ConnectGmailButton from "../components/ConnectGmailButton";
 import FetchEmailsButton from "../components/FetchEmailsButton";
 import { AppStoreConnectModal } from "@/components/app-store-connect-modal";
+import { PlaystoreConnectModal } from "@/components/playstore-connect-modal";
 import { XConnectModal } from "@/components/x-connect-modal";
 import {
   Dialog,
@@ -15,19 +16,58 @@ import {
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
+import { usePlaystoreStore } from "../store/usePlaystoreStore";
 
 export default function ConnectAppsPage() {
   const [connectedApps, setConnectedApps] = useState(() => {
     const saved = localStorage.getItem("connectedApps");
     return saved ? JSON.parse(saved) : {};
   });
-  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+
+  const [isAppStoreModalOpen, setIsAppStoreModalOpen] = useState(false);
+  const [isPlaystoreModalOpen, setIsPlaystoreModalOpen] = useState(false);
   const [isXModalOpen, setIsXModalOpen] = useState(false);
   const [disconnectModal, setDisconnectModal] = useState({
     isOpen: false,
     appName: null,
   });
   const [isDisconnecting, setIsDisconnecting] = useState(false);
+
+  // Playstore store
+  const {
+    isConnected: playstoreConnected,
+    appName: playstoreAppName,
+    isFetching,
+    checkStatus,
+    disconnect: disconnectPlaystore,
+    fetchReviews,
+  } = usePlaystoreStore();
+
+  // Check Play Store connection status on page load
+  useEffect(() => {
+    checkStatus();
+  }, [checkStatus]);
+
+  // Sync Play Store status into connectedApps state
+  useEffect(() => {
+    if (playstoreConnected && playstoreAppName) {
+      setConnectedApps((prev) => ({
+        ...prev,
+        "Play Store": {
+          isConnected: true,
+          appName: playstoreAppName,
+          appIcon: null,
+          lastSync: Date.now(),
+        },
+      }));
+    } else if (!playstoreConnected) {
+      setConnectedApps((prev) => {
+        const updated = { ...prev };
+        delete updated["Play Store"];
+        return updated;
+      });
+    }
+  }, [playstoreConnected, playstoreAppName]);
 
   React.useEffect(() => {
     localStorage.setItem("connectedApps", JSON.stringify(connectedApps));
@@ -58,7 +98,9 @@ export default function ConnectAppsPage() {
 
   const handleConnectClick = (appName) => {
     if (appName === "App Store") {
-      setIsConnectModalOpen(true);
+      setIsAppStoreModalOpen(true);
+    } else if (appName === "Play Store") {
+      setIsPlaystoreModalOpen(true);
     } else if (appName === "X") {
       setIsXModalOpen(true);
     } else {
@@ -74,6 +116,18 @@ export default function ConnectAppsPage() {
         appName: appData.name,
         appIcon: appData.icon,
         appId: appData.id,
+        lastSync: Date.now(),
+      },
+    }));
+  };
+
+  const handlePlaystoreConnected = (appData) => {
+    setConnectedApps((prev) => ({
+      ...prev,
+      "Play Store": {
+        isConnected: true,
+        appName: appData.appId,
+        appIcon: null,
         lastSync: Date.now(),
       },
     }));
@@ -98,18 +152,22 @@ export default function ConnectAppsPage() {
   const confirmDisconnect = async () => {
     setIsDisconnecting(true);
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setConnectedApps((prev) => {
-        const newState = { ...prev };
-        delete newState[disconnectModal.appName];
-        return newState;
-      });
-
-      toast.success(
-        `Disconnected — ${connectedApps[disconnectModal.appName]?.appName || disconnectModal.appName}`,
-      );
+      if (disconnectModal.appName === "Play Store") {
+        await disconnectPlaystore();
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        setConnectedApps((prev) => {
+          const newState = { ...prev };
+          delete newState[disconnectModal.appName];
+          return newState;
+        });
+        toast.success(
+          `Disconnected — ${
+            connectedApps[disconnectModal.appName]?.appName ||
+            disconnectModal.appName
+          }`
+        );
+      }
       setDisconnectModal({ isOpen: false, appName: null });
     } catch (error) {
       toast.error("Failed to disconnect", error);
@@ -133,6 +191,7 @@ export default function ConnectAppsPage() {
           Connect your apps to sync data seamlessly
         </p>
       </div>
+
       <div className="connect-apps-grid">
         {apps.map((app, index) => {
           const isConnected = connectedApps[app.name]?.isConnected;
@@ -155,27 +214,58 @@ export default function ConnectAppsPage() {
                         <img
                           src={connectedData.appIcon}
                           alt={connectedData.appName}
+                          className="h-full w-full object-cover"
                         />
                       ) : (
-                        <span>{connectedData.appName.charAt(0)}</span>
+                        <span className="text-lg font-bold text-primary">
+                          {connectedData.appName?.charAt(0)}
+                        </span>
                       )}
                     </div>
-
-                    <div className="flex-1">
-                      <p>{connectedData.appName}</p>
-                      <p>Synced: {formatTime(connectedData.lastSync)}</p>
+                    <div className="flex-1 min-w-0 text-left">
+                      <p className="text-sm font-medium truncate text-foreground">
+                        {connectedData.appName}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        Synced: {formatTime(connectedData.lastSync)}
+                      </p>
                     </div>
+                    <div
+                      className="h-2 w-2 rounded-full bg-green-500 shrink-0"
+                      title="Connected"
+                    />
                   </div>
                 )}
               </div>
 
               {isConnected ? (
-                <Button
-                  variant="destructive"
-                  onClick={() => handleDisconnectClick(app.name)}
-                >
-                  Disconnect
-                </Button>
+                <div className="flex flex-col gap-2 w-full mt-4">
+                  {/* Fetch Reviews button — only for Play Store */}
+                  {app.name === "Play Store" && (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={fetchReviews}
+                      disabled={isFetching}
+                    >
+                      {isFetching ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Fetching...
+                        </>
+                      ) : (
+                        "Fetch Reviews"
+                      )}
+                    </Button>
+                  )}
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={() => handleDisconnectClick(app.name)}
+                  >
+                    Disconnect
+                  </Button>
+                </div>
               ) : (
                 <button
                   className="connect-button"
@@ -194,18 +284,28 @@ export default function ConnectAppsPage() {
         </div>
       </div>
 
+      {/* App Store Modal */}
       <AppStoreConnectModal
-        isOpen={isConnectModalOpen}
-        onClose={() => setIsConnectModalOpen(false)}
+        isOpen={isAppStoreModalOpen}
+        onClose={() => setIsAppStoreModalOpen(false)}
         onConnect={handleAppStoreConnected}
       />
 
+      {/* Play Store Modal */}
+      <PlaystoreConnectModal
+        isOpen={isPlaystoreModalOpen}
+        onClose={() => setIsPlaystoreModalOpen(false)}
+        onConnect={handlePlaystoreConnected}
+      />
+
+      {/* X Modal */}
       <XConnectModal
         isOpen={isXModalOpen}
         onClose={() => setIsXModalOpen(false)}
         onConnect={handleXConnected}
       />
 
+      {/* Disconnect confirmation dialog */}
       <Dialog
         open={disconnectModal.isOpen}
         onOpenChange={(open) =>

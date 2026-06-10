@@ -1,7 +1,7 @@
 import querystring from "querystring";
 import axios from "axios";
 import User from "../models/users/user.model.js";
-import Feedback from "../models/raw feedbacks/feedback.model.js";
+import Feedback from "../models/raw_feedbacks/feedback.model.js";
 
 import { fetchEmails, fetchEmailDetails } from "../lib/fetchemail.js";
 
