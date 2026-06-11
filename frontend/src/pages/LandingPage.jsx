@@ -30,7 +30,7 @@ const CircularBadge = () => (
         <path id="prysm-circle-path" d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" fill="none" />
         <text style={{ fontSize: "11px", fontWeight: 900, letterSpacing: "0.18em" }} fill="black">
           <textPath href="#prysm-circle-path" startOffset="0%">
-            OPEN PRYSM FREE • OPEN PRYSM FREE •{" "}
+            USE PRYSM • START FOR FREE • 
           </textPath>
         </text>
       </svg>
@@ -89,7 +89,7 @@ const featureCards = [
   {
     label: "ADD YOUR LLM KEY",
     sub: "Gemini, OpenAI, Claude, Groq or local Ollama — your key, your costs.",
-    pill: { text: "gemini-1.5-flash", color: "#0A0A0A" },
+    pill: { text: "gemini-3.5-flash", color: "#0A0A0A" },
     pillBadge: { text: "BYOK", color: "#CCFF00" },
   },
   {
@@ -103,7 +103,7 @@ const featureCards = [
 /* ─── Interactive Demo mock data ─── */
 const demoChannels = {
   x: {
-    name: "X / NITTER",
+    name: "X",
     icon: (
       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -181,7 +181,7 @@ const demoChannels = {
     ]
   },
   gmail: {
-    name: "GMAIL / INBOX",
+    name: "GMAIL",
     icon: (
       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
@@ -339,7 +339,7 @@ export default function LandingPage() {
                   textShadow: [1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`${n}px ${n}px 0 #1a1a00`).join(", "),
                 }}
               >
-                UNIFY
+                # UNIFY
               </h1>
             </div>
 
@@ -390,7 +390,7 @@ export default function LandingPage() {
 
             {/* Floating source card — top right */}
             <SourceCard
-              title="X / Nitter Feed"
+              title="X (Twitter) Feed"
               sub="Sentiment: 76% positive"
               color="#60A5FA"
               rotate={12}
@@ -426,11 +426,10 @@ export default function LandingPage() {
             style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "clamp(11px,1.4vw,13px)", letterSpacing: "1px" }}
           >
             PRIVACY-FIRST AI FEEDBACK AGGREGATOR FOR PRODUCT TEAMS.<br />
-            YOUR KEY. YOUR INSIGHTS. ZERO AI MARKUP.
           </p>
           <Link to="/login">
             <LiquidButton size="xl" className="text-white font-bold tracking-wide">
-              Open Prysm Free
+              Get started for free
             </LiquidButton>
           </Link>
         </div>
@@ -520,7 +519,7 @@ export default function LandingPage() {
             className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest transition-opacity hover:opacity-60 text-white/50 bg-transparent border-none cursor-pointer"
             style={{ fontFamily: "'IBM Plex Mono', monospace" }}
           >
-            Interactive Demo ↓
+            Try The Interactive ↓
           </button>
         </div>
       </section>
@@ -1051,7 +1050,7 @@ export default function LandingPage() {
                       01 // PRYSM CORE SOFTWARE
                     </span>
                     <span className="font-mono font-bold" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-                      $0.00
+                      ₹0.00
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
@@ -1072,7 +1071,7 @@ export default function LandingPage() {
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-mono text-white/50 uppercase" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-                      04 // LOCAL MONGO DATABASE
+                      04 // MULTI-APP CONNECTIVITY
                     </span>
                     <span className="font-mono font-bold" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
                       INCLUDED
@@ -1087,7 +1086,7 @@ export default function LandingPage() {
                       PLATFORM TOTAL:
                     </span>
                     <span className="font-mono text-sm text-white/50" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-                      $0.00 / MO
+                      ₹0.00 / MO
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -1095,7 +1094,7 @@ export default function LandingPage() {
                       NET COST:
                     </span>
                     <span className="font-black text-2xl text-[#CCFF00]" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
-                      $0.00
+                      ₹0.00
                     </span>
                   </div>
                 </div>
@@ -1131,7 +1130,7 @@ export default function LandingPage() {
                     <rect x="96" y="0" width="4" height="20" />
                   </svg>
                   <p className="font-mono text-[8px] text-white/30 uppercase tracking-widest" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-                    # SECURE_BYOK_BY_PRYSM
+                    # FREE_FOREVER ...
                   </p>
                 </div>
               </div>
@@ -1256,11 +1255,96 @@ export default function LandingPage() {
           </div>
 
           {/* Bottom Copyright Block */}
-          <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/5 text-[10px] font-mono uppercase text-white/30" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-            <div>© {new Date().getFullYear()} PRYSM CORP. ALL RIGHTS RESERVED.</div>
-            <div className="mt-2 md:mt-0 flex gap-4">
-              <span>[REACT + NODE + MONGODB]</span>
-              <span>[BYOK ENCRYPTED]</span>
+          <div className="mt-8 flex flex-col gap-4 border-t border-white/5 pt-5 md:flex-row md:items-center md:justify-between font-mono" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
+            <span className="text-[10px] uppercase tracking-[0.24em] text-zinc-500">© 2026 PRYSM. ALL RIGHTS RESERVED.</span>
+
+            <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.24em] text-zinc-500">
+              <span>Made with ❤️ by</span>
+
+              <a
+                href="https://github.com/manasdutta04"
+                target="_blank"
+                rel="noreferrer"
+                className="group relative flex h-8 w-8 items-center justify-center"
+                aria-label="Manas Dutta on GitHub"
+              >
+                <img
+                  src="https://avatars.githubusercontent.com/u/122201926?v=4"
+                  alt="Manas Dutta"
+                  className="h-8 w-8 rounded-full border border-white/10 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="pointer-events-none absolute -top-11 left-1/2 z-20 w-max -translate-x-1/2 rounded-full border border-white/10 bg-[#05070c] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                  manas
+                </span>
+              </a>
+
+              <a
+                href="https://github.com/paritoshdey-dev"
+                target="_blank"
+                rel="noreferrer"
+                className="group relative flex h-8 w-8 items-center justify-center"
+                aria-label="Paritosh Dey on GitHub"
+              >
+                <img
+                  src="https://avatars.githubusercontent.com/u/140790221?v=4"
+                  alt="Paritosh Dey"
+                  className="h-8 w-8 rounded-full border border-white/10 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="pointer-events-none absolute -top-11 left-1/2 z-20 w-max -translate-x-1/2 rounded-full border border-white/10 bg-[#05070c] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                  paritosh
+                </span>
+              </a>
+
+              <a
+                href="https://github.com/kabyasarkar01-tech"
+                target="_blank"
+                rel="noreferrer"
+                className="group relative flex h-8 w-8 items-center justify-center"
+                aria-label="Kabya Sarkar on GitHub"
+              >
+                <img
+                  src="https://avatars.githubusercontent.com/u/233121063?v=4"
+                  alt="Kabya Sarkar"
+                  className="h-8 w-8 rounded-full border border-white/10 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="pointer-events-none absolute -top-11 left-1/2 z-20 w-max -translate-x-1/2 rounded-full border border-white/10 bg-[#05070c] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                  kabya
+                </span>
+              </a>
+
+              <a
+                href="https://github.com/SnehaGhosh4700"
+                target="_blank"
+                rel="noreferrer"
+                className="group relative flex h-8 w-8 items-center justify-center"
+                aria-label="Sneha Ghosh on GitHub"
+              >
+                <img
+                  src="https://avatars.githubusercontent.com/u/140139277?v=4"
+                  alt="Sneha Ghosh"
+                  className="h-8 w-8 rounded-full border border-white/10 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="pointer-events-none absolute -top-11 left-1/2 z-20 w-max -translate-x-1/2 rounded-full border border-white/10 bg-[#05070c] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                  sneha
+                </span>
+              </a>
+
+              <a
+                href="https://github.com/Jayantjha17"
+                target="_blank"
+                rel="noreferrer"
+                className="group relative flex h-8 w-8 items-center justify-center"
+                aria-label="Jayant Kumar Jha on GitHub"
+              >
+                <img
+                  src="https://avatars.githubusercontent.com/u/169228555?v=4"
+                  alt="Jayant Kumar Jha"
+                  className="h-8 w-8 rounded-full border border-white/10 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="pointer-events-none absolute -top-11 left-1/2 z-20 w-max -translate-x-1/2 rounded-full border border-white/10 bg-[#05070c] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                  jayant
+                </span>
+              </a>
             </div>
           </div>
         </div>
