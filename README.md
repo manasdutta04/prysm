@@ -179,3 +179,18 @@ Prysm uses Role-Based Access Control (RBAC) with defined permissions:
 - **Administrator** — Manages users, integrations, and settings. (Full Access)
 - **Product Manager** — Views dashboards, reports, and insights. (Moderate Access)
 - **Support Team Member** — Reviews customer issues and complaint clusters. (Limited Access)
+
+
+## Creators
+
+<table>
+  <tbody>
+    <tr>
+    <td align="center" valign="top" width="14.28%"><a href="https://github.com/manasdutta04"><img src="https://avatars.githubusercontent.com/u/122201926?v=4?s=100" width="100px;" alt="Manas Dutta"/><br /><sub><b>Manas Dutta</b></sub></a><br /></td>
+    <td align="center" valign="top" width="14.28%"><a href="https://github.com/paritoshdey-dev"><img src="https://avatars.githubusercontent.com/u/140790221?v=4?s=100" width="100px;" alt="Paritosh Dey"/><br /><sub><b>Paritosh Dey</b></sub></a><br /></td>
+    <td align="center" valign="top" width="14.28%"><a href="https://github.com/kabyasarkar01-tech"><img src="https://avatars.githubusercontent.com/u/233121063?v=4?s=100" width="100px;" alt="Kabya Sarkar"/><br /><sub><b>Kabya Sarkar</b></sub></a><br /></td>
+    <td align="center" valign="top" width="14.28%"><a href="https://github.com/SnehaGhosh4700"><img src="https://avatars.githubusercontent.com/u/140139277?v=4?s=100" width="100px;" alt="Sneha Ghosh"/><br /><sub><b>Sneha Ghosh</b></sub></a><br /></td>
+    <td align="center" valign="top" width="14.28%"><a href="https://github.com/Jayantjha17"><img src="https://avatars.githubusercontent.com/u/169228555?v=4?s=100" width="100px;" alt="Jayant Kumar Jha"/><br /><sub><b>Jayant Kumar Jha</b></sub></a><br /></td>
+    </tr>
+  </tbody>
+</table>
