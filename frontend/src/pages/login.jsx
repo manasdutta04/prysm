@@ -47,6 +47,20 @@ export default function LoginPage() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px] opacity-40" />
 
       <div className="z-10 w-full max-w-[400px] bg-background/60 backdrop-blur-xl border border-border/50 rounded-2xl p-8 shadow-2xl flex flex-col gap-6">
+        <div className="flex items-center justify-center gap-3">
+          <img
+            src="/prysm-logo.png"
+            alt="Prysm Logo"
+            className="h-10 w-auto object-contain"
+          />
+          <span
+            className="font-black text-white tracking-tighter text-xl uppercase"
+            style={{ fontFamily: "'Geist', sans-serif" }}
+          >
+            PRYSM
+          </span>
+        </div>
+
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400">
             {view === "login" ? "Welcome Back" : "Join Prysm"}
