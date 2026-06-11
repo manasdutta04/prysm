@@ -22,8 +22,8 @@ const ArrowGreenRight = () => (
 /* ─── Rotating "GET STARTED FREE" badge ─── */
 const CircularBadge = () => (
   <div
-    className="relative w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center shadow-xl rotate-12 hover:scale-105 transition-transform cursor-pointer"
-    style={{ background: "#CCFF00", border: "3px solid rgba(0,0,0,0.05)" }}
+    className="relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-xl rotate-12 hover:scale-110 transition-transform cursor-pointer"
+    style={{ background: "#CCFF00", border: "2px solid rgba(0,0,0,0.05)" }}
   >
     <div className="absolute inset-1 animate-[spin_10s_linear_infinite]">
       <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -36,7 +36,7 @@ const CircularBadge = () => (
       </svg>
     </div>
     <div className="absolute inset-0 flex items-center justify-center">
-      <svg viewBox="0 0 100 100" className="w-10 h-10 text-black stroke-current overflow-visible" fill="none" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 100 100" className="w-6 h-6 text-black stroke-current overflow-visible" fill="none" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20,80 Q 40,50 30,30 T 80,20" />
         <path d="M60,10 L80,20 L70,40" />
       </svg>
@@ -294,6 +294,13 @@ export default function LandingPage() {
       className="min-h-screen flex flex-col font-sans relative overflow-hidden w-full"
       style={{ background: "#0A0A0A", selection: "background: #CCFF00; color: black" }}
     >
+      {/* ─── Fixed rotating badge — always bottom-right of viewport ─── */}
+      <div className="fixed bottom-8 right-8 z-[9999] pointer-events-auto">
+        <Link to="/login">
+          <CircularBadge />
+        </Link>
+      </div>
+
       {/* Background grid */}
       <div
         className="absolute inset-0 pointer-events-none z-0"
@@ -456,12 +463,7 @@ export default function LandingPage() {
               <ArrowGreenRight />
             </div>
 
-            {/* Rotating badge — bottom right */}
-            <div className="absolute bottom-[-8%] right-[0%] md:right-[3%] z-40 pointer-events-auto">
-              <Link to="/login">
-                <CircularBadge />
-              </Link>
-            </div>
+
 
           </div>
         </div>
