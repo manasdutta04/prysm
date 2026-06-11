@@ -55,9 +55,18 @@ export default function HistoryPage() {
     <div className="history-page">
       <div className="history-grid">
         <div className="cards-row">
-          <div className="stat-card">Runs Saved: <strong>{topCounts.sessions}</strong></div>
-          <div className="stat-card">Total Feedbacks Analyzed: <strong>{topCounts.totalFeedback}</strong></div>
-          <div className="stat-card">Average Satisfaction: <strong>{topCounts.avgSatisfaction} / 5.0</strong></div>
+          <div className="stat-card liquid-glass-card">
+            <span className="stat-label">Runs Saved</span>
+            <strong className="stat-value">{topCounts.sessions}</strong>
+          </div>
+          <div className="stat-card liquid-glass-card">
+            <span className="stat-label">Total Feedbacks Analyzed</span>
+            <strong className="stat-value">{topCounts.totalFeedback}</strong>
+          </div>
+          <div className="stat-card liquid-glass-card">
+            <span className="stat-label">Average Satisfaction</span>
+            <strong className="stat-value">{topCounts.avgSatisfaction} <span className="stat-unit">/ 5.0</span></strong>
+          </div>
         </div>
 
         <div className="history-list">
@@ -69,7 +78,7 @@ export default function HistoryPage() {
           )}
           
           {!loading && items.length === 0 && (
-            <div className="empty-state-card">
+            <div className="empty-state-card liquid-glass-card">
               <FileText className="empty-icon" size={48} />
               <p className="empty-title">No Analysis History Found</p>
               <p className="empty-desc">Run a fetch on the Dashboard page to save your first feedback summary run.</p>
@@ -80,7 +89,7 @@ export default function HistoryPage() {
             const isExpanded = !!expandedCard[it._id];
             
             return (
-              <div key={it._id} className={`history-card-item ${isExpanded ? 'expanded' : ''}`}>
+              <div key={it._id} className={`history-card-item liquid-glass-card ${isExpanded ? 'expanded' : ''}`}>
                 <div className="card-main-header" onClick={() => toggleExpand(it._id)}>
                   <div className="header-left">
                     <Calendar className="calendar-icon" size={20} />

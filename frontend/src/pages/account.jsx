@@ -89,16 +89,8 @@ export default function AccountPage() {
 
   return (
     <div className="account-page">
-      <div className="page-header">
-        <h1 className="page-title">Account Settings</h1>
-        <p className="page-subtitle">
-          Manage your profile information, email preferences, and password security.
-        </p>
-      </div>
-
       <div className="account-layout">
-        {/* Left Side: Profile overview card */}
-        <div className="profile-overview-card">
+        <div className="profile-overview-card liquid-glass-card">
           <div className="avatar-section">
             <div className="large-avatar-glow">
               {authUser?.profilePic ? (
@@ -151,7 +143,7 @@ export default function AccountPage() {
         {/* Right Side: Account Forms */}
         <div className="account-forms-container">
           {/* Profile Details Form */}
-          <div className="account-form-card">
+          <div className="account-form-card liquid-glass-card">
             <h2 className="form-card-title">Profile Details</h2>
             <form onSubmit={handleProfileSubmit} className="glass-form">
               <div className="form-group">
@@ -195,7 +187,7 @@ export default function AccountPage() {
           </div>
 
           {/* Change Password Form */}
-          <div className="account-form-card">
+          <div className="account-form-card liquid-glass-card">
             <h2 className="form-card-title">Security & Password</h2>
             <form onSubmit={handlePasswordSubmit} className="glass-form">
               <div className="form-group">

@@ -516,3 +516,56 @@
   border-color: #CCFF00 !important;
   box-shadow: 0 0 10px rgba(204, 255, 0, 0.2) !important;
 }
+
+/* ─── Shared liquid glass card (dashboard / connect-apps pattern) ─── */
+.liquid-glass-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.045);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.liquid-glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 1px;
+  border-radius: inherit;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.08) 25%, rgba(255, 255, 255, 0.22) 48%, rgba(255, 255, 255, 0.06) 70%, rgba(255, 255, 255, 0.38)),
+    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.44), transparent 24%),
+    radial-gradient(circle at 86% 94%, rgba(255, 255, 255, 0.22), transparent 28%);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.76;
+  pointer-events: none;
+}
+
+.liquid-glass-card:hover {
+  background: rgba(255, 255, 255, 0.025);
+  border-color: rgba(204, 255, 0, 0.35);
+  transform: translateY(-2px);
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.42),
+    0 0 18px rgba(204, 255, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.065);
+}
+
+.liquid-glass-card:hover::before {
+  opacity: 1;
+}
