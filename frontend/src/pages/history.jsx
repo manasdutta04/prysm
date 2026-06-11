@@ -53,11 +53,6 @@ export default function HistoryPage() {
 
   return (
     <div className="history-page">
-      <div className="page-header">
-        <h1 className="page-title">Analysis History</h1>
-        <p className="page-subtitle">Historical records of your feedback processing runs and AI analysis summaries.</p>
-      </div>
-
       <div className="history-grid">
         <div className="cards-row">
           <div className="stat-card">Runs Saved: <strong>{topCounts.sessions}</strong></div>

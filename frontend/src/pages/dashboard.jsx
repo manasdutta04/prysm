@@ -4,7 +4,7 @@ import "./dashboard.css";
 // import { useNavigate } from "react-router-dom";
 import ConnectGmailButton from "../components/ConnectGmailButton";
 import FetchEmailsButton from "../components/FetchEmailsButton";
-import { Button } from "@/components/ui/button";
+import { Button, LiquidButton } from "@/components/ui/liquid-glass-button";
 import toast from "react-hot-toast";
 import { LineChart } from "@mui/x-charts/LineChart";
 import axiosInstance from "../lib/axios";
@@ -263,15 +263,16 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <Button
+          <LiquidButton
             onClick={handleFetchData}
             disabled={isFetching}
-            className="action-button fetch-button"
+            className="action-button fetch-button text-black font-bold tracking-wide rounded-xl border-none"
             variant="default"
+            size="lg"
           >
-            <RefreshCw className={isFetching ? "spinning" : ""} />
+            <RefreshCw className={isFetching ? "spinning mr-2 h-4 w-4" : "mr-2 h-4 w-4"} />
             Fetch Data
-          </Button>
+          </LiquidButton>
           <div className="last-fetched">
             Last Fetched time → {getTimeAgo(lastFetchedTime)}
           </div>
@@ -369,14 +370,15 @@ export default function DashboardPage() {
             </>
           ) : null}
 
-          <Button
+          <LiquidButton
             onClick={handleDownloadPDF}
-            className="action-button download-button"
+            className="action-button download-button text-white font-semibold tracking-wide border border-white/10 rounded-xl"
             variant="outline"
+            size="lg"
           >
-            <Download />
+            <Download className="mr-2 h-4 w-4" />
             Download as .pdf
-          </Button>
+          </LiquidButton>
         </div>
       </div>
 

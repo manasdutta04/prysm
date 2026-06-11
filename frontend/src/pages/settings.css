@@ -8,34 +8,7 @@
   min-height: 100%;
   box-sizing: border-box;
   color: #fff;
-  background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.07) 0%, transparent 65%);
-}
-
-/* ===== Header ===== */
-.settings-page .page-header {
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
-.settings-page .page-title {
-  font-size: 2.5rem;
-  font-weight: 850;
-  background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.75rem;
-  letter-spacing: -0.025em;
-  line-height: 1.1;
-}
-
-.settings-page .page-subtitle {
-  font-size: 1rem;
-  color: #a1a1aa;
-  margin: 0;
-  max-width: 650px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.6;
+  background: radial-gradient(circle at 50% 0%, rgba(204, 255, 0, 0.04) 0%, transparent 65%);
 }
 
 /* Centered Form Layout */
@@ -54,7 +27,7 @@
   max-width: 550px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.5rem;
+  border-radius: 1.75rem;
   padding: 2.5rem;
   backdrop-filter: blur(24px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
@@ -66,9 +39,9 @@
 
 .settings-card:hover {
   background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(139, 92, 246, 0.25);
+  border-color: rgba(204, 255, 0, 0.3);
   transform: translateY(-4px);
-  box-shadow: 0 24px 60px rgba(139, 92, 246, 0.08), 0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 60px rgba(204, 255, 0, 0.03), 0 16px 40px rgba(0, 0, 0, 0.5);
 }
 
 .card-header-with-icon {
@@ -79,8 +52,8 @@
 }
 
 .header-icon.blue {
-  color: #8b5cf6;
-  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
+  color: #CCFF00;
+  filter: drop-shadow(0 0 8px rgba(204, 255, 0, 0.4));
 }
 
 .settings-card .card-title {
@@ -138,7 +111,7 @@
 }
 
 .control-hint.highlight {
-  color: #a78bfa;
+  color: #CCFF00;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -148,7 +121,7 @@
 
 .control-hint.highlight::before {
   content: "●";
-  color: #8b5cf6;
+  color: #CCFF00;
   font-size: 0.5rem;
   margin-right: 0.2rem;
 }
@@ -180,9 +153,9 @@
 
 .settings-select:focus,
 .settings-text-input:focus {
-  border-color: rgba(139, 92, 246, 0.6);
+  border-color: rgba(204, 255, 0, 0.5);
   background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.15);
 }
 
 .settings-select option {
@@ -268,15 +241,15 @@
 }
 
 .btn-save-settings {
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  color: #ffffff;
-  box-shadow: 0 4px 18px rgba(139, 92, 246, 0.3);
+  background: #CCFF00;
+  color: black;
+  box-shadow: 0 4px 18px rgba(204, 255, 0, 0.2);
 }
 
 .btn-save-settings:hover:not(:disabled) {
-  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  background: #ddff33;
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.45);
+  box-shadow: 0 6px 24px rgba(204, 255, 0, 0.35);
 }
 
 .btn-test-settings {
@@ -287,9 +260,9 @@
 
 .btn-test-settings:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(139, 92, 246, 0.35);
+  border-color: rgba(204, 255, 0, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 15px rgba(204, 255, 0, 0.1);
 }
 
 .btn-save-settings:active,
@@ -315,8 +288,8 @@
 
 /* Ollama Suggestions Box */
 .ollama-suggestions-box {
-  background: rgba(139, 92, 246, 0.02);
-  border: 1px solid rgba(139, 92, 246, 0.12);
+  background: rgba(204, 255, 0, 0.02);
+  border: 1px solid rgba(204, 255, 0, 0.12);
   border-radius: 0.85rem;
   padding: 1.1rem 1.35rem;
   display: flex;
@@ -328,7 +301,7 @@
 .suggestions-title {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #a78bfa;
+  color: #CCFF00;
   letter-spacing: -0.01em;
 }
 
@@ -352,8 +325,8 @@
   border-radius: 0.5rem;
   font-family: Menlo, Monaco, Consolas, "Fira Code", monospace;
   font-size: 0.8rem;
-  color: #d8b4fe;
-  border: 1px solid rgba(139, 92, 246, 0.08);
+  color: #CCFF00;
+  border: 1px solid rgba(204, 255, 0, 0.08);
 }
 
 /* Animations */

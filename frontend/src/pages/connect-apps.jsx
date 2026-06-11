@@ -13,7 +13,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Button, LiquidButton } from "@/components/ui/liquid-glass-button";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { usePlaystoreStore } from "../store/usePlaystoreStore";
@@ -76,22 +76,26 @@ export default function ConnectAppsPage() {
   const apps = [
     {
       name: "Gmail",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+      icon: <img src="/gmail.svg" className="w-12 h-12 object-contain" alt="Gmail" />,
       description: "Connect your Gmail account",
     },
     {
       name: "X",
-      logo: "https://static.vecteezy.com/system/resources/previews/027/714/631/non_2x/sankt-petersburg-russia-24-08-2023-twitter-new-logo-twitter-icons-twitter-x-logo-free-png.png",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-10 h-10 fill-current text-white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      ),
       description: "Connect your X account",
     },
     {
       name: "Play Store",
-      logo: "https://cdn.freebiesupply.com/logos/large/2x/google-play-store-logo-png-transparent.png",
+      icon: <img src="/playstore.svg" className="w-10 h-10 object-contain" alt="Play Store" />,
       description: "Connect your Google Play Store",
     },
     {
       name: "App Store",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/6/67/App_Store_%28iOS%29.svg",
+      icon: <img src="/appstore.svg" className="w-10 h-10 object-contain brightness-0 invert" alt="App Store" />,
       description: "Connect your Apple App Store",
     },
   ];
@@ -185,13 +189,6 @@ export default function ConnectAppsPage() {
 
   return (
     <div className="connect-apps-page">
-      <div className="page-header">
-        <h1 className="page-title">Connect Apps</h1>
-        <p className="page-subtitle">
-          Connect your apps to sync data seamlessly
-        </p>
-      </div>
-
       <div className="connect-apps-grid">
         {apps.map((app, index) => {
           const isConnected = connectedApps[app.name]?.isConnected;
@@ -200,7 +197,7 @@ export default function ConnectAppsPage() {
           return (
             <div key={index} className="app-card">
               <div className="app-logo">
-                <img src={app.logo} alt={`${app.name} logo`} />
+                {app.icon}
               </div>
 
               <div className="app-info">
@@ -242,11 +239,12 @@ export default function ConnectAppsPage() {
                 <div className="flex flex-col gap-2 w-full mt-4">
                   {/* Fetch Reviews button — only for Play Store */}
                   {app.name === "Play Store" && (
-                    <Button
+                    <LiquidButton
                       variant="outline"
-                      className="w-full"
+                      className="w-full text-white font-semibold border border-white/10 rounded-xl"
                       onClick={fetchReviews}
                       disabled={isFetching}
+                      size="lg"
                     >
                       {isFetching ? (
                         <>
@@ -256,23 +254,26 @@ export default function ConnectAppsPage() {
                       ) : (
                         "Fetch Reviews"
                       )}
-                    </Button>
+                    </LiquidButton>
                   )}
-                  <Button
+                  <LiquidButton
                     variant="destructive"
-                    className="w-full"
+                    className="w-full text-white font-semibold rounded-xl"
                     onClick={() => handleDisconnectClick(app.name)}
+                    size="lg"
                   >
                     Disconnect
-                  </Button>
+                  </LiquidButton>
                 </div>
               ) : (
-                <button
-                  className="connect-button"
+                <LiquidButton
+                  className="w-full text-black font-bold tracking-wide rounded-xl border-none"
+                  variant="default"
                   onClick={() => handleConnectClick(app.name)}
+                  size="lg"
                 >
                   Connect
-                </button>
+                </LiquidButton>
               )}
             </div>
           );

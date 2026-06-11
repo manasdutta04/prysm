@@ -20,7 +20,6 @@ import { NavMain } from "@/components/nav-main"
 import { useLocation, Link } from "react-router-dom"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -92,8 +91,20 @@ export function AppSidebar(props) {
 
   return (
     <Sidebar collapsible="none" className="w-64 shrink-0" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+      <SidebarHeader className="px-6 py-4 flex flex-row items-center gap-3 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <img
+            src="/prysm-logo.png"
+            alt="Prysm Logo"
+            className="h-8 w-auto object-contain"
+          />
+          <span
+            className="font-normal text-white tracking-tight text-2xl italic"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            Prysm
+          </span>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

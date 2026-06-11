@@ -11,8 +11,8 @@
     --card-foreground: 0 0% 96%;
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 96%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 0 0% 4%;
+    --primary: 72 100% 50%;         /* Brand Lime Green #CCFF00 */
+    --primary-foreground: 0 0% 4%;  /* Black */
     --secondary: 0 0% 11%;
     --secondary-foreground: 0 0% 96%;
     --muted: 0 0% 11%;
@@ -23,13 +23,30 @@
     --destructive-foreground: 0 0% 96%;
     --border: 0 0% 13%;
     --input: 0 0% 13%;
-    --ring: 0 0% 80%;
+    --ring: 72 100% 50%;            /* Brand Lime Green */
     --radius: 0.75rem;
-    --chart-1: 220 70% 50%;
+    --chart-1: 72 100% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+
+  .page-title {
+    font-family: 'Instrument Serif', serif !important;
+    font-style: italic !important;
+    font-weight: normal !important;
+    color: #F5F5F0 !important;
+    font-size: clamp(2rem, 5vw, 3rem) !important;
+    text-shadow: 2px 2px 0 #1a1a1a, 4px 4px 0 #000000;
+  }
+
+  .page-subtitle {
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    color: rgba(255, 255, 255, 0.4) !important;
   }
 }
 
