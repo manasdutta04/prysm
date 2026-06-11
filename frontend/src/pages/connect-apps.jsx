@@ -99,7 +99,10 @@ export default function ConnectAppsPage() {
   ];
 
   const handleConnectClick = (appName) => {
-    if (appName === "App Store") {
+    if (appName === "Gmail") {
+      const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      window.location.href = `${apiBase}/auth/google/connect`;
+    } else if (appName === "App Store") {
       setIsAppStoreModalOpen(true);
     } else if (appName === "Play Store") {
       setIsPlaystoreModalOpen(true);
@@ -203,39 +206,32 @@ export default function ConnectAppsPage() {
                 <p className="app-description">{app.description}</p>
 
                 {isConnected && (
-                  <div className="mt-4 p-3 bg-secondary/50 rounded-lg border border-border flex items-center gap-3 w-full">
-                    <div className="h-10 w-10 rounded-md bg-background flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
+                  <div className="connected-status">
+                    <div className="status-avatar">
                       {connectedData.appIcon ? (
                         <img
                           src={connectedData.appIcon}
                           alt={connectedData.appName}
-                          className="h-full w-full object-cover"
                         />
                       ) : (
-                        <span className="text-lg font-bold text-primary">
+                        <span className="status-initial">
                           {connectedData.appName?.charAt(0)}
                         </span>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0 text-left">
-                      <p className="text-sm font-medium truncate text-foreground">
-                        {connectedData.appName}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
+                    <div className="status-details">
+                      <p className="status-name">{connectedData.appName}</p>
+                      <p className="status-sync">
                         Synced: {formatTime(connectedData.lastSync)}
                       </p>
                     </div>
-                    <div
-                      className="h-2 w-2 rounded-full bg-green-500 shrink-0"
-                      title="Connected"
-                    />
+                    <div className="status-dot" title="Connected" />
                   </div>
                 )}
               </div>
 
               {isConnected ? (
-                <div className="flex flex-col gap-2 w-full mt-4">
-                  {/* Fetch Reviews button — only for Play Store */}
+                <div className="app-card-actions">
                   {app.name === "Play Store" && (
                     <LiquidButton
                       variant="outline"
@@ -264,14 +260,16 @@ export default function ConnectAppsPage() {
                   </LiquidButton>
                 </div>
               ) : (
-                <LiquidButton
-                  className="w-full text-white font-bold tracking-wide rounded-xl border-none"
-                  variant="default"
-                  onClick={() => handleConnectClick(app.name)}
-                  size="lg"
-                >
-                  Connect
-                </LiquidButton>
+                <div className="app-card-actions">
+                  <LiquidButton
+                    className="w-full text-white font-bold tracking-wide rounded-xl border-none"
+                    variant="default"
+                    onClick={() => handleConnectClick(app.name)}
+                    size="lg"
+                  >
+                    Connect
+                  </LiquidButton>
+                </div>
               )}
             </div>
           );
