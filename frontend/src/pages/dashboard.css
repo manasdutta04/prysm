@@ -2,11 +2,14 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 1.5rem;
-  padding-bottom: 3rem;
+  padding: 0;
+  padding-bottom: 2rem;
   min-height: 100%;
   width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
   box-sizing: border-box;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Main Section with Summary and Actions */
@@ -140,11 +143,13 @@
 }
 
 .widget-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #ffffff;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #F5F5F0;
   margin: 0;
-  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .summary-stats {
@@ -230,10 +235,13 @@
 }
 
 .section-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
   margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .insights-list,
@@ -422,11 +430,12 @@
 }
 
 .matrix-label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.12em;
   text-align: center;
 }
 
@@ -460,16 +469,16 @@
   font-size: 28px;
   font-weight: 800;
   fill: #CCFF00;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .gauge-center-label {
   font-size: 10px;
   font-weight: 600;
   fill: rgba(255, 255, 255, 0.6);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'IBM Plex Mono', monospace;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.12em;
 }
 
 /* Gauge Legend */
@@ -570,11 +579,12 @@
 }
 
 .last-fetched {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
   text-align: right;
   padding: 0.5rem 0;
-  font-style: italic;
+  letter-spacing: 0.05em;
 }
 
 .spinning {
@@ -730,8 +740,9 @@
   border: none;
   border-bottom: 2px solid transparent;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -926,11 +937,13 @@
 }
 
 .chart-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #ffffff;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #F5F5F0;
   margin: 0;
-  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .chart-container {
@@ -966,10 +979,12 @@
 }
 
 .date-label {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
   font-weight: 500;
   text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .date-picker-input {
@@ -979,6 +994,7 @@
   border-radius: 0.375rem;
   padding: 0.5rem;
   font-size: 0.875rem;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
   width: 100%;
   color-scheme: dark;
   transition: all 0.2s ease;

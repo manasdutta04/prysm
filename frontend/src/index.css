@@ -42,11 +42,51 @@
   }
 
   .page-subtitle {
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 0.9375rem !important;
+    font-weight: 400 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    line-height: 1.6 !important;
+    max-width: 640px !important;
+  }
+
+  .section-label {
     font-family: 'IBM Plex Mono', monospace !important;
     font-size: 10px !important;
     text-transform: uppercase !important;
     letter-spacing: 1.5px !important;
-    color: rgba(255, 255, 255, 0.4) !important;
+    color: #CCFF00 !important;
+    margin: 0 0 0.75rem 0 !important;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .page-header--centered {
+    text-align: center;
+  }
+
+  .page-header--centered .page-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-heading {
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    color: #F5F5F0 !important;
+  }
+
+  .display-heading {
+    font-family: 'Instrument Serif', serif !important;
+    font-style: italic !important;
+    font-weight: normal !important;
+    color: #F5F5F0 !important;
   }
 }
 

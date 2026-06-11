@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./connect-apps.css";
-import ConnectGmailButton from "../components/ConnectGmailButton";
-import FetchEmailsButton from "../components/FetchEmailsButton";
 import { AppStoreConnectModal } from "@/components/app-store-connect-modal";
 import { PlaystoreConnectModal } from "@/components/playstore-connect-modal";
 import { XConnectModal } from "@/components/x-connect-modal";
@@ -267,7 +265,7 @@ export default function ConnectAppsPage() {
                 </div>
               ) : (
                 <LiquidButton
-                  className="w-full text-black font-bold tracking-wide rounded-xl border-none"
+                  className="w-full text-white font-bold tracking-wide rounded-xl border-none"
                   variant="default"
                   onClick={() => handleConnectClick(app.name)}
                   size="lg"
@@ -278,11 +276,6 @@ export default function ConnectAppsPage() {
             </div>
           );
         })}
-        <div>
-          <h1>Gmail Integration Test</h1>
-          <ConnectGmailButton />
-          <FetchEmailsButton />
-        </div>
       </div>
 
       {/* App Store Modal */}

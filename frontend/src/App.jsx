@@ -25,7 +25,7 @@ import { useAuthStore } from "./store/useAuthStore";
 
 function PrivateLayout() {
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "#0A0A0A" }}>
       <SidebarProvider>
         <AppSidebar />
         <div

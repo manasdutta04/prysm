@@ -64,7 +64,7 @@ export default function CustomDataPage() {
   };
 
   return (
-    <div className="custom-data-page grid">
+    <div className="custom-data-page">
       <div className="content">
         {/* Upload Card */}
         <div
