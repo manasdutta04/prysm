@@ -313,19 +313,18 @@ export default function LandingPage() {
       {/* ───── NAVBAR ───── */}
       <nav className="relative z-20 flex items-center justify-between px-6 py-6 md:px-10 md:py-8 max-w-[1440px] mx-auto w-full">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div
-            className="font-black tracking-tight text-xs md:text-sm px-3 py-1.5 relative shadow-sm"
-            style={{ background: "white", color: "black", borderRadius: "1rem 1rem 1rem 0.2rem" }}
+        <div className="flex items-center gap-3">
+          <img
+            src="/prysm-logo.png"
+            alt="Prysm Logo"
+            className="h-10 w-auto object-contain"
+          />
+          <span
+            className="font-black text-white tracking-tighter text-xl uppercase"
+            style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
           >
             PRYSM
-          </div>
-          <div
-            className="font-black text-xs md:text-sm px-3 py-1.5 rounded-full shadow-sm"
-            style={{ background: "#CCFF00", color: "black", border: "1.5px solid white" }}
-          >
-            AI
-          </div>
+          </span>
         </div>
 
         {/* Desktop nav links */}
@@ -1298,19 +1297,18 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             {/* Brand Column */}
             <div className="space-y-4 md:col-span-2">
-              <div className="flex items-center gap-2">
-                <div
-                  className="font-black tracking-tight text-xs md:text-sm px-3 py-1.5"
-                  style={{ background: "white", color: "black", borderRadius: "1rem 1rem 1rem 0.2rem" }}
+              <div className="flex items-center gap-3">
+                <img
+                  src="/prysm-logo.png"
+                  alt="Prysm Logo"
+                  className="h-10 w-auto object-contain"
+                />
+                <span
+                  className="font-black text-white tracking-tighter text-xl uppercase"
+                  style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
                 >
                   PRYSM
-                </div>
-                <div
-                  className="font-black text-xs md:text-sm px-3 py-1.5 rounded-full"
-                  style={{ background: "#CCFF00", color: "black", border: "1.5px solid white" }}
-                >
-                  AI
-                </div>
+                </span>
               </div>
               <p className="font-mono text-[10px] text-white/40 uppercase tracking-wider max-w-sm leading-relaxed" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
                 BYOK feedback aggregator for product intelligence. Zero middleman markup. 100% data privacy.
