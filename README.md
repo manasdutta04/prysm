@@ -108,6 +108,8 @@ After logging in, users can access all major features through the left-hand navi
 - **Connect Apps**: Integrates Prysm with third-party platforms such as Gmail, Slack, Twitter (X), Facebook, Google Play, and the App Store.
 - **Custom Data**: Allows users to upload manual feedback files in CSV or Excel format.
 - **History**: Provides a chronological record of processed feedback sessions and alerts.
+- **Settings**: Allows users to configure application preferences and manage API keys for LLM integrations.
+- **Account**: Enables users to manage their personal profile and account settings.
 - **Help & Support**: Offers access to FAQs, troubleshooting guides, and support contact details.
 - **Documentation**: Contains system architecture, AI workflow, API integrations, and feature explanations.
 

@@ -54,6 +54,12 @@ Instead of raw comments logs, the **History** tab displays historical logs of co
 * Includes a multi-colored inline sentiment progress bar.
 * Expandable section lists the exact Key Insights and Areas to Improve calculated for that run.
 
+### E. Account Management & Settings
+Allows users to manage their profile data and configure API keys.
+
+### F. Documentation & Support
+Provides access to system architecture details, feature explanations, and help resources.
+
 ---
 
 ## 3. Bring Your Own API Key (BYOK) Specifications

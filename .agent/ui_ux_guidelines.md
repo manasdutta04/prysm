@@ -59,6 +59,10 @@ Maintain the following harmonious colors across all dashboard and application co
     * Background: `rgba(255, 255, 255, 0.03)` with `backdrop-filter: blur(14px)`.
     * Shimmer border: `1px solid rgba(255, 255, 255, 0.1)`.
     * Active state: A gradient background with the Prysm lime brand color (`#CCFF00`), turning text/icons black.
+  * For dashboard widgets and charts, use a complex layered glass effect:
+    * Background: `rgba(255, 255, 255, 0.02)`.
+    * Border: `1px solid rgba(255, 255, 255, 0.11)`.
+    * Shadows: Layered `box-shadow` combining deep dropshadows with bright inner rim lighting.
 * **Hover States**: Cards must scale up slightly and increase border brightness on hover:
   ```css
   .card:hover {

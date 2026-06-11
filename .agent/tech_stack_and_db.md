@@ -22,7 +22,7 @@ prysm/
 ├── frontend/             # Vite React client
 │   ├── src/
 │   ├── components/   # Modals (x-connect, app-sidebar)
-│   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Login, Terms, Privacy
+│   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy
 │   ├── store/        # Zustand stores
 │   └── lib/          # axios.js instance pointing to backend
 ├── backend/              # Express API server
