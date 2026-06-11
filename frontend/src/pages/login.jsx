@@ -55,7 +55,7 @@ export default function LoginPage() {
           />
           <span
             className="font-black text-white tracking-tighter text-xl uppercase"
-            style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
+            style={{ fontFamily: "'Geist', sans-serif" }}
           >
             PRYSM
           </span>

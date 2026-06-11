@@ -60,7 +60,7 @@ function PrivateLayout() {
                 />
                 <span
                   className="font-black text-white tracking-tighter text-sm uppercase"
-                  style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
+                  style={{ fontFamily: "'Geist', sans-serif" }}
                 >
                   PRYSM
                 </span>

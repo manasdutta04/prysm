@@ -321,7 +321,7 @@ export default function LandingPage() {
           />
           <span
             className="font-black text-white tracking-tighter text-xl uppercase"
-            style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
+            style={{ fontFamily: "'Geist', sans-serif" }}
           >
             PRYSM
           </span>
@@ -364,45 +364,45 @@ export default function LandingPage() {
             {/* UNIFY */}
             <div className="w-full flex justify-start pl-[8%] md:pl-[20%] relative z-30">
               <h1
-                className="font-black leading-[0.85] tracking-tighter m-0 p-0 uppercase"
+                className="font-normal leading-[0.85] tracking-tighter m-0 p-0 italic"
                 style={{
-                  fontFamily: '"Arial Black", Impact, sans-serif',
-                  fontSize: "clamp(3.5rem,10vw,130px)",
+                  fontFamily: "'Instrument Serif', serif",
+                  fontSize: "clamp(3.5rem,11vw,140px)",
                   color: "#CCFF00",
                   textShadow: [1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`${n}px ${n}px 0 #1a1a00`).join(", "),
                 }}
               >
-                # UNIFY
+                # Unify
               </h1>
             </div>
 
             {/* FEEDBACK */}
             <div className="w-full flex justify-center relative z-20">
               <h1
-                className="font-black leading-[0.85] tracking-tighter m-0 p-0 uppercase"
+                className="font-normal leading-[0.85] tracking-tighter m-0 p-0 italic"
                 style={{
-                  fontFamily: '"Arial Black", Impact, sans-serif',
-                  fontSize: "clamp(4rem,13vw,190px)",
+                  fontFamily: "'Instrument Serif', serif",
+                  fontSize: "clamp(4rem,14vw,200px)",
                   color: "#F5F5F0",
                   textShadow: [1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`${n}px ${n}px 0 #1a1a1a`).join(", "),
                 }}
               >
-                FEEDBACK
+                Feedback
               </h1>
             </div>
 
             {/* INSIGHTS */}
             <div className="w-full flex justify-end pr-[8%] md:pr-[18%] relative z-10">
               <h1
-                className="font-black leading-[0.85] tracking-tighter m-0 p-0 uppercase"
+                className="font-normal leading-[0.85] tracking-tighter m-0 p-0 italic"
                 style={{
-                  fontFamily: '"Arial Black", Impact, sans-serif',
-                  fontSize: "clamp(3.5rem,10vw,130px)",
+                  fontFamily: "'Instrument Serif', serif",
+                  fontSize: "clamp(3.5rem,11vw,140px)",
                   color: "#F5F5F0",
                   textShadow: [1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`${n}px ${n}px 0 #1a1a1a`).join(", "),
                 }}
               >
-                INSIGHTS
+                Insights
               </h1>
             </div>
           </div>
@@ -484,7 +484,7 @@ export default function LandingPage() {
               className="rounded-[2rem] p-8 flex flex-col items-center text-center relative border transition-all duration-300 hover:border-[#CCFF00]/40 group"
               style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.08)", minHeight: "16rem" }}
             >
-              <h3 className="text-xl md:text-2xl uppercase leading-tight mb-2 font-black tracking-tight" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+              <h3 className="text-xl md:text-2xl uppercase leading-tight mb-2 font-black tracking-tight" style={{ fontFamily: "'Geist', sans-serif" }}>
                 {card.label}
               </h3>
               <p className="text-[10px] md:text-xs font-mono mb-auto uppercase tracking-wider text-white/50" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
@@ -573,15 +573,15 @@ export default function LandingPage() {
               01 // INTERACTIVE WORKFLOW
             </p>
             <h2
-              className="font-black leading-none tracking-tighter uppercase mb-4"
+              className="leading-none tracking-tighter italic font-normal mb-4"
               style={{
-                fontFamily: '"Arial Black", Impact, sans-serif',
-                fontSize: "clamp(2rem, 5vw, 4.5rem)",
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(2.5rem, 6vw, 5.5rem)",
                 color: "#F5F5F0",
                 textShadow: "3px 3px 0 #1a1a1a, 6px 6px 0 #000000",
               }}
             >
-              HOW IT WORKS
+              How it works
             </h2>
             <p className="font-mono text-xs text-white/50 max-w-xl leading-relaxed uppercase" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
               Select a channel to see how Prysm gathers feedback, parses sentiments, and creates summaries dynamically.
@@ -737,15 +737,15 @@ export default function LandingPage() {
               02 // ARCHITECTURE PIPELINE
             </p>
             <h2
-              className="font-black leading-none tracking-tighter uppercase mb-4"
+              className="leading-none tracking-tighter italic font-normal mb-4"
               style={{
-                fontFamily: '"Arial Black", Impact, sans-serif',
-                fontSize: "clamp(2rem, 5vw, 4.5rem)",
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(2.5rem, 6vw, 5.5rem)",
                 color: "#F5F5F0",
                 textShadow: "3px 3px 0 #1a1a1a, 6px 6px 0 #000000",
               }}
             >
-              CONNECTIVITY MAP
+              Connectivity map
             </h2>
             <p className="font-mono text-xs text-white/50 max-w-xl leading-relaxed uppercase" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
               See how data streams from diverse platforms, converges in Prysm aggregator, and branches out to your preferred LLMs.
@@ -1003,15 +1003,15 @@ export default function LandingPage() {
               03 // CAPABILITIES ENGINE
             </p>
             <h2
-              className="font-black leading-none tracking-tighter uppercase mb-4"
+              className="leading-none tracking-tighter italic font-normal mb-4"
               style={{
-                fontFamily: '"Arial Black", Impact, sans-serif',
-                fontSize: "clamp(2rem, 5vw, 4.5rem)",
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(2.5rem, 6vw, 5.5rem)",
                 color: "#F5F5F0",
                 textShadow: "3px 3px 0 #1a1a1a, 6px 6px 0 #000000",
               }}
             >
-              CORE CAPABILITIES
+              Core capabilities
             </h2>
             <p className="font-mono text-xs text-white/50 max-w-xl leading-relaxed uppercase" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
               Privacy-first analytics with modern dashboard panels, built for professional teams.
@@ -1030,7 +1030,7 @@ export default function LandingPage() {
                   SYS_OK
                 </div>
               </div>
-              <h3 className="text-xl font-black uppercase mb-3" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+              <h3 className="text-xl font-black uppercase mb-3" style={{ fontFamily: "'Geist', sans-serif" }}>
                 Multi-Source Ingestion
               </h3>
               <p className="font-mono text-xs text-white/60 leading-relaxed uppercase" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
@@ -1048,7 +1048,7 @@ export default function LandingPage() {
                   SYS_OK
                 </div>
               </div>
-              <h3 className="text-xl font-black uppercase mb-3" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+              <h3 className="text-xl font-black uppercase mb-3" style={{ fontFamily: "'Geist', sans-serif" }}>
                 BYOK Model Economics
               </h3>
               <p className="font-mono text-xs text-white/60 leading-relaxed uppercase" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
@@ -1066,7 +1066,7 @@ export default function LandingPage() {
                   SYS_OK
                 </div>
               </div>
-              <h3 className="text-xl font-black uppercase mb-3" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+              <h3 className="text-xl font-black uppercase mb-3" style={{ fontFamily: "'Geist', sans-serif" }}>
                 Sentiment Parsing
               </h3>
               <p className="font-mono text-xs text-white/60 leading-relaxed uppercase" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
@@ -1084,7 +1084,7 @@ export default function LandingPage() {
                   SYS_OK
                 </div>
               </div>
-              <h3 className="text-xl font-black uppercase mb-3" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+              <h3 className="text-xl font-black uppercase mb-3" style={{ fontFamily: "'Geist', sans-serif" }}>
                 Secure History Storage
               </h3>
               <p className="font-mono text-xs text-white/60 leading-relaxed uppercase" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
@@ -1111,15 +1111,15 @@ export default function LandingPage() {
               04 // ECONOMICS & Q&A
             </p>
             <h2
-              className="font-black leading-none tracking-tighter uppercase mb-4"
+              className="leading-none tracking-tighter italic font-normal mb-4"
               style={{
-                fontFamily: '"Arial Black", Impact, sans-serif',
-                fontSize: "clamp(2rem, 5vw, 4.5rem)",
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(2.5rem, 6vw, 5.5rem)",
                 color: "#F5F5F0",
                 textShadow: "3px 3px 0 #1a1a1a, 6px 6px 0 #000000",
               }}
             >
-              PRICING & FAQ
+              Pricing & FAQ
             </h2>
           </div>
 
@@ -1141,7 +1141,7 @@ export default function LandingPage() {
                 {/* Receipt Header */}
                 <div className="border-b border-dashed border-white/20 pb-6 mb-6">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="font-black text-xl tracking-tight uppercase" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                    <span className="font-black text-xl tracking-tight uppercase" style={{ fontFamily: "'Geist', sans-serif" }}>
                       PRYSM AI
                     </span>
                     <span className="font-mono text-[10px] text-[#CCFF00]" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
@@ -1200,10 +1200,10 @@ export default function LandingPage() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-black text-sm uppercase" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                    <span className="font-black text-sm uppercase" style={{ fontFamily: "'Geist', sans-serif" }}>
                       NET COST:
                     </span>
-                    <span className="font-black text-2xl text-[#CCFF00]" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                    <span className="font-black text-2xl text-[#CCFF00]" style={{ fontFamily: "'Geist', sans-serif" }}>
                       ₹0.00
                     </span>
                   </div>
@@ -1263,7 +1263,7 @@ export default function LandingPage() {
                       onClick={() => setOpenFaq(isOpen ? null : index)}
                       className="w-full text-left p-6 flex justify-between items-center gap-4 cursor-pointer bg-transparent border-none"
                     >
-                      <span className="font-black text-sm uppercase md:text-base text-white" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                      <span className="font-black text-sm uppercase md:text-base text-white" style={{ fontFamily: "'Geist', sans-serif" }}>
                         {item.q}
                       </span>
                       <span className="font-mono text-lg text-[#CCFF00]" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
@@ -1305,7 +1305,7 @@ export default function LandingPage() {
                 />
                 <span
                   className="font-black text-white tracking-tighter text-xl uppercase"
-                  style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
+                  style={{ fontFamily: "'Geist', sans-serif" }}
                 >
                   PRYSM
                 </span>
@@ -1317,7 +1317,7 @@ export default function LandingPage() {
 
             {/* Product Links */}
             <div className="space-y-3">
-              <h4 className="font-black text-xs uppercase text-white/80" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+              <h4 className="font-black text-xs uppercase text-white/80" style={{ fontFamily: "'Geist', sans-serif" }}>
                 PRODUCT
               </h4>
               <ul className="space-y-2">
@@ -1340,7 +1340,7 @@ export default function LandingPage() {
 
             {/* Legal & Docs */}
             <div className="space-y-3">
-              <h4 className="font-black text-xs uppercase text-white/80" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+              <h4 className="font-black text-xs uppercase text-white/80" style={{ fontFamily: "'Geist', sans-serif" }}>
                 LEGAL & HELP
               </h4>
               <ul className="space-y-2">
