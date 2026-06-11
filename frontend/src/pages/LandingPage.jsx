@@ -336,10 +336,17 @@ export default function LandingPage() {
                 const id = item.toLowerCase().replace(/ /g, "-").replace("&", "and");
                 document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="px-4 py-1.5 rounded-full border text-white text-xs font-semibold hover:bg-white/10 transition-colors bg-transparent cursor-pointer"
-              style={{ borderColor: "rgba(255,255,255,0.3)" }}
+              className="relative px-4 py-1.5 rounded-full text-white text-xs font-semibold cursor-pointer transition-all duration-300 hover:scale-105 group overflow-hidden"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                boxShadow: "0 0 6px rgba(0,0,0,0.08), inset 1px 1px 1px -0.5px rgba(255,255,255,0.18), inset -1px -1px 1px -0.5px rgba(255,255,255,0.08), inset 0 0 6px 4px rgba(255,255,255,0.04), 0 0 10px rgba(255,255,255,0.04)",
+              }}
             >
-              {item}
+              <span className="relative z-10">{item}</span>
+              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%)" }} />
             </button>
           ))}
         </div>
@@ -347,10 +354,17 @@ export default function LandingPage() {
         {/* CTA */}
         <Link to="/login">
           <button
-            className="px-6 py-2 rounded-full border text-white text-xs md:text-sm font-semibold hover:bg-white hover:text-black transition-colors"
-            style={{ borderColor: "white" }}
+            className="relative px-6 py-2 rounded-full text-white text-xs md:text-sm font-semibold cursor-pointer transition-all duration-300 hover:scale-105 group overflow-hidden"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              border: "1px solid rgba(255,255,255,0.22)",
+              boxShadow: "0 0 8px rgba(0,0,0,0.1), inset 1.5px 1.5px 1px -1px rgba(255,255,255,0.55), inset -1px -1px 1px -0.5px rgba(255,255,255,0.15), inset 0 0 8px 6px rgba(255,255,255,0.04), 0 0 15px rgba(255,255,255,0.06)",
+            }}
           >
-            Log In
+            <span className="relative z-10">Log In</span>
+            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 50%)" }} />
           </button>
         </Link>
       </nav>
@@ -549,10 +563,19 @@ export default function LandingPage() {
         <div className="flex justify-center mt-12">
           <button
             onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-            className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest transition-opacity hover:opacity-60 text-white/50 bg-transparent border-none cursor-pointer"
-            style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+            className="relative flex items-center gap-2 font-mono text-xs uppercase tracking-widest px-6 py-3 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 group overflow-hidden"
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              color: "rgba(255,255,255,0.7)",
+              background: "rgba(255,255,255,0.03)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+              border: "1px solid rgba(255,255,255,0.10)",
+              boxShadow: "0 0 6px rgba(0,0,0,0.06), inset 1px 1px 1px -0.5px rgba(255,255,255,0.20), inset -1px -1px 1px -0.5px rgba(255,255,255,0.06), inset 0 0 6px 4px rgba(255,255,255,0.02), 0 0 12px rgba(204,255,0,0.04)",
+            }}
           >
-            Try The Interactive ↓
+            <span className="relative z-10">Try The Interactive ↓</span>
+            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(135deg, rgba(204,255,0,0.06) 0%, transparent 60%)" }} />
           </button>
         </div>
       </section>
@@ -646,16 +669,27 @@ export default function LandingPage() {
                     <button
                       key={key}
                       onClick={() => setActiveTab(key)}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-full border text-xs font-mono uppercase tracking-wider transition-all duration-300 cursor-pointer bg-transparent"
+                      className="relative flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all duration-300 cursor-pointer hover:scale-105 group overflow-hidden"
                       style={{
-                        background: active ? "#CCFF00" : "rgba(255,255,255,0.02)",
-                        color: active ? "black" : "white",
-                        borderColor: active ? "#CCFF00" : "rgba(255,255,255,0.1)",
-                        boxShadow: active ? "0 0 15px rgba(204,255,0,0.2)" : "none"
+                        background: active
+                          ? "linear-gradient(135deg, rgba(204,255,0,0.85) 0%, rgba(180,240,0,0.95) 100%)"
+                          : "rgba(255,255,255,0.03)",
+                        backdropFilter: active ? "none" : "blur(14px)",
+                        WebkitBackdropFilter: active ? "none" : "blur(14px)",
+                        color: active ? "black" : "rgba(255,255,255,0.8)",
+                        border: active
+                          ? "1px solid rgba(204,255,0,0.9)"
+                          : "1px solid rgba(255,255,255,0.10)",
+                        boxShadow: active
+                          ? "0 0 20px rgba(204,255,0,0.25), inset 1.5px 1.5px 1px -1px rgba(255,255,255,0.6), inset -1px -1px 1px -0.5px rgba(180,220,0,0.4)"
+                          : "0 0 6px rgba(0,0,0,0.06), inset 1px 1px 1px -0.5px rgba(255,255,255,0.18), inset -1px -1px 1px -0.5px rgba(255,255,255,0.06), inset 0 0 6px 4px rgba(255,255,255,0.02)",
+                        fontWeight: active ? "700" : "500",
                       }}
                     >
-                      {ch.icon}
-                      <span>{ch.name}</span>
+                      <span className="relative z-10 flex items-center gap-2">{ch.icon}<span>{ch.name}</span></span>
+                      {!active && (
+                        <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%)" }} />
+                      )}
                     </button>
                   );
                 })}
