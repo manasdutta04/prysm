@@ -862,31 +862,49 @@ export default function LandingPage() {
                 {/* LEFT COLUMN: SOURCES */}
                 <foreignObject x="10" y="30" width="180" height="60">
                   <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#CCFF00] text-black font-black text-[10px]">A</div>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                      <img src="/appstore.svg" className="w-full h-full object-contain brightness-0 invert" alt="App Store" />
+                    </div>
                     <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">App Store Reviews</div>
                   </div>
                 </foreignObject>
                 <foreignObject x="10" y="120" width="180" height="60">
                   <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#CCFF00] text-black font-black text-[10px]">P</div>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                      <img src="/playstore.svg" className="w-full h-full object-contain" alt="Play Store" />
+                    </div>
                     <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Play Store Reviews</div>
                   </div>
                 </foreignObject>
                 <foreignObject x="10" y="210" width="180" height="60">
                   <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#CCFF00] text-black font-black text-[10px]">X</div>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                      <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current text-white" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                    </div>
                     <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">X / Nitter RSS</div>
                   </div>
                 </foreignObject>
                 <foreignObject x="10" y="300" width="180" height="60">
                   <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#CCFF00] text-black font-black text-[10px]">M</div>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                      <img src="/gmail.svg" className="w-full h-full object-contain" alt="Gmail" />
+                    </div>
                     <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Gmail Feed</div>
                   </div>
                 </foreignObject>
                 <foreignObject x="10" y="390" width="180" height="60">
                   <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#CCFF00] text-black font-black text-[10px]">C</div>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                      <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current text-white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <line x1="3" y1="9" x2="21" y2="9" />
+                        <line x1="3" y1="15" x2="21" y2="15" />
+                        <line x1="9" y1="9" x2="9" y2="21" />
+                        <line x1="15" y1="9" x2="15" y2="21" />
+                      </svg>
+                    </div>
                     <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Custom CSV Data</div>
                   </div>
                 </foreignObject>
@@ -921,7 +939,9 @@ export default function LandingPage() {
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">G</div>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                        <img src="/gemini.svg" className="w-full h-full object-contain brightness-0 invert" alt="Gemini" />
+                      </div>
                       <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Gemini API</div>
                     </div>
                     {selectedLLM === "gemini" && (
@@ -943,7 +963,9 @@ export default function LandingPage() {
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">O</div>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                        <img src="/openai.svg" className="w-full h-full object-contain brightness-0 invert" alt="OpenAI" />
+                      </div>
                       <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">OpenAI API</div>
                     </div>
                     {selectedLLM === "openai" && (
@@ -965,7 +987,9 @@ export default function LandingPage() {
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">C</div>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                        <img src="/claude.svg" className="w-full h-full object-contain brightness-0 invert" alt="Claude" />
+                      </div>
                       <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Claude API</div>
                     </div>
                     {selectedLLM === "claude" && (
@@ -987,7 +1011,9 @@ export default function LandingPage() {
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">R</div>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                        <img src="/groq.svg" className="w-full h-full object-contain brightness-0 invert" alt="Groq" />
+                      </div>
                       <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Groq API</div>
                     </div>
                     {selectedLLM === "groq" && (
@@ -1009,7 +1035,9 @@ export default function LandingPage() {
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">L</div>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/5 border border-white/10 p-1">
+                        <img src="/ollama.svg" className="w-full h-full object-contain brightness-0 invert" alt="Ollama" />
+                      </div>
                       <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Ollama Local</div>
                     </div>
                     {selectedLLM === "ollama" && (
