@@ -417,7 +417,7 @@ export default function LandingPage() {
               color="#CCFF00"
               rotate={-11}
               bottom="5%"
-              left="2%"
+              left="-6%"
               delay={0}
             />
 
@@ -428,22 +428,22 @@ export default function LandingPage() {
               color="#60A5FA"
               rotate={12}
               top="10%"
-              right="2%"
+              right="-8%"
               delay={1.2}
             />
 
             {/* Arrow left */}
-            <div className="absolute bottom-[0%] left-[0%] md:left-[8%] w-24 h-24 md:w-32 md:h-32 z-20">
+            <div className="absolute bottom-[0%] left-[0%] md:left-[33%] w-24 h-24 md:w-32 md:h-32 z-20">
               <ArrowGreenLeft />
             </div>
 
             {/* Arrow right */}
-            <div className="absolute top-[5%] right-[0%] md:right-[8%] w-24 h-24 md:w-32 md:h-32 z-20">
+            <div className="absolute top-[5%] right-[0%] md:right-[18%] w-24 h-24 md:w-32 md:h-32 z-20">
               <ArrowGreenRight />
             </div>
 
             {/* Rotating badge — bottom right */}
-            <div className="absolute bottom-[-8%] right-[0%] md:right-[12%] z-40 pointer-events-auto">
+            <div className="absolute bottom-[-8%] right-[0%] md:right-[3%] z-40 pointer-events-auto">
               <Link to="/login">
                 <CircularBadge />
               </Link>
