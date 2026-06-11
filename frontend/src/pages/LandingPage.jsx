@@ -688,7 +688,32 @@ export default function LandingPage() {
                         fontWeight: active ? "700" : "500",
                       }}
                     >
-                      <span className="relative z-10 flex items-center gap-2">{ch.icon}<span>{ch.name}</span></span>
+                      <span className="relative z-10 flex items-center gap-2">
+                        {key === "x" && (
+                          <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 fill-current transition-all duration-300 ${active ? "text-black" : "text-white/80"}`} xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                          </svg>
+                        )}
+                        {key === "appstore" && (
+                          <img src="/appstore.svg" className={`w-3.5 h-3.5 object-contain transition-all duration-300 ${active ? "brightness-0" : "brightness-0 invert opacity-80"}`} alt="App Store" />
+                        )}
+                        {key === "playstore" && (
+                          <img src="/playstore.svg" className={`w-3.5 h-3.5 object-contain transition-all duration-300 ${active ? "brightness-0" : "brightness-0 invert opacity-80"}`} alt="Play Store" />
+                        )}
+                        {key === "gmail" && (
+                          <img src="/gmail.svg" className={`w-3.5 h-3.5 object-contain transition-all duration-300 ${active ? "brightness-0" : "brightness-0 invert opacity-80"}`} alt="Gmail" />
+                        )}
+                        {key === "csv" && (
+                          <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 fill-none stroke-current transition-all duration-300 ${active ? "text-black" : "text-white/80"}`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <line x1="3" y1="9" x2="21" y2="9" />
+                            <line x1="3" y1="15" x2="21" y2="15" />
+                            <line x1="9" y1="9" x2="9" y2="21" />
+                            <line x1="15" y1="9" x2="15" y2="21" />
+                          </svg>
+                        )}
+                        <span>{ch.name}</span>
+                      </span>
                       {!active && (
                         <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%)" }} />
                       )}
