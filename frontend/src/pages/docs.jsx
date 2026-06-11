@@ -1,4 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 import "./docs.css";
 import documentationContent from "./components2/docContent.js";
 import { Search, FileText, CheckCircle } from "lucide-react";
@@ -170,6 +172,28 @@ export default function DocsPage() {
 
   return (
     <div className="docs-page">
+      {/* Header/Navbar matching landing page style */}
+      <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-6 md:px-10 md:py-8 max-w-[1440px] mx-auto w-full">
+        <Link to="/" className="flex items-center gap-3 cursor-pointer">
+          <img
+            src="/prysm-logo.png"
+            alt="Prysm Logo"
+            className="h-10 w-auto object-contain"
+          />
+          <span
+            className="font-normal text-white tracking-tight text-3xl italic"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            Prysm
+          </span>
+        </Link>
+        <Link to="/">
+          <LiquidButton size="sm" className="text-white font-bold tracking-wide">
+            Back to Home
+          </LiquidButton>
+        </Link>
+      </header>
+
       <div className="docs-container">
         
         {/* Sidebar Navigation */}

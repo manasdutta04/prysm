@@ -3,9 +3,30 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
   box-sizing: border-box;
-  padding: 2rem;
+  padding: 6rem 2rem 2rem 2rem;
+  background: #0A0A0A;
+  position: relative;
+  overflow-x: hidden;
+  font-family: 'Geist', sans-serif;
+}
+
+/* Background decoration */
+.docs-page::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: rgba(204, 255, 0, 0.03);
+  border-radius: 9999px;
+  filter: blur(150px);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* ===== Layout Structure ===== */
@@ -19,41 +40,44 @@
   margin: 0 auto;
   flex: 1;
   min-height: 0;
+  position: relative;
+  z-index: 10;
 }
 
 /* ===== Sidebar Index Container ===== */
 .docs-index {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.01);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   padding: 1.5rem;
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   position: sticky;
-  top: 2rem;
-  max-height: calc(100vh - 120px);
+  top: 7rem;
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* ===== Sidebar Search Box ===== */
 .docs-search-box {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0.75rem;
   padding: 0.6rem 0.85rem;
   gap: 0.5rem;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .docs-search-box:focus-within {
-  border-color: rgba(59, 130, 246, 0.5);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  border-color: #CCFF00;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 0 15px rgba(204, 255, 0, 0.15);
 }
 
 .docs-search-box .search-icon {
@@ -76,13 +100,14 @@
 
 /* ===== Sidebar Title and List ===== */
 .docs-index-title {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   margin-top: 0.25rem;
   padding-left: 0.5rem;
+  font-family: 'IBM Plex Mono', monospace;
 }
 
 .docs-index-list {
@@ -98,12 +123,12 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
   padding: 0.6rem 0.85rem;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
 }
 
@@ -113,11 +138,10 @@
 }
 
 .docs-index-list li.active {
-  color: #60a5fa;
-  background: rgba(59, 130, 246, 0.1);
-  font-weight: 600;
-  box-shadow: inset 3px 0 0 #3b82f6;
-  padding-left: calc(0.85rem - 3px);
+  color: #000000;
+  background: #CCFF00;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(204, 255, 0, 0.2);
 }
 
 .docs-index-list li.no-results {
@@ -134,21 +158,22 @@
 }
 
 li.active .doc-sidebar-icon {
-  color: #60a5fa;
+  color: #000000;
   opacity: 1;
 }
 
 /* ===== Content Pane (Scrollable) ===== */
 .page-content.scrollable {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.01);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   padding: 2.5rem;
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   overflow-y: auto;
   scroll-behavior: smooth;
-  max-height: calc(100vh - 120px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  max-height: calc(100vh - 160px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
 }
 
@@ -174,25 +199,26 @@ li.active .doc-sidebar-icon {
 }
 
 .doc-subheading {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: #ffffff;
   margin: 1.75rem 0 0.75rem 0;
 }
 
 .doc-requirement-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #60a5fa;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #CCFF00;
   margin: 1.5rem 0 0.75rem 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.5px;
+  font-family: 'IBM Plex Mono', monospace;
 }
 
 .doc-section-content p {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.65);
   margin: 0 0 1.25rem 0;
 }
 
@@ -205,32 +231,33 @@ li.active .doc-sidebar-icon {
 }
 
 .doc-spec-card {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.01);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 0.75rem;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .doc-spec-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-2px);
 }
 
 .spec-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  font-family: 'IBM Plex Mono', monospace;
 }
 
 .spec-value {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: #ffffff;
 }
@@ -246,20 +273,22 @@ li.active .doc-sidebar-icon {
 }
 
 .doc-list li {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.65);
   position: relative;
   padding-left: 1.5rem;
 }
 
 .doc-list li::before {
-  content: "•";
-  color: #3b82f6;
-  font-size: 1.2rem;
+  content: "//";
+  color: #CCFF00;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
   position: absolute;
-  left: 0.25rem;
-  top: -0.1rem;
+  left: 0;
+  top: 0.05rem;
 }
 
 .list-bold-label {
@@ -267,13 +296,13 @@ li.active .doc-sidebar-icon {
 }
 
 .list-text-val {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.65);
 }
 
-/* ===== Callouts (Violet-accented blockquote style) ===== */
+/* ===== Callouts (Lime-accented blockquote style) ===== */
 .doc-callout {
-  background: rgba(139, 92, 246, 0.05);
-  border-left: 3px solid #8b5cf6;
+  background: rgba(204, 255, 0, 0.02);
+  border-left: 2px solid #CCFF00;
   border-radius: 0 0.75rem 0.75rem 0;
   padding: 1.25rem;
   margin: 1.5rem 0;
@@ -283,14 +312,15 @@ li.active .doc-sidebar-icon {
 }
 
 .callout-badge {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  color: #a78bfa;
-  letter-spacing: 1px;
+  color: #CCFF00;
+  letter-spacing: 1.5px;
+  font-family: 'IBM Plex Mono', monospace;
 }
 
 .callout-text {
-  font-size: 0.925rem !important;
+  font-size: 0.875rem !important;
   line-height: 1.6 !important;
   color: rgba(255, 255, 255, 0.8) !important;
   margin: 0 !important;
@@ -302,14 +332,14 @@ li.active .doc-sidebar-icon {
   width: 100%;
   border-collapse: collapse;
   margin: 1.5rem 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   border-radius: 0.75rem;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .doc-section-content th {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.02);
   color: #ffffff;
   font-weight: 600;
   padding: 0.85rem 1rem;
@@ -319,7 +349,7 @@ li.active .doc-sidebar-icon {
 
 .doc-section-content td {
   padding: 0.85rem 1rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.65);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -328,7 +358,7 @@ li.active .doc-sidebar-icon {
 }
 
 .doc-section-content tr:hover {
-  background: rgba(255, 255, 255, 0.015);
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .doc-section-content tr:last-child td {
@@ -371,12 +401,12 @@ li.active .doc-sidebar-icon {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .feedback-icon {
-  color: #10b981;
+  color: #CCFF00;
 }
 
 .feedback-buttons {
@@ -386,35 +416,37 @@ li.active .doc-sidebar-icon {
 
 .feedback-btn {
   padding: 0.4rem 1.25rem;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 700;
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'IBM Plex Mono', monospace;
+  text-transform: uppercase;
 }
 
 .feedback-btn.yes {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  color: #34d399;
+  background: rgba(204, 255, 0, 0.1);
+  border: 1px solid rgba(204, 255, 0, 0.2);
+  color: #CCFF00;
 }
 
 .feedback-btn.yes:hover {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(204, 255, 0, 0.2);
+  border-color: rgba(204, 255, 0, 0.4);
   transform: translateY(-1px);
 }
 
 .feedback-btn.no {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #f87171;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 
 .feedback-btn.no:hover {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-1px);
 }
 
@@ -436,7 +468,7 @@ li.active .doc-sidebar-icon {
 
 @media (max-width: 600px) {
   .docs-page {
-    padding: 1rem;
+    padding: 6rem 1rem 1rem 1rem;
   }
   .page-content.scrollable {
     padding: 1.5rem;
