@@ -320,10 +320,10 @@ export default function LandingPage() {
             className="h-10 w-auto object-contain"
           />
           <span
-            className="font-black text-white tracking-tighter text-xl uppercase"
-            style={{ fontFamily: "'Geist', sans-serif" }}
+            className="font-normal text-white tracking-tight text-3xl italic"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
           >
-            PRYSM
+            Prysm
           </span>
         </div>
 
@@ -1304,10 +1304,10 @@ export default function LandingPage() {
                   className="h-10 w-auto object-contain"
                 />
                 <span
-                  className="font-black text-white tracking-tighter text-xl uppercase"
-                  style={{ fontFamily: "'Geist', sans-serif" }}
+                  className="font-normal text-white tracking-tight text-3xl italic"
+                  style={{ fontFamily: "'Instrument Serif', serif" }}
                 >
-                  PRYSM
+                  Prysm
                 </span>
               </div>
               <p className="font-mono text-[10px] text-white/40 uppercase tracking-wider max-w-sm leading-relaxed" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
