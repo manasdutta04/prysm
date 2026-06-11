@@ -34,7 +34,7 @@ graph TD
         Headers --> Router[Dashboard Router: POST /fetch-and-analyze]
         Router --> Controller[Dashboard Controller]
         
-        Controller --> Scrapers[Scraper Engines: X Nitter RSS / App Store Pages]
+        Controller --> Scrapers[Scraper Engines: X Nitter RSS / App Store / Play Store Pages]
         Scrapers --> DBStore[Save Raw Feedbacks to MongoDB]
         
         Controller --> Query[Query DB: Load Feedbacks in Date Range]
