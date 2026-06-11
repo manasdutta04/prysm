@@ -256,6 +256,17 @@ export default function LandingPage() {
   const [selectedLLM, setSelectedLLM] = useState("gemini");
   const [openFaq, setOpenFaq] = useState(null);
 
+  React.useEffect(() => {
+    const providers = ["gemini", "openai", "claude", "groq", "ollama"];
+    const interval = setInterval(() => {
+      setSelectedLLM((prev) => {
+        const nextIndex = (providers.indexOf(prev) + 1) % providers.length;
+        return providers[nextIndex];
+      });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [selectedLLM]);
+
   const getLLMPathOut = (type) => {
     switch (type) {
       case "gemini": return "M 490,215 C 540,215 540,55 610,55";
