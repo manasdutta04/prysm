@@ -11,10 +11,11 @@ import axiosInstance from "../lib/axios";
 import {
   RefreshCw,
   Download,
-  List,
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
+  Sparkles,
+  Smile,
+  Frown,
+  Activity,
+  Layers,
   CheckCircle2,
   XCircle,
   ArrowUp,
@@ -202,13 +203,8 @@ export default function DashboardPage() {
         {/* Main Summary Widget */}
         <div className="dashboard-summary-widget">
           <div className="widget-header">
-            <List className="widget-icon" />
-            <div className="widget-title-section">
-              <h3 className="widget-title">Summary</h3>
-              <p className="widget-subtitle">
-                Shows things to improve and overall feedback insights
-              </p>
-            </div>
+            <Sparkles className="widget-icon neutral" size={20} />
+            <h3 className="widget-title">AI Summary</h3>
           </div>
 
           {isLoading ? (
@@ -387,13 +383,8 @@ export default function DashboardPage() {
         {/* Positive Points Widget */}
         <div className="dashboard-widget-card">
           <div className="widget-card-header">
-            <div className="widget-card-icon positive">
-              <TrendingUp />
-            </div>
-            <div>
-              <h4 className="widget-card-title">Positive Points</h4>
-              <p className="widget-card-subtitle">as per feedback</p>
-            </div>
+            <Smile className="widget-icon positive" size={20} />
+            <h4 className="widget-card-title">What's Working</h4>
           </div>
           {isLoading ? (
             <SkeletonLoader className="card-skeleton" />
@@ -421,13 +412,8 @@ export default function DashboardPage() {
         {/* Negative Points Widget */}
         <div className="dashboard-widget-card">
           <div className="widget-card-header">
-            <div className="widget-card-icon negative">
-              <TrendingDown />
-            </div>
-            <div>
-              <h4 className="widget-card-title">Negative Points</h4>
-              <p className="widget-card-subtitle">as per feedback</p>
-            </div>
+            <Frown className="widget-icon negative" size={20} />
+            <h4 className="widget-card-title">Needs Attention</h4>
           </div>
           {isLoading ? (
             <SkeletonLoader className="card-skeleton" />
@@ -455,15 +441,8 @@ export default function DashboardPage() {
         {/* Metrics Widget */}
         <div className="dashboard-widget-card">
           <div className="widget-card-header">
-            <div className="widget-card-icon metrics">
-              <BarChart3 />
-            </div>
-            <div>
-              <h4 className="widget-card-title">Improvement Metrics</h4>
-              <p className="widget-card-subtitle">
-                metrics to visualize improvement from the last time
-              </p>
-            </div>
+            <Activity className="widget-icon metrics" size={20} />
+            <h4 className="widget-card-title">Performance Metrics</h4>
           </div>
           {isLoading ? (
             <SkeletonLoader className="card-skeleton" />
@@ -598,11 +577,8 @@ export default function DashboardPage() {
       {/* Feedback Sources Line Chart */}
       <div className="feedback-sources-chart">
         <div className="chart-header">
-          <BarChart3 className="chart-icon" />
-          <div>
-            <h3 className="chart-title">Feedback Source Comparison</h3>
-            <p className="chart-subtitle">Monthly feedback volume by source</p>
-          </div>
+          <Layers className="widget-icon neutral" size={20} />
+          <h3 className="chart-title">Source Breakdown</h3>
         </div>
         {isLoading ? (
           <SkeletonLoader className="chart-skeleton" />
