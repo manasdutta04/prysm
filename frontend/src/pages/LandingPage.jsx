@@ -1,294 +1,375 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "motion/react";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
-const workflowSteps = [
-  { label: "Ingestion", detail: "Capture feedback from sources like Gmail, X, App Store and CSV." },
-  { label: "Storage", detail: "Organize raw feedback into searchable collections." },
-  { label: "AI Processing", detail: "Run your own LLM key for secure sentiment and insights." },
-  { label: "Dashboard", detail: "Monitor metrics, history, and growth trends in one view." },
-];
+/* ─── Hand-drawn SVG accents ─── */
+const ArrowGreenLeft = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full stroke-current overflow-visible" style={{ color: "#CCFF00" }} fill="none" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10,90 C 10,40 40,20 60,50 C 70,65 80,75 95,70" />
+    <path d="M80,55 L95,70 L85,85" />
+  </svg>
+);
 
-const feedbackTabs = [
-  {
-    name: "Gmail",
-    subtitle: "Email feedback captured via secure OAuth sync.",
-    cards: [
-      { title: "Billing issue", message: "Customer reports unexpected invoice charge.", sentiment: "Neutral" },
-      { title: "Feature request", message: "Needs better export options for reports.", sentiment: "Positive" },
-    ],
-    summary: "AI distills email threads into urgent actions and sentiment snapshots." 
-  },
-  {
-    name: "Twitter",
-    subtitle: "Public product feedback from X Nitter feeds.",
-    cards: [
-      { title: "UX friction", message: "App feels slow after the latest update.", sentiment: "Negative" },
-      { title: "New praise", message: "Loving the new onboarding flow — very smooth.", sentiment: "Positive" },
-    ],
-    summary: "Social insight cards highlight trending customer pain points instantly." 
-  },
-  {
-    name: "App Store",
-    subtitle: "Review scraping across App Store and Play Store.",
-    cards: [
-      { title: "Crash report", message: "App crashes when opening analytics view.", sentiment: "Negative" },
-      { title: "Feature love", message: "App Store review says onboarding is delightful.", sentiment: "Positive" },
-    ],
-    summary: "Review ingestion converts raw ratings into priority insights." 
-  },
-];
+const ArrowGreenRight = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full stroke-current overflow-visible" style={{ color: "#CCFF00" }} fill="none" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M90,10 C 80,60 60,80 40,60 C 20,40 40,20 60,30 C 80,40 70,70 50,80" />
+    <path d="M65,75 L50,80 L55,65" />
+  </svg>
+);
 
-const features = [
-  {
-    title: "Multi-Channel Aggregation",
-    description: "Sync App Store, Play Store, X Nitter, Gmail, and CSV for a unified view.",
-  },
-  {
-    title: "Bring Your Own Key (BYOK)",
-    description: "Privacy-first AI analysis that uses your own LLM provider and token costs only.",
-  },
-  {
-    title: "Insight History Logs",
-    description: "Track every analysis run over time and compare evolving customer sentiment.",
-  },
-  {
-    title: "Enterprise Analytics",
-    description: "Sentiment gauges, trend lines, and activity charts for faster decision-making.",
-  },
-];
+/* ─── Rotating "GET STARTED FREE" badge ─── */
+const CircularBadge = () => (
+  <div
+    className="relative w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center shadow-xl rotate-12 hover:scale-105 transition-transform cursor-pointer"
+    style={{ background: "#CCFF00", border: "3px solid rgba(0,0,0,0.05)" }}
+  >
+    <div className="absolute inset-1 animate-[spin_10s_linear_infinite]">
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path id="prysm-circle-path" d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" fill="none" />
+        <text style={{ fontSize: "11px", fontWeight: 900, letterSpacing: "0.18em" }} fill="black">
+          <textPath href="#prysm-circle-path" startOffset="0%">
+            OPEN PRYSM FREE • OPEN PRYSM FREE •{" "}
+          </textPath>
+        </text>
+      </svg>
+    </div>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <svg viewBox="0 0 100 100" className="w-10 h-10 text-black stroke-current overflow-visible" fill="none" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20,80 Q 40,50 30,30 T 80,20" />
+        <path d="M60,10 L80,20 L70,40" />
+      </svg>
+    </div>
+  </div>
+);
 
-const audiences = [
-  {
-    title: "Product Managers",
-    details: "Turn scattered feedback into roadmap-ready priorities with zero guesswork.",
-  },
-  {
-    title: "Customer Success",
-    details: "Resolve churn drivers faster by surfacing voice-of-customer signals instantly.",
-  },
-  {
-    title: "SaaS Builders",
-    details: "Build better products with feedback-based analytics and privacy-first AI.",
-  },
-];
-
-const faqs = [
-  {
-    question: "How is my LLM key kept safe?",
-    answer: "Prysm never stores your key centrally. You provide your own key locally so AI calls are billed directly by your provider.",
-  },
-  {
-    question: "How often does scraping run?",
-    answer: "Scraping schedules are configurable. By default, Prysm refreshes feedback sources hourly with rate-limit safe polling.",
-  },
-  {
-    question: "What Gmail OAuth scopes are required?",
-    answer: "Only read-only Gmail scopes are requested for inbox and labels so we can securely ingest feedback without sending mail.",
-  },
-];
-
-export default function LandingPage() {
-  const [activeTab, setActiveTab] = useState(feedbackTabs[0].name);
-  const [openFaq, setOpenFaq] = useState(0);
-
-  const currentTab = feedbackTabs.find((tab) => tab.name === activeTab) ?? feedbackTabs[0];
+/* ─── Floating source card ─── */
+function SourceCard({ title, sub, color, rotate, bottom, top, left, right, delay = 0 }) {
+  const posStyle = {
+    ...(bottom !== undefined ? { bottom } : {}),
+    ...(top !== undefined ? { top } : {}),
+    ...(left !== undefined ? { left } : {}),
+    ...(right !== undefined ? { right } : {}),
+  };
 
   return (
-    <div className="min-h-screen bg-[#071022] text-slate-100 overflow-x-hidden">
-      <div className="relative isolate overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.25),_transparent_35%),linear-gradient(180deg,_rgba(15,23,42,1),_rgba(7,16,34,1))]" />
-        <div className="absolute left-1/2 top-32 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-purple-500/10 blur-3xl" />
-        <div className="absolute right-16 top-10 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" />
-
-        <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 sm:px-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-400 to-cyan-400 text-2xl font-black text-slate-950 shadow-xl shadow-violet-500/20">
-              P
-            </div>
-            <div>
-              <p className="text-sm uppercase tracking-[0.32em] text-violet-300">Prysm</p>
-              <p className="text-xs text-slate-400">Feedback intelligence</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-5">
-            <Link to="/docs" className="text-sm font-medium text-slate-300 transition hover:text-white">
-              Docs
-            </Link>
-            <Link to="/login">
-              <Button size="sm" className="rounded-full px-5 py-3 text-sm font-semibold">
-                Open App
-              </Button>
-            </Link>
-          </div>
-        </header>
-
-        <main className="mx-auto flex max-w-7xl flex-col gap-20 px-6 py-16 lg:px-8">
-          <section className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 shadow-lg shadow-violet-500/10">
-                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-violet-400" />
-                Prysm — feedback intelligence for modern SaaS teams
-              </div>
-              <div className="space-y-6">
-                <h1 className="text-5xl font-semibold tracking-tight text-white sm:text-6xl" style={{ fontFamily: "Borel, cursive" }}>
-                  Turn scattered feedback into actionable product intelligence.
-                </h1>
-                <p className="max-w-2xl text-lg leading-8 text-slate-300">
-                  Prysm ingests reviews, tickets, tweets, and CSV feedback into one privacy-first analytics engine, then surfaces insights using your own LLM key.
-                </p>
-              </div>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <Link to="/login">
-                  <Button size="lg" className="rounded-full px-8 py-4 shadow-lg shadow-violet-500/20 transition-transform duration-300 hover:-translate-y-1">
-                    Launch Prysm
-                  </Button>
-                </Link>
-                <Link to="/docs" className="inline-flex items-center text-sm font-medium text-slate-200 transition-colors hover:text-white">
-                  Learn how BYOK works <span className="ml-2 text-violet-400">→</span>
-                </Link>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-3xl border border-white/10 bg-white/5 px-5 py-4 shadow-[0_20px_50px_-30px_rgba(99,102,241,0.8)] backdrop-blur-xl">
-                  <p className="text-sm uppercase tracking-[0.24em] text-violet-300">Sources</p>
-                  <p className="mt-3 text-3xl font-semibold text-white">App Store, Gmail, X</p>
-                </div>
-                <div className="rounded-3xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-xl">
-                  <p className="text-sm uppercase tracking-[0.24em] text-slate-400">AI Cost</p>
-                  <p className="mt-3 text-3xl font-semibold text-white">Pay your own provider</p>
-                </div>
-                <div className="rounded-3xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-xl">
-                  <p className="text-sm uppercase tracking-[0.24em] text-slate-400">History</p>
-                  <p className="mt-3 text-3xl font-semibold text-white">Every run saved</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6 rounded-[2rem] border border-white/10 bg-slate-950/50 p-6 shadow-2xl shadow-slate-950/30 backdrop-blur-xl">
-              <div className="rounded-3xl bg-slate-900/80 p-5 ring-1 ring-white/10">
-                <p className="text-xs uppercase tracking-[0.24em] text-violet-300">Product Workflow</p>
-                <h2 className="mt-3 text-2xl font-semibold text-white">From input to insight in four smooth steps</h2>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {workflowSteps.map((step, index) => (
-                  <div key={step.label} className="group rounded-3xl border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:border-violet-300/20 hover:bg-violet-500/10">
-                    <div className="flex items-center justify-between text-sm text-slate-400">
-                      <span>{`Step ${index + 1}`}</span>
-                      <span className="rounded-full border border-violet-300/20 bg-violet-300/10 px-3 py-1 text-violet-200">{step.label}</span>
-                    </div>
-                    <p className="mt-4 text-sm leading-6 text-slate-200">{step.detail}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="rounded-[2rem] border border-violet-500/10 bg-[#0d1730] p-5">
-                <p className="text-sm uppercase tracking-[0.24em] text-violet-300">Interactive demo</p>
-                <div className="mt-4 flex flex-wrap items-center gap-3">
-                  {feedbackTabs.map((tab) => (
-                    <button
-                      key={tab.name}
-                      onClick={() => setActiveTab(tab.name)}
-                      className={`rounded-full px-4 py-2 text-sm transition ${activeTab === tab.name ? "bg-violet-400 text-slate-950 shadow-lg shadow-violet-500/20" : "bg-white/5 text-slate-300 hover:bg-white/10"}`}
-                    >
-                      {tab.name}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  {currentTab.cards.map((card) => (
-                    <div key={card.title} className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-inner shadow-slate-950/20 transition hover:scale-[1.01]">
-                      <h3 className="text-base font-semibold text-white">{card.title}</h3>
-                      <p className="mt-2 text-sm text-slate-300">{card.message}</p>
-                      <span className={`mt-4 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${card.sentiment === "Positive" ? "bg-emerald-500/10 text-emerald-200" : card.sentiment === "Negative" ? "bg-rose-500/10 text-rose-200" : "bg-slate-500/10 text-slate-200"}`}>{card.sentiment}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-5 rounded-3xl border border-white/10 bg-[#111b36] p-5 text-slate-200">
-                  <p className="text-sm uppercase tracking-[0.24em] text-violet-300">AI Summary</p>
-                  <p className="mt-3 leading-7">{currentTab.summary}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-slate-950/20 backdrop-blur-xl">
-              <div className="mb-6 inline-flex items-center rounded-full bg-violet-500/10 px-4 py-2 text-sm text-violet-200">
-                <span className="mr-3 h-2.5 w-2.5 rounded-full bg-violet-400" />
-                Core capabilities for fast, privacy-safe product intelligence
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {features.map((feature) => (
-                  <div key={feature.title} className="rounded-3xl border border-white/10 bg-slate-950/70 p-5 transition hover:-translate-y-1 hover:border-violet-300/20">
-                    <h3 className="text-lg font-semibold text-white">{feature.title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-slate-300">{feature.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-slate-950/20 backdrop-blur-xl">
-              <h2 className="text-3xl font-semibold text-white">Target audience</h2>
-              <p className="mt-4 text-slate-300">Built for teams that want product intelligence, not platform markup.</p>
-              <div className="mt-8 grid gap-4">
-                {audiences.map((audience) => (
-                  <div key={audience.title} className="rounded-3xl border border-white/10 bg-slate-950/70 p-5 transition hover:-translate-y-1">
-                    <h3 className="text-xl font-semibold text-white">{audience.title}</h3>
-                    <p className="mt-2 text-slate-300">{audience.details}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-950/90 to-slate-900/80 p-10 shadow-2xl shadow-slate-950/30 backdrop-blur-xl">
-              <p className="text-sm uppercase tracking-[0.28em] text-violet-300">Pricing</p>
-              <h2 className="mt-5 text-4xl font-semibold text-white">Free SaaS-ready value with no AI markup.</h2>
-              <p className="mt-6 max-w-2xl text-slate-300 leading-8">
-                Prysm is cost-effective because you bring your own LLM key. That means you only pay for raw AI usage from your provider, while Prysm stays free to use for aggregation, analytics, and insights.
-              </p>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-3xl border border-violet-500/10 bg-white/5 p-6">
-                  <p className="text-sm uppercase tracking-[0.24em] text-violet-300">BYOK</p>
-                  <p className="mt-4 text-lg font-semibold text-white">Pay only for your own token usage.</p>
-                </div>
-                <div className="rounded-3xl border border-slate-700/50 bg-white/5 p-6">
-                  <p className="text-sm uppercase tracking-[0.24em] text-slate-400">SaaS economics</p>
-                  <p className="mt-4 text-lg font-semibold text-white">No usage surcharge, no hidden fees.</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-slate-950/20 backdrop-blur-xl">
-              <p className="text-sm uppercase tracking-[0.24em] text-violet-300">FAQ</p>
-              <div className="mt-6 space-y-4">
-                {faqs.map((faq, index) => (
-                  <div key={faq.question} className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-                    <button
-                      onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
-                      className="flex w-full items-center justify-between text-left text-base font-semibold text-white"
-                    >
-                      <span>{faq.question}</span>
-                      <span className="text-violet-300">{openFaq === index ? "−" : "+"}</span>
-                    </button>
-                    {openFaq === index && (
-                      <p className="mt-4 text-sm leading-7 text-slate-300">{faq.answer}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        </main>
+    <motion.div
+      animate={{ y: [0, -14, 0] }}
+      transition={{ duration: 5 + delay, repeat: Infinity, ease: "easeInOut", delay }}
+      className="absolute z-30 pointer-events-auto"
+      style={posStyle}
+    >
+      <div
+        className="w-44 md:w-56 backdrop-blur-md border border-white/30 rounded-[1.75rem] p-5 flex flex-col gap-2 shadow-2xl transition-transform duration-500 hover:rotate-0"
+        style={{ background: "rgba(255,255,255,0.15)", transform: `rotate(${rotate}deg)` }}
+      >
+        <div className="w-3 h-3 rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />
+        <p className="font-bold text-base text-white leading-tight">{title}</p>
+        <p className="text-xs text-white/70 font-mono">{sub}</p>
+        <div
+          className="flex items-center justify-center h-6 px-3 rounded w-fit mt-1"
+          style={{ background: "rgba(0,0,0,0.4)" }}
+        >
+          <span className="text-[9px] font-black tracking-widest uppercase" style={{ color }}>[LIVE]</span>
+        </div>
       </div>
-      <footer className="border-t border-white/10 bg-slate-950/80 py-8 text-center text-sm text-slate-500">
-        <div className="mx-auto max-w-7xl px-6 sm:px-8">
-          <p>Secure BYOK analytics for SaaS teams. Free product intelligence, with your own AI costs.</p>
-          <div className="mt-3 flex flex-wrap justify-center gap-4 text-slate-400">
-            <Link to="/terms" className="transition hover:text-white">Terms</Link>
-            <Link to="/privacy" className="transition hover:text-white">Privacy</Link>
-            <Link to="/docs" className="transition hover:text-white">Docs</Link>
+    </motion.div>
+  );
+}
+
+/* ─── Bottom feature cards ─── */
+const featureCards = [
+  {
+    label: "CONNECT YOUR SOURCES",
+    sub: "Link Gmail, X, App Store, Play Store or drag a CSV.",
+    pill: { text: "5 sources connected", color: "#0A0A0A" },
+    pillBadge: { text: "READY", color: "#CCFF00" },
+  },
+  {
+    label: "ADD YOUR LLM KEY",
+    sub: "Gemini, OpenAI, Claude, Groq or local Ollama — your key, your costs.",
+    pill: { text: "gemini-1.5-flash", color: "#0A0A0A" },
+    pillBadge: { text: "BYOK", color: "#CCFF00" },
+  },
+  {
+    label: "GET INSTANT INSIGHTS",
+    sub: "Sentiment, key insights and improvement areas in seconds.",
+    pill: null,
+    badge: { text: "76% POSITIVE // SCORE 4.2/5.0", color: "#0A0A0A", bg: "#CCFF00" },
+  },
+];
+
+/* ─────────────────────── MAIN LANDING PAGE ─────────────────────── */
+export default function LandingPage() {
+  return (
+    <div
+      className="min-h-screen flex flex-col font-sans relative overflow-hidden w-full"
+      style={{ background: "#0A0A0A", selection: "background: #CCFF00; color: black" }}
+    >
+      {/* Background grid */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "4rem 4rem",
+        }}
+      />
+
+      {/* Subtle center glow */}
+      <div
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none z-0"
+        style={{ background: "radial-gradient(circle, rgba(204,255,0,0.06) 0%, transparent 70%)" }}
+      />
+
+      {/* ───── NAVBAR ───── */}
+      <nav className="relative z-20 flex items-center justify-between px-6 py-6 md:px-10 md:py-8 max-w-[1440px] mx-auto w-full">
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <div
+            className="font-black tracking-tight text-xs md:text-sm px-3 py-1.5 relative shadow-sm"
+            style={{ background: "white", color: "black", borderRadius: "1rem 1rem 1rem 0.2rem" }}
+          >
+            PRYSM
+          </div>
+          <div
+            className="font-black text-xs md:text-sm px-3 py-1.5 rounded-full shadow-sm"
+            style={{ background: "#CCFF00", color: "black", border: "1.5px solid white" }}
+          >
+            AI
           </div>
         </div>
-      </footer>
+
+        {/* Desktop nav links */}
+        <div className="hidden md:flex items-center space-x-2">
+          {["Features", "How It Works", "Sources", "FAQ"].map((item) => (
+            <button
+              key={item}
+              onClick={() => {
+                const id = item.toLowerCase().replace(/ /g, "-");
+                document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="px-4 py-1.5 rounded-full border text-white text-xs font-semibold hover:bg-white/10 transition-colors bg-transparent cursor-pointer"
+              style={{ borderColor: "rgba(255,255,255,0.3)" }}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <Link to="/login">
+          <button
+            className="px-6 py-2 rounded-full border text-white text-xs md:text-sm font-semibold hover:bg-white hover:text-black transition-colors"
+            style={{ borderColor: "white" }}
+          >
+            Log In
+          </button>
+        </Link>
+      </nav>
+
+      {/* ───── HERO ───── */}
+      <main className="flex-1 relative z-10 pt-8 pb-32 md:pt-12 md:pb-48 px-4 flex flex-col items-center justify-center w-full max-w-[1440px] mx-auto">
+        <div className="relative w-full max-w-5xl mx-auto flex flex-col items-center justify-center text-center z-10 mt-4 mb-16">
+
+          {/* Headline typography */}
+          <div className="w-full flex flex-col items-center relative z-10" style={{ gap: "0.5rem" }}>
+            {/* UNIFY */}
+            <div className="w-full flex justify-start pl-[8%] md:pl-[20%] relative z-30">
+              <h1
+                className="font-black leading-[0.85] tracking-tighter m-0 p-0 uppercase"
+                style={{
+                  fontFamily: '"Arial Black", Impact, sans-serif',
+                  fontSize: "clamp(3.5rem,10vw,130px)",
+                  color: "#CCFF00",
+                  textShadow: [1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`${n}px ${n}px 0 #1a1a00`).join(", "),
+                }}
+              >
+                UNIFY
+              </h1>
+            </div>
+
+            {/* FEEDBACK */}
+            <div className="w-full flex justify-center relative z-20">
+              <h1
+                className="font-black leading-[0.85] tracking-tighter m-0 p-0 uppercase"
+                style={{
+                  fontFamily: '"Arial Black", Impact, sans-serif',
+                  fontSize: "clamp(4rem,13vw,190px)",
+                  color: "#F5F5F0",
+                  textShadow: [1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`${n}px ${n}px 0 #1a1a1a`).join(", "),
+                }}
+              >
+                FEEDBACK
+              </h1>
+            </div>
+
+            {/* INSIGHTS */}
+            <div className="w-full flex justify-end pr-[8%] md:pr-[18%] relative z-10">
+              <h1
+                className="font-black leading-[0.85] tracking-tighter m-0 p-0 uppercase"
+                style={{
+                  fontFamily: '"Arial Black", Impact, sans-serif',
+                  fontSize: "clamp(3.5rem,10vw,130px)",
+                  color: "#F5F5F0",
+                  textShadow: [1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`${n}px ${n}px 0 #1a1a1a`).join(", "),
+                }}
+              >
+                INSIGHTS
+              </h1>
+            </div>
+          </div>
+
+          {/* Absolute overlays */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+
+            {/* Floating source card — bottom left */}
+            <SourceCard
+              title="App Store Reviews"
+              sub="1,284 feedbacks ingested"
+              color="#CCFF00"
+              rotate={-11}
+              bottom="5%"
+              left="2%"
+              delay={0}
+            />
+
+            {/* Floating source card — top right */}
+            <SourceCard
+              title="X / Nitter Feed"
+              sub="Sentiment: 76% positive"
+              color="#60A5FA"
+              rotate={12}
+              top="10%"
+              right="2%"
+              delay={1.2}
+            />
+
+            {/* Arrow left */}
+            <div className="absolute bottom-[0%] left-[0%] md:left-[8%] w-24 h-24 md:w-32 md:h-32 z-20">
+              <ArrowGreenLeft />
+            </div>
+
+            {/* Arrow right */}
+            <div className="absolute top-[5%] right-[0%] md:right-[8%] w-24 h-24 md:w-32 md:h-32 z-20">
+              <ArrowGreenRight />
+            </div>
+
+            {/* Rotating badge — bottom right */}
+            <div className="absolute bottom-[-8%] right-[0%] md:right-[12%] z-40 pointer-events-auto">
+              <Link to="/login">
+                <CircularBadge />
+              </Link>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Subheading + liquid CTA below headline block */}
+        <div className="relative z-20 flex flex-col items-center gap-6 mt-4">
+          <p
+            className="text-center max-w-[600px] px-4"
+            style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "clamp(11px,1.4vw,14px)", color: "#888", letterSpacing: "1px", lineHeight: 1.7 }}
+          >
+            PRIVACY-FIRST AI FEEDBACK AGGREGATOR FOR PRODUCT TEAMS.<br />
+            YOUR KEY. YOUR INSIGHTS. ZERO AI MARKUP.
+          </p>
+          <Link to="/login">
+            <LiquidButton size="xl" className="text-white font-bold tracking-wide">
+              Open Prysm Free
+            </LiquidButton>
+          </Link>
+        </div>
+      </main>
+
+      {/* ───── BOTTOM FEATURE CARDS ───── */}
+      <section
+        className="text-black px-6 py-12 md:px-10 md:py-16 relative z-20 w-full mt-auto"
+        style={{
+          background: "white",
+          borderRadius: "2.5rem 2.5rem 0 0",
+          boxShadow: "0 -20px 50px rgba(0,0,0,0.3)",
+        }}
+      >
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          {featureCards.map((card, i) => (
+            <div
+              key={i}
+              className="rounded-[2rem] p-8 flex flex-col items-center text-center relative border"
+              style={{ background: "#F8F9FA", borderColor: "#e5e7eb", minHeight: "16rem" }}
+            >
+              <h3 className="text-xl md:text-2xl uppercase leading-tight mb-2 font-black">{card.label}</h3>
+              <p className="text-[10px] md:text-xs font-bold mb-auto" style={{ color: "rgba(0,0,0,0.6)" }}>{card.sub}</p>
+
+              {/* Pill / badge graphic */}
+              <div className="relative w-full flex justify-center mt-6">
+                {card.pill && (
+                  <>
+                    <div
+                      className="flex items-center rounded-2xl p-3 pr-20 text-white shadow-lg relative z-10"
+                      style={{ background: card.pill.color }}
+                    >
+                      <div
+                        className="w-7 h-7 rounded-full mr-3 flex-shrink-0 flex items-center justify-center font-black text-xs"
+                        style={{ background: "#CCFF00", color: "black" }}
+                      >
+                        P
+                      </div>
+                      <p className="text-[11px] font-bold">{card.pill.text}</p>
+                    </div>
+                    {card.pillBadge && (
+                      <div
+                        className="absolute right-2 top-1/2 -translate-y-1/2 font-black text-[10px] px-3 py-2 rounded-xl z-20 shadow-md"
+                        style={{ background: card.pillBadge.color, color: "black" }}
+                      >
+                        {card.pillBadge.text}
+                      </div>
+                    )}
+                  </>
+                )}
+                {card.badge && (
+                  <div
+                    className="flex flex-col items-center rounded-[1.5rem] px-6 py-4 shadow-lg relative w-full max-w-[220px]"
+                    style={{ background: card.badge.bg, color: card.badge.color }}
+                  >
+                    <p className="text-[9px] font-bold uppercase tracking-wider mb-1">ANALYSIS RESULT</p>
+                    <p className="text-sm font-black">{card.badge.text}</p>
+                    <div
+                      className="absolute -bottom-2 left-8 w-5 h-5 transform rotate-45"
+                      style={{ background: card.badge.bg }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Arrow connector between cards (hidden on last) */}
+              {i < 2 && (
+                <div className="hidden md:block absolute -right-10 bottom-10 w-14 h-14 z-30 opacity-40">
+                  <svg viewBox="0 0 100 100" className="w-full h-full text-black stroke-current" fill="none" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20,80 Q 40,20 80,40" />
+                    <path d="M60,20 L80,40 L50,60" />
+                  </svg>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Link to full landing */}
+        <div className="flex justify-center mt-10">
+          <button
+            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
+            className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest transition-opacity hover:opacity-60"
+            style={{ color: "#888", background: "transparent", border: "none", cursor: "pointer" }}
+          >
+            See all features ↓
+          </button>
+        </div>
+      </section>
+
+      {/* ───── REMAINING SECTIONS (imported inline below) ───── */}
+      <div id="features-anchor" />
     </div>
   );
 }
