@@ -26,6 +26,9 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/store/useAuthStore"
 
@@ -80,8 +83,8 @@ export function AppSidebar(props) {
   const { authUser } = useAuthStore();
   const isHelpActive = location.pathname === "/help-support";
   const isDocsActive = location.pathname === "/docs";
-  const baseLinkClass = "flex items-center gap-2 px-3 py-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors";
-  const activeClass = "bg-sidebar-accent text-sidebar-accent-foreground font-medium";
+  const baseLinkClass = "glass-nav-item";
+  const activeClass = "active";
 
   const currentUser = {
     name: authUser?.fullName || "Guest",
@@ -90,9 +93,9 @@ export function AppSidebar(props) {
   };
 
   return (
-    <Sidebar collapsible="none" className="w-64 shrink-0" {...props}>
-      <SidebarHeader className="px-6 py-4 flex flex-row items-center gap-3 border-b border-white/5">
-        <div className="flex items-center gap-3">
+    <Sidebar collapsible="none" className="w-64 shrink-0 premium-glass-sidebar" {...props}>
+      <SidebarHeader className="px-6 py-4 flex flex-row items-center gap-3 relative overflow-hidden">
+        <div className="flex items-center gap-3 relative z-10 transition-transform duration-300 hover:scale-[1.02]">
           <img
             src="/prysm-logo.png"
             alt="Prysm Logo"
@@ -109,17 +112,24 @@ export function AppSidebar(props) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
+        <div className="flex-1" />
+        <SidebarGroup className="px-0 py-2 border-t border-white/5">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <Link to="/help-support" className={`${baseLinkClass} ${isHelpActive ? activeClass : ""}`}>
+                <LifeBuoy size={18} className="lucide" />
+                <span>Help & Support</span>
+              </Link>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <Link to="/docs" className={`${baseLinkClass} ${isDocsActive ? activeClass : ""}`}>
+                <FileText size={18} className="lucide" />
+                <span>Documentation</span>
+              </Link>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
-      <div className="flex flex-col gap-1 px-2 py-2 text-sm">
-        <Link to="/help-support" className={`${baseLinkClass} ${isHelpActive ? activeClass : ""}`}>
-          <LifeBuoy size={18} className="lucide" />
-          <span>Help & Support</span>
-        </Link>
-        <Link to="/docs" className={`${baseLinkClass} ${isDocsActive ? activeClass : ""}`}>
-          <FileText size={18} className="lucide" />
-          <span>Documentation</span>
-        </Link>
-      </div>
       <SidebarFooter>
         <NavUser user={currentUser} />
       </SidebarFooter>

@@ -381,3 +381,98 @@
     transform: rotate(-1turn);
   }
 }
+
+/* ─── Premium Glass Sidebar ─── */
+.premium-glass-sidebar {
+  background: rgba(10, 10, 10, 0.35) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass nav items */
+.glass-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px !important;
+  margin: 4px 12px !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  background: transparent;
+  border: 1px solid transparent !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.glass-nav-item svg {
+  color: rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Inactive Hover */
+.glass-nav-item:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.glass-nav-item:hover svg {
+  color: #CCFF00 !important;
+  transform: scale(1.05);
+}
+
+/* Active Glass Nav Item */
+.glass-nav-item.active {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.glass-nav-item.active svg {
+  color: #CCFF00 !important;
+  transform: scale(1.05);
+}
+
+/* Left neon accent line for active item - styled as a floating minimal capsule */
+.glass-nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 32%;
+  bottom: 32%;
+  width: 2px;
+  background-color: #CCFF00;
+  border-radius: 99px;
+  box-shadow: 0 0 8px rgba(204, 255, 0, 0.5);
+}
+
+/* Profile section card */
+.glass-profile-card {
+  width: calc(100% - 24px) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  margin: 8px 12px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.glass-profile-card:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Glowing avatar */
+.avatar-glow {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.glass-profile-card:hover .avatar-glow {
+  border-color: #CCFF00 !important;
+  box-shadow: 0 0 10px rgba(204, 255, 0, 0.2) !important;
+}
