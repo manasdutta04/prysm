@@ -57,7 +57,7 @@ function SourceCard({ title, sub, color, rotate, bottom, top, left, right, delay
     <motion.div
       animate={{ y: [0, -14, 0] }}
       transition={{ duration: 5 + delay, repeat: Infinity, ease: "easeInOut", delay }}
-      className="absolute z-30 pointer-events-auto"
+      className="hidden md:block absolute z-30 pointer-events-auto"
       style={posStyle}
     >
       <div
@@ -255,6 +255,8 @@ export default function LandingPage() {
   const [activeTab, setActiveTab] = useState("x");
   const [selectedLLM, setSelectedLLM] = useState("gemini");
   const [openFaq, setOpenFaq] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNetworkMenuOpen, setIsNetworkMenuOpen] = useState(false);
 
   React.useEffect(() => {
     const providers = ["gemini", "openai", "claude", "groq", "ollama"];
@@ -358,22 +360,66 @@ export default function LandingPage() {
           ))}
         </div>
 
-        {/* CTA */}
-        <Link to="/login">
-          <button
-            className="relative px-6 py-2 rounded-full text-white text-xs md:text-sm font-semibold cursor-pointer transition-all duration-300 hover:scale-105 group overflow-hidden"
-            style={{
-              background: "rgba(255,255,255,0.06)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
-              border: "1px solid rgba(255,255,255,0.22)",
-              boxShadow: "0 0 8px rgba(0,0,0,0.1), inset 1.5px 1.5px 1px -1px rgba(255,255,255,0.55), inset -1px -1px 1px -0.5px rgba(255,255,255,0.15), inset 0 0 8px 6px rgba(255,255,255,0.04), 0 0 15px rgba(255,255,255,0.06)",
-            }}
-          >
-            <span className="relative z-10">Log In</span>
-            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 50%)" }} />
-          </button>
-        </Link>
+        {/* CTA and Mobile Menu */}
+        <div className="flex items-center gap-2">
+          <Link to="/login">
+            <button
+              className="relative px-6 py-2 rounded-full text-white text-xs md:text-sm font-semibold cursor-pointer transition-all duration-300 hover:scale-105 group overflow-hidden"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(255,255,255,0.22)",
+                boxShadow: "0 0 8px rgba(0,0,0,0.1), inset 1.5px 1.5px 1px -1px rgba(255,255,255,0.55), inset -1px -1px 1px -0.5px rgba(255,255,255,0.15), inset 0 0 8px 6px rgba(255,255,255,0.04), 0 0 15px rgba(255,255,255,0.06)",
+              }}
+            >
+              <span className="relative z-10">Log In</span>
+              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 50%)" }} />
+            </button>
+          </Link>
+
+          {/* Mobile Menu 3-Dot Button */}
+          <div className="md:hidden relative">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-full text-white cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                boxShadow: "0 0 6px rgba(0,0,0,0.08), inset 1px 1px 1px -0.5px rgba(255,255,255,0.18)",
+              }}
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="5" r="2" />
+                <circle cx="12" cy="12" r="2" />
+                <circle cx="12" cy="19" r="2" />
+              </svg>
+            </button>
+
+            {isMobileMenuOpen && (
+              <div
+                className="absolute top-12 right-0 z-50 flex flex-col gap-1 p-2 rounded-2xl border border-white/10 bg-black/90 w-[160px] shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-200"
+                style={{ background: "rgba(10,10,10,0.95)" }}
+              >
+                {["Features", "How It Works", "Data Flow", "Pricing & FAQ"].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => {
+                      const id = item.toLowerCase().replace(/ /g, "-").replace("&", "and");
+                      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-xl text-white text-xs font-semibold hover:bg-[#CCFF00] hover:text-black transition-all duration-200 cursor-pointer"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </nav>
 
       {/* ───── HERO ───── */}
@@ -454,12 +500,12 @@ export default function LandingPage() {
             />
 
             {/* Arrow left */}
-            <div className="absolute bottom-[0%] left-[0%] md:left-[33%] w-24 h-24 md:w-32 md:h-32 z-20">
+            <div className="hidden md:block absolute bottom-[0%] left-[33%] w-32 h-32 z-20">
               <ArrowGreenLeft />
             </div>
 
             {/* Arrow right */}
-            <div className="absolute top-[5%] right-[0%] md:right-[18%] w-24 h-24 md:w-32 md:h-32 z-20">
+            <div className="hidden md:block absolute top-[5%] right-[18%] w-32 h-32 z-20">
               <ArrowGreenRight />
             </div>
 
@@ -816,6 +862,78 @@ export default function LandingPage() {
           {/* Connectivity diagram wrapper */}
           <div className="w-full flex justify-center">
             <div className="relative w-full max-w-4xl border border-white/10 rounded-[2.5rem] bg-[#0E0E0E] p-4 md:p-8 overflow-hidden shadow-2xl">
+              {/* Mobile 3-dot Network Navigation Menu */}
+              <div className="absolute top-4 right-4 md:hidden z-30">
+                <button
+                  onClick={() => setIsNetworkMenuOpen(!isNetworkMenuOpen)}
+                  className="p-2 rounded-full text-white cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    boxShadow: "0 0 6px rgba(0,0,0,0.08), inset 1px 1px 1px -0.5px rgba(255,255,255,0.18)",
+                  }}
+                  aria-label="Navigate Network LLM"
+                >
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-white animate-pulse" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="5" r="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <circle cx="12" cy="19" r="2" />
+                  </svg>
+                </button>
+
+                {isNetworkMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-30 cursor-default"
+                      onClick={() => setIsNetworkMenuOpen(false)}
+                    />
+                    <div
+                      className="absolute top-10 right-0 z-40 flex flex-col gap-1 p-2 rounded-2xl border border-white/10 w-[180px] shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-200"
+                      style={{ background: "rgba(10,10,10,0.95)" }}
+                    >
+                      <div className="px-3 py-1.5 text-[8px] font-mono text-zinc-500 uppercase tracking-widest border-b border-white/5 mb-1">
+                        SELECT LLM NODE
+                      </div>
+                      {[
+                        { id: "gemini", name: "Gemini API", icon: "/gemini.svg" },
+                        { id: "openai", name: "OpenAI API", icon: "/openai.svg" },
+                        { id: "claude", name: "Claude API", icon: "/claude.svg" },
+                        { id: "groq", name: "Groq API", icon: "/groq.svg" },
+                        { id: "ollama", name: "Ollama Local", icon: "/ollama.svg" }
+                      ].map((provider) => {
+                        const isActive = selectedLLM === provider.id;
+                        return (
+                          <button
+                            key={provider.id}
+                            onClick={() => {
+                              setSelectedLLM(provider.id);
+                              setIsNetworkMenuOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-xl font-mono text-[10px] uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center justify-between ${
+                              isActive ? "bg-[#CCFF00] text-black font-bold" : "text-white/80 hover:bg-white/5"
+                            }`}
+                          >
+                            <span className="flex items-center gap-2">
+                              <img
+                                src={provider.icon}
+                                className={`w-3.5 h-3.5 object-contain ${
+                                  isActive ? "brightness-0" : "brightness-0 invert opacity-80"
+                                }`}
+                                alt={provider.name}
+                              />
+                              {provider.name}
+                            </span>
+                            {isActive && <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+
               <svg viewBox="0 0 800 480" className="w-full h-auto overflow-visible" xmlns="http://www.w3.org/2000/svg">
                 {/* Defs for gradients & glows */}
                 <defs>
