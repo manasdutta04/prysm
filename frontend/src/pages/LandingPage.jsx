@@ -253,7 +253,30 @@ const faqItems = [
 /* ─────────────────────── MAIN LANDING PAGE ─────────────────────── */
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState("x");
+  const [selectedLLM, setSelectedLLM] = useState("gemini");
   const [openFaq, setOpenFaq] = useState(null);
+
+  const getLLMPathOut = (type) => {
+    switch (type) {
+      case "gemini": return "M 490,215 C 540,215 540,55 610,55";
+      case "openai": return "M 490,215 C 540,215 540,145 610,145";
+      case "claude": return "M 490,215 C 540,215 540,235 610,235";
+      case "groq": return "M 490,215 C 540,215 540,325 610,325";
+      case "ollama": return "M 490,215 C 540,215 540,415 610,415";
+      default: return "";
+    }
+  };
+
+  const getLLMPathReturn = (type) => {
+    switch (type) {
+      case "gemini": return "M 610,55 C 540,55 540,265 490,265";
+      case "openai": return "M 610,145 C 540,145 540,265 490,265";
+      case "claude": return "M 610,235 C 540,235 540,265 490,265";
+      case "groq": return "M 610,325 C 540,325 540,265 490,265";
+      case "ollama": return "M 610,415 C 540,415 540,265 490,265";
+      default: return "";
+    }
+  };
 
   return (
     <div
@@ -741,63 +764,53 @@ export default function LandingPage() {
                     <stop offset="100%" stopColor="#10B981" stopOpacity="0.4" />
                   </linearGradient>
                 </defs>
+                {/* Path 1: App Store (y=55) */}
+                <path d="M 190,55 C 260,55 260,215 310,215" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
+                {/* Path 2: Play Store (y=145) */}
+                <path d="M 190,145 C 260,145 260,215 310,215" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
+                {/* Path 3: X / Nitter (y=235) */}
+                <path d="M 190,235 C 260,235 260,215 310,215" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
+                {/* Path 4: Gmail (y=325) */}
+                <path d="M 190,325 C 260,325 260,215 310,215" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
+                {/* Path 5: CSV (y=415) */}
+                <path d="M 190,415 C 260,415 260,215 310,215" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
 
-                {/* FLOW LINES LEFT TO CENTER */}
-                {/* Path 1: App Store (y=60) */}
-                <path d="M 190,60 C 260,60 260,240 310,240" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
-                {/* Path 2: Play Store (y=150) */}
-                <path d="M 190,150 C 260,150 260,240 310,240" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
-                {/* Path 3: X / Nitter (y=240) */}
-                <path d="M 190,240 L 310,240" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
-                {/* Path 4: Gmail (y=330) */}
-                <path d="M 190,330 C 260,330 260,240 310,240" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
-                {/* Path 5: CSV (y=420) */}
-                <path d="M 190,420 C 260,420 260,240 310,240" fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
+                {/* FLOW LINES CENTER TO RIGHT (ORCHESTRATOR TO SELECTABLE LLMS) */}
+                {/* Inactive Channels (Faint Static Solid Lines) */}
+                <path d="M 490,215 C 540,215 540,55 610,55" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                <path d="M 490,215 C 540,215 540,145 610,145" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                <path d="M 490,215 C 540,215 540,235 610,235" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                <path d="M 490,215 C 540,215 540,325 610,325" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                <path d="M 490,215 C 540,215 540,415 610,415" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
 
-                {/* FLOW LINES CENTER TO RIGHT */}
-                {/* Path 6: Gemini (y=60) */}
-                <path d="M 490,240 C 540,240 540,60 610,60" fill="none" stroke="url(#grad-right)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
-                {/* Path 7: OpenAI (y=150) */}
-                <path d="M 490,240 C 540,240 540,150 610,150" fill="none" stroke="url(#grad-right)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
-                {/* Path 8: Claude (y=240) */}
-                <path d="M 490,240 L 610,240" fill="none" stroke="url(#grad-right)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
-                {/* Path 9: Groq (y=330) */}
-                <path d="M 490,240 C 540,240 540,330 610,330" fill="none" stroke="url(#grad-right)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
-                {/* Path 10: Ollama (y=420) */}
-                <path d="M 490,240 C 540,240 540,420 610,420" fill="none" stroke="url(#grad-right)" strokeWidth="2" strokeDasharray="6 4" className="opacity-40" />
+                {/* Active Outgoing Path (Aggregated Feed -> LLM Provider) */}
+                <path d={getLLMPathOut(selectedLLM)} fill="none" stroke="url(#grad-right)" strokeWidth="2" strokeDasharray="6 4" className="opacity-80" />
+                {/* Active Returning Path (LLM Output -> Unified Dashboard) */}
+                <path d={getLLMPathReturn(selectedLLM)} fill="none" stroke="url(#grad-left)" strokeWidth="2" strokeDasharray="6 4" className="opacity-80" />
 
-                {/* ANIMATED PULSES LEFT */}
+                {/* ANIMATED PULSES LEFT (SOURCES STREAMING TO AGGREGATOR) */}
                 <circle r="4" fill="#CCFF00" filter="url(#glow-neon)">
-                  <animateMotion dur="3s" repeatCount="indefinite" path="M 190,60 C 260,60 260,240 310,240" />
+                  <animateMotion dur="3s" repeatCount="indefinite" path="M 190,55 C 260,55 260,215 310,215" />
                 </circle>
                 <circle r="4" fill="#CCFF00" filter="url(#glow-neon)">
-                  <animateMotion dur="2.4s" repeatCount="indefinite" path="M 190,150 C 260,150 260,240 310,240" />
+                  <animateMotion dur="2.4s" repeatCount="indefinite" path="M 190,145 C 260,145 260,215 310,215" />
                 </circle>
                 <circle r="4" fill="#CCFF00" filter="url(#glow-neon)">
-                  <animateMotion dur="3.8s" repeatCount="indefinite" path="M 190,240 L 310,240" />
+                  <animateMotion dur="3.8s" repeatCount="indefinite" path="M 190,235 C 260,235 260,215 310,215" />
                 </circle>
                 <circle r="4" fill="#CCFF00" filter="url(#glow-neon)">
-                  <animateMotion dur="2.8s" repeatCount="indefinite" path="M 190,330 C 260,330 260,240 310,240" />
+                  <animateMotion dur="2.8s" repeatCount="indefinite" path="M 190,325 C 260,325 260,215 310,215" />
                 </circle>
                 <circle r="4" fill="#CCFF00" filter="url(#glow-neon)">
-                  <animateMotion dur="3.2s" repeatCount="indefinite" path="M 190,420 C 260,420 260,240 310,240" />
+                  <animateMotion dur="3.2s" repeatCount="indefinite" path="M 190,415 C 260,415 260,215 310,215" />
                 </circle>
 
-                {/* ANIMATED PULSES RIGHT */}
+                {/* ANIMATED PULSES RIGHT (DYNAMIC ROUND TRIP FOR ACTIVE BYOK) */}
                 <circle r="4" fill="#10B981" filter="url(#glow-neon)">
-                  <animateMotion dur="2.6s" repeatCount="indefinite" path="M 490,240 C 540,240 540,60 610,60" />
+                  <animateMotion dur="2.4s" repeatCount="indefinite" path={getLLMPathOut(selectedLLM)} />
                 </circle>
-                <circle r="4" fill="#10B981" filter="url(#glow-neon)">
-                  <animateMotion dur="3.4s" repeatCount="indefinite" path="M 490,240 C 540,240 540,150 610,150" />
-                </circle>
-                <circle r="4" fill="#10B981" filter="url(#glow-neon)">
-                  <animateMotion dur="2.2s" repeatCount="indefinite" path="M 490,240 L 610,240" />
-                </circle>
-                <circle r="4" fill="#10B981" filter="url(#glow-neon)">
-                  <animateMotion dur="3.6s" repeatCount="indefinite" path="M 490,240 C 540,240 540,330 610,330" />
-                </circle>
-                <circle r="4" fill="#10B981" filter="url(#glow-neon)">
-                  <animateMotion dur="3.0s" repeatCount="indefinite" path="M 490,240 C 540,240 540,420 610,420" />
+                <circle r="4" fill="#CCFF00" filter="url(#glow-neon)">
+                  <animateMotion dur="2.4s" repeatCount="indefinite" path={getLLMPathReturn(selectedLLM)} />
                 </circle>
 
                 {/* LEFT COLUMN: SOURCES */}
@@ -832,43 +845,130 @@ export default function LandingPage() {
                   </div>
                 </foreignObject>
 
-                {/* CENTER NODE: PRYSM ORCHESTRATOR */}
-                <foreignObject x="310" y="195" width="180" height="110">
-                  <div xmlns="http://www.w3.org/1999/xhtml" className="flex flex-col items-center justify-center p-3 rounded-[2rem] border bg-black/80 w-[180px] h-[90px]" style={{ borderColor: "#CCFF00", boxShadow: "0 0 25px rgba(204,255,0,0.15)" }}>
-                    <div className="font-black tracking-tight text-[11px] px-2 py-1 bg-white text-black rounded-lg mb-1.5">PRYSM</div>
-                    <div className="font-mono text-[8px] font-black text-[#CCFF00] tracking-widest uppercase">[ORCHESTRATOR]</div>
+                {/* CENTER NODE: PRYSM AGGREGATOR ENGINE */}
+                <foreignObject x="310" y="190" width="180" height="110">
+                  <div xmlns="http://www.w3.org/1999/xhtml" className="flex flex-col rounded-[2rem] border bg-[#0E0E0E] w-[180px] h-[100px] overflow-hidden" style={{ borderColor: "#CCFF00", boxShadow: "0 0 25px rgba(204,255,0,0.15)" }}>
+                    {/* Top: Ingestion Aggregator */}
+                    <div className="flex flex-col items-center justify-center border-b border-white/10 w-full h-[50px] bg-white/[0.01]">
+                      <div className="font-black tracking-tight text-[10px] px-2 py-0.5 bg-white text-black rounded mb-0.5">PRYSM</div>
+                      <div className="font-mono text-[7px] text-[#CCFF00] tracking-widest uppercase">FEEDBACK AGGREGATOR</div>
+                    </div>
+                    {/* Bottom: Unified Insights Output */}
+                    <div className="flex flex-col items-center justify-center w-full h-[50px] bg-black">
+                      <div className="font-mono text-[7px] text-white/50 tracking-wider uppercase mb-0.5">UNIFIED OUTPUT</div>
+                      <div className="font-mono text-[8px] font-black text-[#CCFF00] tracking-widest uppercase animate-pulse">[INSIGHTS_OK]</div>
+                    </div>
                   </div>
                 </foreignObject>
 
                 {/* RIGHT COLUMN: LLM PROVIDERS */}
                 <foreignObject x="610" y="30" width="180" height="60">
-                  <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">G</div>
-                    <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Gemini API</div>
+                  <div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    onClick={() => setSelectedLLM("gemini")}
+                    className="flex items-center justify-between p-3 rounded-2xl border w-[170px] h-[50px] cursor-pointer transition-all duration-300"
+                    style={{
+                      background: selectedLLM === "gemini" ? "rgba(204,255,0,0.03)" : "rgba(0,0,0,0.6)",
+                      borderColor: selectedLLM === "gemini" ? "#CCFF00" : "rgba(255,255,255,0.1)",
+                      opacity: selectedLLM === "gemini" ? 1 : 0.35,
+                      boxShadow: selectedLLM === "gemini" ? "0 0 15px rgba(204,255,0,0.1)" : "none"
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">G</div>
+                      <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Gemini API</div>
+                    </div>
+                    {selectedLLM === "gemini" && (
+                      <span className="font-mono text-[7px] bg-[#CCFF00] text-black px-1.5 py-0.5 rounded font-black">[ACTIVE]</span>
+                    )}
                   </div>
                 </foreignObject>
+
                 <foreignObject x="610" y="120" width="180" height="60">
-                  <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">O</div>
-                    <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">OpenAI API</div>
+                  <div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    onClick={() => setSelectedLLM("openai")}
+                    className="flex items-center justify-between p-3 rounded-2xl border w-[170px] h-[50px] cursor-pointer transition-all duration-300"
+                    style={{
+                      background: selectedLLM === "openai" ? "rgba(204,255,0,0.03)" : "rgba(0,0,0,0.6)",
+                      borderColor: selectedLLM === "openai" ? "#CCFF00" : "rgba(255,255,255,0.1)",
+                      opacity: selectedLLM === "openai" ? 1 : 0.35,
+                      boxShadow: selectedLLM === "openai" ? "0 0 15px rgba(204,255,0,0.1)" : "none"
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">O</div>
+                      <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">OpenAI API</div>
+                    </div>
+                    {selectedLLM === "openai" && (
+                      <span className="font-mono text-[7px] bg-[#CCFF00] text-black px-1.5 py-0.5 rounded font-black">[ACTIVE]</span>
+                    )}
                   </div>
                 </foreignObject>
+
                 <foreignObject x="610" y="210" width="180" height="60">
-                  <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">C</div>
-                    <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Claude API</div>
+                  <div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    onClick={() => setSelectedLLM("claude")}
+                    className="flex items-center justify-between p-3 rounded-2xl border w-[170px] h-[50px] cursor-pointer transition-all duration-300"
+                    style={{
+                      background: selectedLLM === "claude" ? "rgba(204,255,0,0.03)" : "rgba(0,0,0,0.6)",
+                      borderColor: selectedLLM === "claude" ? "#CCFF00" : "rgba(255,255,255,0.1)",
+                      opacity: selectedLLM === "claude" ? 1 : 0.35,
+                      boxShadow: selectedLLM === "claude" ? "0 0 15px rgba(204,255,0,0.1)" : "none"
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">C</div>
+                      <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Claude API</div>
+                    </div>
+                    {selectedLLM === "claude" && (
+                      <span className="font-mono text-[7px] bg-[#CCFF00] text-black px-1.5 py-0.5 rounded font-black">[ACTIVE]</span>
+                    )}
                   </div>
                 </foreignObject>
+
                 <foreignObject x="610" y="300" width="180" height="60">
-                  <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">R</div>
-                    <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Groq API</div>
+                  <div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    onClick={() => setSelectedLLM("groq")}
+                    className="flex items-center justify-between p-3 rounded-2xl border w-[170px] h-[50px] cursor-pointer transition-all duration-300"
+                    style={{
+                      background: selectedLLM === "groq" ? "rgba(204,255,0,0.03)" : "rgba(0,0,0,0.6)",
+                      borderColor: selectedLLM === "groq" ? "#CCFF00" : "rgba(255,255,255,0.1)",
+                      opacity: selectedLLM === "groq" ? 1 : 0.35,
+                      boxShadow: selectedLLM === "groq" ? "0 0 15px rgba(204,255,0,0.1)" : "none"
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">R</div>
+                      <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Groq API</div>
+                    </div>
+                    {selectedLLM === "groq" && (
+                      <span className="font-mono text-[7px] bg-[#CCFF00] text-black px-1.5 py-0.5 rounded font-black">[ACTIVE]</span>
+                    )}
                   </div>
                 </foreignObject>
+
                 <foreignObject x="610" y="390" width="180" height="60">
-                  <div xmlns="http://www.w3.org/1999/xhtml" className="flex items-center gap-3 p-3 rounded-2xl border border-white/10 bg-black/60 w-[170px] h-[50px]">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">L</div>
-                    <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Ollama Local</div>
+                  <div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    onClick={() => setSelectedLLM("ollama")}
+                    className="flex items-center justify-between p-3 rounded-2xl border w-[170px] h-[50px] cursor-pointer transition-all duration-300"
+                    style={{
+                      background: selectedLLM === "ollama" ? "rgba(204,255,0,0.03)" : "rgba(0,0,0,0.6)",
+                      borderColor: selectedLLM === "ollama" ? "#CCFF00" : "rgba(255,255,255,0.1)",
+                      opacity: selectedLLM === "ollama" ? 1 : 0.35,
+                      boxShadow: selectedLLM === "ollama" ? "0 0 15px rgba(204,255,0,0.1)" : "none"
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white text-black font-black text-[8px]">L</div>
+                      <div className="font-mono text-[9px] font-black uppercase text-white tracking-wider">Ollama Local</div>
+                    </div>
+                    {selectedLLM === "ollama" && (
+                      <span className="font-mono text-[7px] bg-[#CCFF00] text-black px-1.5 py-0.5 rounded font-black">[ACTIVE]</span>
+                    )}
                   </div>
                 </foreignObject>
               </svg>
