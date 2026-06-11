@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
 import "./docs.css";
 import documentationContent from "./components2/docContent.js";
-import { Search, FileText, CheckCircle } from "lucide-react";
+import { Search, FileText, ArrowRight } from "lucide-react";
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState(documentationContent[0]?.id || "");
@@ -63,6 +63,34 @@ export default function DocsPage() {
       section.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const renderLinkedText = (text) => {
+    if (!/\/[a-z-]+|https:\/\/[^\s]+/.test(text)) return text;
+
+    return text.split(/(\/[a-z-]+|https:\/\/[^\s]+)/g).map((part, idx) => {
+      if (/^\/[a-z-]+$/.test(part)) {
+        return (
+          <Link key={idx} to={part} className="doc-inline-link">
+            {part}
+          </Link>
+        );
+      }
+      if (part.startsWith("https://")) {
+        return (
+          <a
+            key={idx}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="doc-inline-link"
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   // Smart plain-text parser to render highly formatted HTML components
   const parseContent = (content) => {
     if (content.includes("<table")) {
@@ -88,7 +116,7 @@ export default function DocsPage() {
             return (
               <div key={index} className="doc-callout example-callout">
                 <span className="callout-badge">EXAMPLE</span>
-                <p className="callout-text">{exampleText}</p>
+                <p className="callout-text">{renderLinkedText(exampleText)}</p>
               </div>
             );
           }
@@ -129,7 +157,7 @@ export default function DocsPage() {
                   return (
                     <div key={lIdx} className="doc-spec-card">
                       <span className="spec-label">{label}</span>
-                      <span className="spec-value">{val}</span>
+                      <span className="spec-value">{renderLinkedText(val)}</span>
                     </div>
                   );
                 })}
@@ -152,19 +180,19 @@ export default function DocsPage() {
                     return (
                       <li key={lIdx}>
                         <strong className="list-bold-label">{boldPart}:</strong>{" "}
-                        <span className="list-text-val">{restPart}</span>
+                        <span className="list-text-val">{renderLinkedText(restPart)}</span>
                       </li>
                     );
                   }
 
-                  return <li key={lIdx}>{trimmedLine}</li>;
+                  return <li key={lIdx}>{renderLinkedText(trimmedLine)}</li>;
                 })}
               </ul>
             );
           }
 
           // Standard paragraph block
-          return <p key={index}>{text}</p>;
+          return <p key={index}>{renderLinkedText(text)}</p>;
         })}
       </div>
     );
@@ -187,9 +215,9 @@ export default function DocsPage() {
             Prysm
           </span>
         </Link>
-        <Link to="/">
+        <Link to="/login">
           <LiquidButton size="sm" className="text-white font-bold tracking-wide">
-            Back to Home
+            Open App
           </LiquidButton>
         </Link>
       </header>
@@ -208,7 +236,7 @@ export default function DocsPage() {
             />
           </div>
 
-          <div className="docs-index-title">Documentation</div>
+          <div className="docs-index-title">User Guide</div>
           
           <ul className="docs-index-list">
             {filteredContent.map((section) => (
@@ -229,6 +257,19 @@ export default function DocsPage() {
 
         {/* Scrollable Document Content */}
         <div className="page-content scrollable" ref={contentRef}>
+          <div className="docs-intro-banner liquid-glass-card">
+            <div>
+              <p className="docs-intro-label">Deployed on Vercel</p>
+              <h1 className="docs-intro-title">How to use Prysm</h1>
+              <p className="docs-intro-desc">
+                Step-by-step guide for the live web app — connect sources, add your AI key, and run feedback analysis from the dashboard.
+              </p>
+            </div>
+            <Link to="/login" className="docs-intro-cta">
+              Get started <ArrowRight size={16} />
+            </Link>
+          </div>
+
           {filteredContent.map((section) => (
             <div key={section.id} id={section.id} className="doc-section">
               <h2 className="doc-section-title">{section.title}</h2>
@@ -243,27 +284,6 @@ export default function DocsPage() {
             </div>
           )}
 
-          {/* Footer voting widget */}
-          <div className="docs-feedback-footer">
-            <div className="feedback-content">
-              <CheckCircle className="feedback-icon" size={18} />
-              <span>Was this page helpful?</span>
-            </div>
-            <div className="feedback-buttons">
-              <button
-                className="feedback-btn yes"
-                onClick={() => alert("Thank you for your feedback!")}
-              >
-                Yes
-              </button>
-              <button
-                className="feedback-btn no"
-                onClick={() => alert("Thank you for your feedback!")}
-              >
-                No
-              </button>
-            </div>
-          </div>
         </div>
 
       </div>

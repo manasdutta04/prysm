@@ -138,10 +138,11 @@
 }
 
 .docs-index-list li.active {
-  color: #000000;
-  background: #CCFF00;
+  color: #ffffff;
+  background: rgba(204, 255, 0, 0.12);
+  border: 1px solid rgba(204, 255, 0, 0.35);
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(204, 255, 0, 0.2);
+  box-shadow: 0 0 16px rgba(204, 255, 0, 0.08);
 }
 
 .docs-index-list li.no-results {
@@ -158,7 +159,7 @@
 }
 
 li.active .doc-sidebar-icon {
-  color: #000000;
+  color: #CCFF00;
   opacity: 1;
 }
 
@@ -191,11 +192,85 @@ li.active .doc-sidebar-icon {
 }
 
 .doc-section-title {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 800;
   color: #ffffff;
   margin: 0 0 1.25rem 0;
   line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.docs-intro-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.75rem 2rem;
+  border-radius: 1.5rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.docs-intro-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #CCFF00;
+  margin: 0 0 0.5rem 0;
+}
+
+.docs-intro-title {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: normal;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+}
+
+.docs-intro-desc {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  max-width: 640px;
+}
+
+.docs-intro-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(204, 255, 0, 0.35);
+  background: rgba(204, 255, 0, 0.08);
+  color: #ffffff;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.docs-intro-cta:hover {
+  background: rgba(204, 255, 0, 0.15);
+  border-color: rgba(204, 255, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.doc-inline-link {
+  color: #CCFF00;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.doc-inline-link:hover {
+  color: #ddff33;
 }
 
 .doc-subheading {
