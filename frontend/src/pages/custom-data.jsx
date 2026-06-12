@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import "./custom-data.css";
 import axios from "../lib/axios";
 import toast from "react-hot-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check, FileSpreadsheet, UploadCloud } from "lucide-react";
 
 export default function CustomDataPage() {
   const [fileName, setFileName] = useState(null);
@@ -83,7 +83,9 @@ export default function CustomDataPage() {
                 </div>
               ) : (
                 <>
-                  <div className="upload-icon">📂</div>
+                  <div className="upload-icon-container">
+                    <UploadCloud className="upload-cloud-icon" size={32} />
+                  </div>
                   <p className="drop-text">Drag &amp; Drop</p>
                   <p>
                     or{" "}
@@ -103,7 +105,10 @@ export default function CustomDataPage() {
             </div>
 
             {fileName && !isUploading && (
-              <div className="file-name">📄 {fileName}</div>
+              <div className="file-name">
+                <FileSpreadsheet className="file-icon" size={16} />
+                <span>{fileName}</span>
+              </div>
             )}
             {status && !isUploading && (
               <div
@@ -124,24 +129,62 @@ export default function CustomDataPage() {
 
         {/* Instructions Card */}
         <div className="instructions">
-          <h3>Instructions</h3>
-          <ol>
-            <li>
-              Must carry column <strong>source</strong>
-            </li>
-            <li>
-              Must carry column <strong>date</strong> or{" "}
-              <strong>timestamp</strong>
-            </li>
-            <li>
-              Must carry column <strong>feedback</strong> or{" "}
-              <strong>comment</strong>
-            </li>
-          </ol>
+          <div className="instructions-header">
+            <span className="instructions-tag">CSV Schema</span>
+            <h3>Data Format Guide</h3>
+            <p className="instructions-subtitle">Follow these schema requirements to format your custom feedback CSV correctly.</p>
+          </div>
+
+          <div className="requirements-list">
+            <div className="requirement-item">
+              <div className="req-label-container">
+                <span className="req-number">01</span>
+                <code className="req-code">source</code>
+                <span className="req-badge">Required</span>
+              </div>
+              <p className="req-text">Identifies the platform source of the feedback (e.g. appstore, playstore, twitter).</p>
+            </div>
+
+            <div className="requirement-item">
+              <div className="req-label-container">
+                <span className="req-number">02</span>
+                <div className="req-code-group">
+                  <code className="req-code">date</code>
+                  <span className="req-or-divider">or</span>
+                  <code className="req-code">timestamp</code>
+                </div>
+                <span className="req-badge">Required</span>
+              </div>
+              <p className="req-text">The timestamp of the review, formatted as ISO-8601 or YYYY-MM-DD.</p>
+            </div>
+
+            <div className="requirement-item">
+              <div className="req-label-container">
+                <span className="req-number">03</span>
+                <div className="req-code-group">
+                  <code className="req-code">feedback</code>
+                  <span className="req-or-divider">or</span>
+                  <code className="req-code">comment</code>
+                </div>
+                <span className="req-badge">Required</span>
+              </div>
+              <p className="req-text">The main text content containing the user's review or comments.</p>
+            </div>
+          </div>
+
           <div className="instructions-note">
-            <p>✅ Only <strong>.csv</strong> files accepted</p>
-            <p>✅ Extra columns will be ignored</p>
-            <p>✅ Source is normalized automatically</p>
+            <div className="note-item">
+              <Check className="note-icon" size={14} />
+              <span>Only <strong>.csv</strong> files accepted</span>
+            </div>
+            <div className="note-item">
+              <Check className="note-icon" size={14} />
+              <span>Extra columns will be ignored</span>
+            </div>
+            <div className="note-item">
+              <Check className="note-icon" size={14} />
+              <span>Source is normalized automatically</span>
+            </div>
           </div>
         </div>
       </div>

@@ -109,9 +109,31 @@
   color: #CCFF00;
 }
 
-.upload-icon {
-  font-size: 2.5rem;
-  margin-bottom: 12px;
+.upload-icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(204, 255, 0, 0.03);
+  border: 1px solid rgba(204, 255, 0, 0.15);
+  color: #CCFF00;
+  margin-bottom: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 20px rgba(204, 255, 0, 0.02);
+}
+
+.upload-area:hover .upload-icon-container {
+  background: rgba(204, 255, 0, 0.08);
+  border-color: #CCFF00;
+  box-shadow: 0 0 25px rgba(204, 255, 0, 0.15);
+  transform: scale(1.05);
+}
+
+.upload-cloud-icon {
+  color: #CCFF00;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .drop-text {
@@ -173,6 +195,14 @@
   border-radius: 8px;
   border: 1px solid rgba(204, 255, 0, 0.15);
   font-family: 'IBM Plex Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-icon {
+  color: #CCFF00;
+  flex-shrink: 0;
 }
 
 .status {
@@ -207,7 +237,7 @@
   color: rgba(255, 255, 255, 0.8);
   padding: 2rem;
   border-radius: 2rem;
-  width: 320px;
+  width: 360px;
   flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
@@ -249,43 +279,144 @@
   opacity: 1;
 }
 
+.instructions-header {
+  margin-bottom: 24px;
+}
+
+.instructions-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: #CCFF00;
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
 .instructions h3 {
-  margin-top: 0;
+  margin: 0;
   font-family: 'Instrument Serif', serif;
   font-style: italic;
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   font-weight: normal;
   color: #F5F5F0;
-  margin-bottom: 16px;
+  line-height: 1.2;
 }
 
-.instructions ol {
-  padding-left: 1.2rem;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 2;
-  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+.instructions-subtitle {
+  margin: 6px 0 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
 }
 
-.instructions ol strong {
-  color: #CCFF00;
+.requirements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.requirement-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.requirement-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.req-label-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.req-number {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.85em;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.25);
+  margin-right: 2px;
+}
+
+.req-code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: #CCFF00;
+  background: rgba(204, 255, 0, 0.06);
+  border: 1px solid rgba(204, 255, 0, 0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+
+.req-code-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.req-or-divider {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.req-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+.req-text {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
 }
 
 .instructions-note {
   margin-top: 20px;
-  padding-top: 16px;
+  padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
-  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  gap: 10px;
 }
 
-.instructions-note strong {
+.note-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+}
+
+.note-item strong {
   color: #CCFF00;
+  font-weight: 500;
+}
+
+.note-icon {
+  color: #CCFF00;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 /* Responsive */
