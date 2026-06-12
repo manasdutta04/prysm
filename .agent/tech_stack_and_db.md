@@ -21,7 +21,7 @@ prysm/
 ├── .agent/               # AI Agent documentation files
 ├── frontend/             # Vite React client
 │   ├── src/
-│   ├── components/   # Modals (x-connect, app-sidebar)
+│   ├── components/   # Modals (x-connect, app-sidebar, notification-modal)
 │   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy
 │   ├── store/        # Zustand stores
 │   └── lib/          # axios.js instance pointing to backend

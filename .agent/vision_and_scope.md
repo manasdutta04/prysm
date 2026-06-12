@@ -18,7 +18,7 @@ The core user experience is structured around the following sequence:
 [4. Fetch & Timeframe]    --- User selects Date Timeframe bounds (From -> To) on the Dashboard
            │                  and clicks "Fetch Data".
            │
-[5. Ingestion Pipeline]   --- Backend triggers active scrapers for App Store, Play Store & X, parses and
+[5. Ingestion Pipeline]   --- Backend triggers active scrapers for App Store, Play Store, X, and Gmail sync, parses and
            │                  persists records in MongoDB Feedback model.
            │
 [6. Processing & AI]      --- Queries DB for feedbacks in date range, runs dynamic analysis,
@@ -37,6 +37,7 @@ The core user experience is structured around the following sequence:
 * **Feedback Distribution (Sentiment Gauge)**: An SVG circle gauge showing Positive, Negative, and Neutral percentages.
 * **Comparison Line Charts**: Powered by `@mui/x-charts` showing volume trends grouped by month and source.
 * **Positive and Negative Lists**: Displays specific customer concerns and highlights, showing the density of mentions.
+* **Notification Modal**: A popup modal that provides in-app alerts on feedback trends and system notifications.
 
 ### B. App Integration Connectors
 Located under **Connect Apps**. Allows the user to link their platforms:
