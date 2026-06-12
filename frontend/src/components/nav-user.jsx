@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useAuthStore } from "@/store/useAuthStore"
+import { useNotificationStore } from "@/store/useNotificationStore"
 
 import {
   Avatar,
@@ -36,6 +37,8 @@ export function NavUser({
   const { isMobile } = useSidebar()
   const { logout } = useAuthStore()
   const navigate = useNavigate()
+  const { notifications, setModalOpen } = useNotificationStore()
+  const unreadCount = notifications.filter(n => !n.read).length
 
   const handleLogout = async () => {
     await logout()
@@ -93,9 +96,29 @@ export function NavUser({
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/settings")}>
+              <DropdownMenuItem onClick={() => setModalOpen(true)}>
                 <Bell />
-                Notifications
+                <span>Notifications</span>
+                {unreadCount > 0 && (
+                  <span 
+                    style={{
+                      marginLeft: "auto",
+                      display: "flex",
+                      height: "1rem",
+                      width: "1rem",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "9999px",
+                      background: "#CCFF00",
+                      fontSize: "9px",
+                      fontWeight: "bold",
+                      color: "#000000",
+                      fontFamily: "monospace"
+                    }}
+                  >
+                    {unreadCount}
+                  </span>
+                )}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

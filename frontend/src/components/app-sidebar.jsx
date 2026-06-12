@@ -2,18 +2,13 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
+  LayoutDashboard,
+  Blocks,
+  Database,
+  History,
+  HelpCircle,
   BookOpen,
-  Bot,
-  Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-  LifeBuoy,
-  FileText,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -55,23 +50,23 @@ const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: SquareTerminal,
+      icon: LayoutDashboard,
       isActive: true,
     },
     {
       title: "Connect Apps",
       url: "/connect-apps",
-      icon: Bot,
+      icon: Blocks,
     },
     {
       title: "Custom Data",
       url: "/custom-data",
-      icon: BookOpen,
+      icon: Database,
     },
     {
       title: "History",
       url: "/history",
-      icon: Settings2,
+      icon: History,
     },
   ],
   projects: [],
@@ -117,13 +112,13 @@ export function AppSidebar(props) {
           <SidebarMenu>
             <SidebarMenuItem>
               <Link to="/help-support" className={`${baseLinkClass} ${isHelpActive ? activeClass : ""}`}>
-                <LifeBuoy size={18} className="lucide" />
+                <HelpCircle size={18} className="lucide" />
                 <span>Help & Support</span>
               </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <Link to="/docs" className={`${baseLinkClass} ${isDocsActive ? activeClass : ""}`}>
-                <FileText size={18} className="lucide" />
+                <BookOpen size={18} className="lucide" />
                 <span>Documentation</span>
               </Link>
             </SidebarMenuItem>

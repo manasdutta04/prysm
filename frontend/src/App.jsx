@@ -20,8 +20,10 @@ import HelpSupportPage from "./pages/help-support";
 import DocsPage from "./pages/docs";
 import SettingsPage from "./pages/settings";
 import AccountPage from "./pages/account";
+import { NotificationModal } from "./components/notification-modal";
 
 import { useAuthStore } from "./store/useAuthStore";
+import { useNotificationStore } from "./store/useNotificationStore";
 
 function PrivateLayout() {
   return (
@@ -106,10 +108,17 @@ function LoginPageWrapper() {
 
 function App() {
   const { authUser, checkAuth } = useAuthStore();
+  const { loadNotifications } = useNotificationStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  useEffect(() => {
+    if (authUser) {
+      loadNotifications();
+    }
+  }, [authUser, loadNotifications]);
 
   return (
     <>
@@ -136,6 +145,7 @@ function App() {
           },
         }}
       />
+      <NotificationModal />
 
       <Routes>
         <Route path="/" element={<LandingPage />} />

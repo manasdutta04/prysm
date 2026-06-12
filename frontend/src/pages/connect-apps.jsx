@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import { Loader2, HelpCircle, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePlaystoreStore } from "../store/usePlaystoreStore";
+import { useNotificationStore } from "../store/useNotificationStore";
 
 export default function ConnectAppsPage() {
   const [connectedApps, setConnectedApps] = useState(() => {
@@ -32,15 +33,15 @@ export default function ConnectAppsPage() {
   });
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(true);
+  const { addNotification } = useNotificationStore();
 
   // Playstore store
   const {
     isConnected: playstoreConnected,
     appName: playstoreAppName,
-    isFetching,
+    appId: playstoreAppId,
     checkStatus,
     disconnect: disconnectPlaystore,
-    fetchReviews,
   } = usePlaystoreStore();
 
   // Check Play Store connection status on page load
@@ -56,6 +57,7 @@ export default function ConnectAppsPage() {
         "Play Store": {
           isConnected: true,
           appName: playstoreAppName,
+          appId: playstoreAppId,
           appIcon: null,
           lastSync: Date.now(),
         },
@@ -67,7 +69,7 @@ export default function ConnectAppsPage() {
         return updated;
       });
     }
-  }, [playstoreConnected, playstoreAppName]);
+  }, [playstoreConnected, playstoreAppName, playstoreAppId]);
 
   React.useEffect(() => {
     localStorage.setItem("connectedApps", JSON.stringify(connectedApps));
@@ -80,7 +82,7 @@ export default function ConnectAppsPage() {
       description: "Connect your Gmail account",
     },
     {
-      name: "X (Twitter)",
+      name: "X",
       icon: (
         <svg viewBox="0 0 24 24" className="w-full h-full fill-current text-white" xmlns="http://www.w3.org/2000/svg">
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -126,6 +128,11 @@ export default function ConnectAppsPage() {
         lastSync: Date.now(),
       },
     }));
+    addNotification({
+      title: "App Store Connected",
+      description: `Successfully linked App Store app: "${appData.name}" (ID: ${appData.id}).`,
+      category: "system"
+    });
   };
 
   const handlePlaystoreConnected = (appData) => {
@@ -138,6 +145,11 @@ export default function ConnectAppsPage() {
         lastSync: Date.now(),
       },
     }));
+    addNotification({
+      title: "Play Store Connected",
+      description: `Successfully linked Play Store app package ID: "${appData.appId}".`,
+      category: "system"
+    });
   };
 
   const handleXConnected = (appData) => {
@@ -150,6 +162,11 @@ export default function ConnectAppsPage() {
         lastSync: Date.now(),
       },
     }));
+    addNotification({
+      title: "X Account Tracked",
+      description: `Successfully linked handle: "@${appData.name}". Social feedback is queued for sync.`,
+      category: "system"
+    });
   };
 
   const handleDisconnectClick = (appName) => {
@@ -204,7 +221,7 @@ export default function ConnectAppsPage() {
                   {app.icon}
                 </div>
                 <div className="app-title-group">
-                  <h3 className="app-name">{app.name}</h3>
+                  <h3 className="app-name">{app.name === "X" ? "X (Twitter)" : app.name}</h3>
                   <span className={`status-badge ${isConnected ? "badge-connected" : "badge-disconnected"}`}>
                     {isConnected ? "Connected" : "Available"}
                   </span>
@@ -241,24 +258,6 @@ export default function ConnectAppsPage() {
 
               {isConnected ? (
                 <div className="app-card-actions">
-                  {app.name === "Play Store" && (
-                    <LiquidButton
-                      variant="outline"
-                      className="w-full text-white font-semibold border border-white/10 rounded-xl"
-                      onClick={fetchReviews}
-                      disabled={isFetching}
-                      size="lg"
-                    >
-                      {isFetching ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Fetching...
-                        </>
-                      ) : (
-                        "Fetch Reviews"
-                      )}
-                    </LiquidButton>
-                  )}
                   <LiquidButton
                     variant="destructive"
                     className="w-full text-white font-semibold rounded-xl"

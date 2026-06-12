@@ -3,14 +3,60 @@ import "./custom-data.css";
 import axios from "../lib/axios";
 import toast from "react-hot-toast";
 import { Loader2, Check, FileSpreadsheet, UploadCloud } from "lucide-react";
+import { useNotificationStore } from "../store/useNotificationStore";
+
+const parseCSVPreview = (text) => {
+  const lines = [];
+  let row = [];
+  let inQuotes = false;
+  let currentVal = "";
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        currentVal += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      row.push(currentVal.trim());
+      currentVal = "";
+    } else if ((char === '\r' || char === '\n') && !inQuotes) {
+      if (char === '\r' && nextChar === '\n') {
+        i++;
+      }
+      row.push(currentVal.trim());
+      lines.push(row);
+      row = [];
+      currentVal = "";
+      if (lines.length >= 6) { // Header + 5 rows
+        break;
+      }
+    } else {
+      currentVal += char;
+    }
+  }
+  if (row.length > 0 || currentVal) {
+    row.push(currentVal.trim());
+    lines.push(row);
+  }
+  return lines;
+};
 
 export default function CustomDataPage() {
   const [fileName, setFileName] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewRows, setPreviewRows] = useState([]);
   const [status, setStatus] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const { addNotification } = useNotificationStore();
 
-  const onFile = useCallback(async (file) => {
+  const onFile = useCallback((file) => {
     if (!file) return;
 
     // Client-side validation — only .csv allowed
@@ -20,11 +66,27 @@ export default function CustomDataPage() {
     }
 
     setFileName(file.name);
+    setSelectedFile(file);
+    setStatus("");
+    setPreviewRows([]);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const parsed = parseCSVPreview(text);
+      setPreviewRows(parsed);
+    };
+    reader.readAsText(file);
+  }, []);
+
+  const handleImportData = async () => {
+    if (!selectedFile) return;
+
     setIsUploading(true);
     setStatus("");
 
     const fd = new FormData();
-    fd.append("file", file);
+    fd.append("file", selectedFile);
 
     try {
       const resp = await axios.post("/custom-data/upload", fd, {
@@ -32,6 +94,15 @@ export default function CustomDataPage() {
       });
       setStatus(resp.data.message || "Upload complete");
       toast.success(resp.data.message || "Upload complete");
+      addNotification({
+        title: "CSV Upload Completed",
+        description: `Successfully imported "${selectedFile.name}" feedback records to MongoDB.`,
+        category: "system"
+      });
+      // Clear preview
+      setFileName(null);
+      setSelectedFile(null);
+      setPreviewRows([]);
     } catch (err) {
       const msg =
         err?.response?.data?.message || err.message || "Upload failed";
@@ -40,7 +111,14 @@ export default function CustomDataPage() {
     } finally {
       setIsUploading(false);
     }
-  }, []);
+  };
+
+  const handleClearPreview = () => {
+    setFileName(null);
+    setSelectedFile(null);
+    setPreviewRows([]);
+    setStatus("");
+  };
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -75,41 +153,92 @@ export default function CustomDataPage() {
         >
           <div className="upload-inner">
             <p className="upload-title">Upload your File:</p>
-            <div className={`drop-box ${isDragging ? "drag-active" : ""}`}>
-              {isUploading ? (
-                <div className="uploading-state">
-                  <Loader2 className="spin-icon" size={32} />
-                  <p>Uploading...</p>
+            
+            {selectedFile ? (
+              <div className="csv-preview-container">
+                <p className="preview-heading">CSV Preview (First 5 Rows)</p>
+                <div className="preview-table-wrapper">
+                  <table className="preview-table">
+                    <thead>
+                      <tr>
+                        {previewRows[0]?.map((header, idx) => (
+                          <th key={idx}>{header}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {previewRows.slice(1).map((row, rowIdx) => (
+                        <tr key={rowIdx}>
+                          {row.map((cell, cellIdx) => (
+                            <td key={cellIdx}>{cell}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              ) : (
-                <>
-                  <div className="upload-icon-container">
-                    <UploadCloud className="upload-cloud-icon" size={32} />
+                <div className="preview-actions">
+                  <button
+                    className="btn-clear"
+                    onClick={handleClearPreview}
+                    disabled={isUploading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn-import"
+                    onClick={handleImportData}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="spin-icon mr-2" size={16} />
+                        Importing...
+                      </>
+                    ) : (
+                      "Import Data"
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className={`drop-box ${isDragging ? "drag-active" : ""}`}>
+                {isUploading ? (
+                  <div className="uploading-state">
+                    <Loader2 className="spin-icon" size={32} />
+                    <p>Uploading...</p>
                   </div>
-                  <p className="drop-text">Drag &amp; Drop</p>
-                  <p>
-                    or{" "}
-                    <label className="browse-label">
-                      browse
-                      <input
-                        type="file"
-                        accept=".csv"
-                        onChange={handleBrowse}
-                        hidden
-                      />
-                    </label>
-                  </p>
-                  <p className="hint">upload in .csv format only</p>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    <div className="upload-icon-container">
+                      <UploadCloud className="upload-cloud-icon" size={32} />
+                    </div>
+                    <p className="drop-text">Drag &amp; Drop</p>
+                    <p>
+                      or{" "}
+                      <label className="browse-label">
+                        browse
+                        <input
+                          type="file"
+                          accept=".csv"
+                          onChange={handleBrowse}
+                          hidden
+                        />
+                      </label>
+                    </p>
+                    <p className="hint">upload in .csv format only</p>
+                  </>
+                )}
+              </div>
+            )}
 
-            {fileName && !isUploading && (
+            {fileName && (
               <div className="file-name">
                 <FileSpreadsheet className="file-icon" size={16} />
                 <span>{fileName}</span>
               </div>
             )}
+
             {status && !isUploading && (
               <div
                 className={`status ${

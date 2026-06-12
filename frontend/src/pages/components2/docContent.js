@@ -52,7 +52,7 @@ Go to /connect-apps to link feedback sources. Each connected app stores its stat
 
 App Store: Click Connect, search for your iOS app, and confirm. Reviews are scraped from the public App Store (up to 10 pages of recent reviews per fetch).
 
-Play Store: Click Connect, enter your Android app ID, and connect. Use Fetch Reviews on the card to pull the latest Play Store reviews into the database.
+Play Store: Click Connect, enter your Android app ID, and connect. The dashboard Fetch Data button will pull the latest reviews automatically.
 
 X (Twitter): Click Connect and enter the X account handle to track. Prysm uses public Nitter RSS feeds — only the most recent posts are available per scrape; older posts accumulate in the database over repeated fetches.
 
@@ -89,14 +89,14 @@ The Dashboard at /dashboard is where analysis happens.
 2. Click Fetch Data.
 
 What Fetch Data does:
-Runs scrapers for your connected App Store and X sources (if connected)
-Loads feedback already stored in MongoDB for all sources (Play Store, Gmail, CSV, past scrapes) within your date range
+Runs scrapers for your connected App Store, Play Store, X, and Gmail sources (if connected)
+Loads feedback already stored in MongoDB for all sources (including CSV custom uploads) within your date range
 Sends batched feedback to your configured LLM using the API key from Settings
 Returns AI summary, key insights, areas to improve, sentiment gauge, performance metrics, and source breakdown charts
 
 The page updates with live results. Use the metric tabs under Performance Metrics to switch between satisfaction, response time, and volume views. Download PDF exports the current dashboard snapshot when data is loaded.
 
-Important: Fetch Data does not trigger new Gmail API pulls from the Dashboard — Gmail messages already in the database are analyzed by date range only.
+Important: Fetch Data automatically pulls new Gmail messages for connected accounts from the last 30 days.
 `,
   },
   {
