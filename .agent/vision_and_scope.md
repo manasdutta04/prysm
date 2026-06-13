@@ -9,7 +9,8 @@ Prysm is an AI-driven customer feedback aggregator and analyzer designed for Pro
 The core user experience is structured around the following sequence:
 
 ```text
-[1. User Authentication]  --- Enforced by a dedicated /login route (with separate public layout).
+[1. User Authentication]  --- Logged-out users start at / on the Landing Page and authenticate via /login.
+           |                  After login, / is the Dashboard home inside the authenticated layout.
            │
 [2. Ingestion Connectors] --- User connects Gmail, X, or searches App Store / Play Store on Connect Apps.
            │

@@ -83,7 +83,7 @@ export default function AccountPage() {
       );
       setShowConfirmModal(false);
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        window.location.href = "/";
       }, 1500);
     } catch (error) {
       console.error("Clear History Error:", error);

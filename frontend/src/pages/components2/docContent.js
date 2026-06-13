@@ -5,13 +5,13 @@ const documentationContent = [
     content: `
 Prysm is a web app for collecting customer feedback from app stores, X, Gmail, and CSV uploads, then analyzing it with your own AI API key. There is nothing to install — use the version already deployed on Vercel in your browser.
 
-Open the app and go to /login to create an account or sign in. After login you land on the Dashboard.
+Open the app at /. If you are logged out, you will see the landing page and can continue to /login. After login, / opens the Dashboard.
 
 Recommended first-time flow:
-Create your account at /login
+Create your account from the landing page or /login
 Configure an LLM provider and API key in /settings
 Connect at least one data source in /connect-apps (or upload CSV at /custom-data)
-Return to /dashboard, pick a date range, and click Fetch Data
+Return to /, pick a date range on the Dashboard, and click Fetch Data
 Review results and open /history for past analysis runs
 
 Example:
@@ -83,7 +83,7 @@ A file with columns source, date, feedback — one row per support ticket — ca
     id: "dashboard",
     title: "5. Dashboard — Fetch & Analyze",
     content: `
-The Dashboard at /dashboard is where analysis happens.
+The Dashboard is the authenticated home page at /.
 
 1. Set the From and To dates (defaults to the last 30 days).
 2. Click Fetch Data.

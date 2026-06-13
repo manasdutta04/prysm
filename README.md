@@ -98,7 +98,7 @@ You can run both the frontend and backend of Prysm in a single unified Docker en
 
 1. Navigate to the Login page.
 2. Enter your registered email ID and password.
-3. Upon successful authentication, you will be redirected to the main dashboard.
+3. Upon successful authentication, `/` becomes the main dashboard. Logged-out users at `/` see the landing page, and logged-in users at `/` go straight to the dashboard.
 
 ### Navigation Overview
 

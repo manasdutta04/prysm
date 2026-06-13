@@ -23,7 +23,7 @@ import { NotificationModal } from "./components/notification-modal";
 import { useAuthStore } from "./store/useAuthStore";
 import { useNotificationStore } from "./store/useNotificationStore";
 
-function PrivateLayout() {
+function PrivateLayout({ children }) {
   return (
     <div
       style={{
@@ -61,7 +61,7 @@ function PrivateLayout() {
                 padding: "2rem",
               }}
             >
-              <Outlet />
+              {children || <Outlet />}
             </div>
           </SidebarInset>
         </div>
@@ -104,7 +104,21 @@ function ProtectedRoute({ children }) {
   if (isCheckingAuth) {
     return <HamsterLoader />;
   }
-  return authUser ? children : <Navigate to="/login" replace />;
+  return authUser ? children : <Navigate to="/" replace />;
+}
+
+function HomeRoute() {
+  const { authUser, isCheckingAuth } = useAuthStore();
+  if (isCheckingAuth) {
+    return <HamsterLoader />;
+  }
+  return authUser ? (
+    <PrivateLayout>
+      <DashboardPage />
+    </PrivateLayout>
+  ) : (
+    <LandingPage />
+  );
 }
 
 function LoginPageWrapper() {
@@ -112,7 +126,7 @@ function LoginPageWrapper() {
   if (isCheckingAuth) {
     return <HamsterLoader />;
   }
-  return authUser ? <Navigate to="/dashboard" replace /> : <LoginPage />;
+  return authUser ? <Navigate to="/" replace /> : <LoginPage />;
 }
 
 function App() {
@@ -157,7 +171,7 @@ function App() {
       <NotificationModal />
 
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<LoginPageWrapper />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
@@ -170,7 +184,6 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/connect-apps" element={<ConnectAppsPage />} />
           <Route path="/custom-data" element={<CustomDataPage />} />
           <Route path="/history" element={<HistoryPage />} />
@@ -181,7 +194,7 @@ function App() {
 
         <Route
           path="*"
-          element={<Navigate to={authUser ? "/dashboard" : "/"} replace />}
+          element={<Navigate to="/" replace />}
         />
       </Routes>
     </>
