@@ -303,11 +303,11 @@ const faqItems = [
   },
   {
     q: "Are my API keys and feedback data secure?",
-    a: "Yes. Your API keys are stored strictly in your local browser storage and never sent to our servers. Raw feedbacks are stored in your own secure MongoDB database instance. Prysm is built from the ground up for strict privacy compliance.",
+    a: "Yes. Your API keys are stored strictly in your local browser storage and never sent to our servers. Raw feedbacks are stored in database instance. Prysm is built from the ground up for strict privacy compliance.",
   },
   {
     q: "Which integrations are currently supported?",
-    a: "Prysm supports live feeds from App Store Reviews, Play Store Reviews, X (via Nitter RSS), and custom data CSV uploads. Gmail fetching is supported in the API structure for manual triggering, with more channels being added constantly.",
+    a: "Prysm supports live automated feeds from App Store Reviews, Google Play Store Reviews, X (via Nitter RSS), and Gmail OAuth inbox fetching, alongside custom CSV data uploads. All sources are fetched simultaneously when you trigger Fetch Data on the dashboard.",
   },
   {
     q: "Can I run Prysm completely locally?",
