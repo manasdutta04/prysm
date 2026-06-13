@@ -584,6 +584,89 @@ export default function DashboardPage() {
         });
       }
 
+      // ── STRATEGIC PRIORITY MATRIX ─────────────────────────────
+      checkPage(80);
+      sectionHeader("Strategic Priority Matrix");
+
+      const quadrants = [
+        {
+          label: "Immediate Fix",
+          labelColor: [239, 68, 68],
+          bgColor: [255, 240, 240],
+          text: data.negativePoints?.[0]?.point
+            ? `Resolve issues with: ${data.negativePoints[0].point}`
+            : "No critical negative friction points detected.",
+          meta: `High Urgency · ${data.negativePoints?.[0]?.mentions || 0} Mentions`,
+        },
+        {
+          label: "Growth Lever",
+          labelColor: [120, 170, 0],
+          bgColor: [245, 255, 220],
+          text: data.positivePoints?.[0]?.point
+            ? `Promote and enhance: ${data.positivePoints[0].point}`
+            : "Build customer advocacy around recent updates.",
+          meta: `High Impact · ${data.positivePoints?.[0]?.mentions || 0} Mentions`,
+        },
+        {
+          label: "Quick Win",
+          labelColor: [37, 99, 235],
+          bgColor: [235, 245, 255],
+          text: data.summary.improvements?.[0]
+            ? `Address: ${data.summary.improvements[0]}`
+            : "Conduct lightweight UI polishing and performance tune-ups.",
+          meta: "Medium Urgency · Low Effort",
+        },
+        {
+          label: "Strategic Monitor",
+          labelColor: [80, 80, 80],
+          bgColor: [245, 245, 245],
+          text: data.summary.negativeSentiment > 35
+            ? "High friction spike. Closely track and review upcoming release feedback."
+            : "Sentiment is healthy. Capture long-tail feature requests for the roadmap.",
+          meta: "Continuous Assessment",
+        },
+      ];
+
+      const qW = (contentW - 6) / 2;
+      const qH = 36;
+
+      for (let row = 0; row < 2; row++) {
+        checkPage(qH + 6);
+        for (let col = 0; col < 2; col++) {
+          const q = quadrants[row * 2 + col];
+          const qX = margin + col * (qW + 6);
+          const qY = y;
+
+          // Card background
+          pdf.setFillColor(...q.bgColor);
+          pdf.roundedRect(qX, qY, qW, qH, 2, 2, "F");
+
+          // Left accent stripe
+          pdf.setFillColor(...q.labelColor);
+          pdf.rect(qX, qY, 2.5, qH, "F");
+
+          // Badge label
+          pdf.setFontSize(7);
+          pdf.setFont("helvetica", "bold");
+          pdf.setTextColor(...q.labelColor);
+          pdf.text(q.label.toUpperCase(), qX + 6, qY + 7);
+
+          // Body text
+          pdf.setFontSize(8);
+          pdf.setFont("helvetica", "normal");
+          pdf.setTextColor(30, 30, 30);
+          const bodyLines = pdf.splitTextToSize(q.text, qW - 10);
+          pdf.text(bodyLines.slice(0, 2), qX + 6, qY + 14);
+
+          // Meta
+          pdf.setFontSize(6.5);
+          pdf.setTextColor(100, 100, 100);
+          pdf.text(q.meta, qX + 6, qY + qH - 5);
+        }
+        y += qH + 5;
+      }
+      y += 4;
+
       // ── LAST PAGE: SIGNATURE / CERTIFICATION ─────────────────
       checkPage(80);
       sectionHeader("Report Certification");
