@@ -927,8 +927,8 @@ export const fetchAndAnalyzeData = async (req, res) => {
       "Dec",
     ];
 
-    // 4) Save analysis snapshot to history if it's a fresh scrape run
-    if (!skipScraping && total > 0) {
+    // 4) Save analysis snapshot to history (always save after a full fetch-and-analyze)
+    if (total > 0) {
       try {
         await AnalysisHistory.create({
           userId,
@@ -941,6 +941,35 @@ export const fetchAndAnalyzeData = async (req, res) => {
           keyInsights,
           improvements,
           satisfactionScore: currentScore,
+          positivePoints,
+          negativePoints,
+          metricsSnapshot: {
+            satisfactionScore: currentScore,
+            previousScore,
+            improvement:
+              previousScore > 0
+                ? Number(
+                    (
+                      ((currentScore - previousScore) / previousScore) *
+                      100
+                    ).toFixed(1),
+                  )
+                : 0,
+            responseTime: `${Number((12 / Math.log10(total + 9)).toFixed(1))} hrs`,
+            previousResponseTime: `${previousVolume > 0 ? Number((12 / Math.log10(previousVolume + 9)).toFixed(1)) : 0} hrs`,
+            feedbackVolume: total,
+            previousVolume,
+            trend: currentScore >= previousScore ? "up" : "down",
+            history: {
+              satisfaction: satisfactionHistory,
+              responseTime: responseTimeHistory,
+              volume: volumeHistory,
+            },
+          },
+          feedbackSourcesSnapshot: {
+            months,
+            sources: sourceDistribution,
+          },
         });
         console.log("Analysis history snapshot saved successfully.");
       } catch (err) {
@@ -1016,6 +1045,179 @@ export const getAnalysisHistory = async (req, res) => {
     res
       .status(500)
       .json({ message: error.message || "Failed to load history" });
+  }
+};
+
+/**
+ * GET /dashboard/latest-result
+ * Returns the most recent saved analysis snapshot from MongoDB.
+ * NO LLM calls, NO scraping — pure DB read.
+ * Used on page load / refresh so tokens are never wasted.
+ */
+export const getLatestResult = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const latest = await AnalysisHistory.findOne({ userId }).sort({
+      timestamp: -1,
+    });
+
+    if (!latest) {
+      // No analysis has ever been run — return an empty-state response
+      return res.status(200).json({ noData: true });
+    }
+
+    // If the snapshot fields are present (new format), return them directly
+    if (latest.metricsSnapshot && latest.feedbackSourcesSnapshot) {
+      return res.status(200).json({
+        summary: {
+          totalFeedback: latest.totalFeedback,
+          positiveSentiment: latest.positiveSentiment,
+          negativeSentiment: latest.negativeSentiment,
+          neutralSentiment: latest.neutralSentiment,
+          keyInsights: latest.keyInsights || [],
+          improvements: latest.improvements || [],
+        },
+        positivePoints: latest.positivePoints || [],
+        negativePoints: latest.negativePoints || [],
+        metrics: latest.metricsSnapshot,
+        feedbackSources: latest.feedbackSourcesSnapshot,
+        cachedAt: latest.timestamp,
+      });
+    }
+
+    // Older record without full snapshot — recompute lightweight stats from DB
+    const start = latest.startDate;
+    const end = latest.endDate;
+
+    const feedbacks = await Feedback.find({
+      userId,
+      timestamp: { $gte: start, $lte: end },
+    });
+
+    if (feedbacks.length === 0) {
+      return res.status(200).json({ noData: true });
+    }
+
+    // Rule-based-only recompute (no LLM)
+    const topicStats = TOPICS.map((t) => ({
+      ...t,
+      positiveMentions: 0,
+      negativeMentions: 0,
+      mentions: 0,
+    }));
+
+    let positiveCount = 0;
+    let negativeCount = 0;
+    let neutralCount = 0;
+
+    for (const fb of feedbacks) {
+      const content = (fb.content || "").toLowerCase();
+      let posScore = 0;
+      let negScore = 0;
+      for (const w of POSITIVE_KEYWORDS) if (content.includes(w)) posScore++;
+      for (const w of NEGATIVE_KEYWORDS) if (content.includes(w)) negScore++;
+      if (posScore > negScore) positiveCount++;
+      else if (negScore > posScore) negativeCount++;
+      else neutralCount++;
+
+      for (const t of topicStats) {
+        let match = false;
+        for (const kw of t.keywords) {
+          if (content.includes(kw)) { match = true; break; }
+        }
+        if (match) {
+          t.mentions++;
+          if (posScore > negScore) t.positiveMentions++;
+          if (negScore > posScore) t.negativeMentions++;
+        }
+      }
+    }
+
+    const total = feedbacks.length;
+    const totalCount = positiveCount + negativeCount + neutralCount || total || 1;
+    const posPct = Math.round((positiveCount / totalCount) * 100);
+    const negPct = Math.round((negativeCount / totalCount) * 100);
+    const neuPct = 100 - posPct - negPct;
+    const currentScore = Number(((positiveCount / totalCount) * 5).toFixed(1));
+
+    const sortedTopics = [...topicStats].sort((a, b) => b.mentions - a.mentions);
+    const positivePoints = sortedTopics
+      .filter((t) => t.positiveMentions > 0)
+      .slice(0, 5)
+      .map((t) => ({ point: t.positiveSummary, mentions: t.positiveMentions }));
+    const negativePoints = sortedTopics
+      .filter((t) => t.negativeMentions > 0)
+      .slice(0, 5)
+      .map((t) => ({ point: t.negativeSummary, mentions: t.negativeMentions }));
+
+    const timeDiff = end.getTime() - start.getTime();
+    const chunkMs = timeDiff / 8;
+    const satisfactionHistory = [];
+    const responseTimeHistory = [];
+    const volumeHistory = [];
+    for (let i = 0; i < 8; i++) {
+      const cs = new Date(start.getTime() + i * chunkMs);
+      const ce = new Date(start.getTime() + (i + 1) * chunkMs);
+      const chunk = feedbacks.filter((f) => f.timestamp >= cs && f.timestamp < ce);
+      let cp = 0;
+      for (const fb of chunk) {
+        const c = (fb.content || "").toLowerCase();
+        let ps = 0, ns = 0;
+        for (const w of POSITIVE_KEYWORDS) if (c.includes(w)) ps++;
+        for (const w of NEGATIVE_KEYWORDS) if (c.includes(w)) ns++;
+        if (ps > ns) cp++;
+      }
+      satisfactionHistory.push(chunk.length > 0 ? Number(((cp / chunk.length) * 5).toFixed(1)) : 4.0);
+      responseTimeHistory.push(Number((3.8 - i * 0.2).toFixed(1)));
+      volumeHistory.push(chunk.length);
+    }
+
+    const sourceDistribution = { twitter: Array(12).fill(0), playstore: Array(12).fill(0), appstore: Array(12).fill(0), email: Array(12).fill(0), customData: Array(12).fill(0) };
+    feedbacks.forEach((f) => {
+      const month = f.timestamp.getMonth();
+      if (f.source === "x") sourceDistribution.twitter[month]++;
+      else if (f.source === "playstore") sourceDistribution.playstore[month]++;
+      else if (f.source === "appstore") sourceDistribution.appstore[month]++;
+      else if (f.source === "gmail") sourceDistribution.email[month]++;
+      else sourceDistribution.customData[month]++;
+    });
+
+    const currentResponseTime = Number((12 / Math.log10(total + 9)).toFixed(1));
+
+    return res.status(200).json({
+      summary: {
+        totalFeedback: total,
+        positiveSentiment: posPct,
+        negativeSentiment: negPct,
+        neutralSentiment: neuPct,
+        keyInsights: latest.keyInsights || [],
+        improvements: latest.improvements || [],
+      },
+      positivePoints,
+      negativePoints,
+      metrics: {
+        satisfactionScore: currentScore,
+        previousScore: latest.satisfactionScore,
+        improvement: latest.satisfactionScore > 0
+          ? Number((((currentScore - latest.satisfactionScore) / latest.satisfactionScore) * 100).toFixed(1))
+          : 0,
+        responseTime: `${currentResponseTime} hrs`,
+        previousResponseTime: "0 hrs",
+        feedbackVolume: total,
+        previousVolume: 0,
+        trend: currentScore >= latest.satisfactionScore ? "up" : "down",
+        history: { satisfaction: satisfactionHistory, responseTime: responseTimeHistory, volume: volumeHistory },
+      },
+      feedbackSources: {
+        months: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+        sources: sourceDistribution,
+      },
+      cachedAt: latest.timestamp,
+    });
+  } catch (error) {
+    console.error("Error in getLatestResult:", error.message);
+    res.status(500).json({ message: error.message || "Failed to load latest result" });
   }
 };
 

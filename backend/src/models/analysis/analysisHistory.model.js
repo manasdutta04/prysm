@@ -11,7 +11,18 @@ const AnalysisHistorySchema = new mongoose.Schema({
   neutralSentiment: { type: Number, required: true },
   keyInsights: [{ type: String }],
   improvements: [{ type: String }],
-  satisfactionScore: { type: Number, required: true }
+  satisfactionScore: { type: Number, required: true },
+  positivePoints: [{
+    point: { type: String },
+    mentions: { type: Number },
+  }],
+  negativePoints: [{
+    point: { type: String },
+    mentions: { type: Number },
+  }],
+  // Full metrics snapshot for instant cache reads
+  metricsSnapshot: { type: mongoose.Schema.Types.Mixed, default: null },
+  feedbackSourcesSnapshot: { type: mongoose.Schema.Types.Mixed, default: null },
 });
 
 const AnalysisHistory = mongoose.model("AnalysisHistory", AnalysisHistorySchema);

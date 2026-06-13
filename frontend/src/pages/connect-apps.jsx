@@ -58,16 +58,19 @@ export default function ConnectAppsPage() {
   // Sync Play Store status into connectedApps state
   useEffect(() => {
     if (playstoreConnected && playstoreAppName) {
-      setConnectedApps((prev) => ({
-        ...prev,
-        "Play Store": {
-          isConnected: true,
-          appName: playstoreAppName,
-          appId: playstoreAppId,
-          appIcon: null,
-          lastSync: Date.now(),
-        },
-      }));
+      setConnectedApps((prev) => {
+        const existingLastSync = prev["Play Store"]?.lastSync ?? null;
+        return {
+          ...prev,
+          "Play Store": {
+            isConnected: true,
+            appName: playstoreAppName,
+            appId: playstoreAppId,
+            appIcon: null,
+            lastSync: existingLastSync, // keep old timestamp; only set on actual fetch
+          },
+        };
+      });
     } else if (!playstoreConnected) {
       setConnectedApps((prev) => {
         const updated = { ...prev };

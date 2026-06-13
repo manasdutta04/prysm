@@ -42,9 +42,27 @@ export default function DashboardPage() {
     return new Date().toISOString().split("T")[0];
   });
 
-  const loadDashboardData = useCallback(
-    async (skipScrape = true) => {
-      setIsLoading(true);
+  // ── Page-load path: reads the last saved snapshot from DB (no LLM, no scraping) ──
+  const loadCachedResult = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await axiosInstance.get("/dashboard/latest-result");
+      if (res.data?.noData) {
+        setData(null);
+      } else {
+        setData(res.data);
+      }
+    } catch (error) {
+      console.error("Dashboard cache load error:", error);
+      setData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // ── Button path: scrapes + LLM analysis, saves snapshot to DB ──
+  const runFetchAndAnalyze = useCallback(
+    async (skipScrape = false) => {
       try {
         const savedApps = localStorage.getItem("connectedApps");
         const connectedApps = savedApps ? JSON.parse(savedApps) : {};
@@ -75,11 +93,9 @@ export default function DashboardPage() {
         setData(res.data);
         return res.data;
       } catch (error) {
-        console.error("Dashboard Load Error:", error);
-        toast.error("Failed to load dashboard data");
-        setData(null);
-      } finally {
-        setIsLoading(false);
+        console.error("Fetch & Analyze Error:", error);
+        toast.error("Failed to fetch fresh data");
+        return null;
       }
     },
     [startDate, endDate],
@@ -92,16 +108,17 @@ export default function DashboardPage() {
     }
   }, []);
 
+  // On mount / page refresh: only load the cached snapshot — no LLM, no tokens burned
   useEffect(() => {
-    loadDashboardData(true);
-  }, [loadDashboardData]);
+    loadCachedResult();
+  }, [loadCachedResult]);
 
   const handleFetchData = async () => {
     setIsFetching(true);
     toast.loading("Fetching latest feedback data...", { id: "fetching" });
 
     try {
-      const result = await loadDashboardData(false);
+      const result = await runFetchAndAnalyze(false);
       const now = Date.now();
       setLastFetchedTime(now);
       localStorage.setItem("lastFetchedTime", now.toString());
@@ -163,6 +180,7 @@ export default function DashboardPage() {
       setIsFetching(false);
     }
   };
+
 
   const handleDownloadPDF = () => {
     if (!data) {
