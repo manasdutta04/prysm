@@ -9,7 +9,7 @@ Prysm is an AI-driven customer feedback aggregator and analyzer designed for Pro
 The core user experience is structured around the following sequence:
 
 ```text
-[1. User Authentication]  --- Logged-out users start at / on the Landing Page and authenticate via /login.
+[1. User Authentication]  --- Logged-out users start at / on the Landing Page with interactive demos and authenticate via /login.
            |                  After login, / is the Dashboard home inside the authenticated layout.
            │
 [2. Ingestion Connectors] --- User connects Gmail, X, or searches App Store / Play Store on Connect Apps.
@@ -39,6 +39,7 @@ The core user experience is structured around the following sequence:
 * **Comparison Line Charts**: Powered by `@mui/x-charts` showing volume trends grouped by month and source.
 * **Positive and Negative Lists**: Displays specific customer concerns and highlights, showing the density of mentions.
 * **Notification Modal**: A popup modal that provides in-app alerts on feedback trends and system notifications.
+* **PDF Reporting Generation**: Generates exportable reports including a Strategic Priority Matrix.
 
 ### B. App Integration Connectors
 Located under **Connect Apps**. Allows the user to link their platforms:
@@ -57,7 +58,7 @@ Instead of raw comments logs, the **History** tab displays historical logs of co
 * Expandable section lists the exact Key Insights and Areas to Improve calculated for that run.
 
 ### E. Account Management & Settings
-Allows users to manage their profile data and configure API keys.
+Allows users to manage their profile data and configure API keys. Includes the ability to permanently clear account history.
 
 ### F. Documentation & Support
 Provides access to system architecture details, feature explanations, and help resources.

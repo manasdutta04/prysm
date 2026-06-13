@@ -12,6 +12,8 @@ Conventional feedback analysis often involves manual reading and categorization 
 - "Emerging issues" alerts before they blow up
 - Department-specific reports (Support, Product, Marketing)
 - Slack & email notifications
+- Exportable PDF Reports with Strategic Priority Matrix
+- Data history clearing capabilities
 - Unique Angle: Goes beyond sentiment → actually tells teams what to fix
 - Target Users: Product managers, Large organisations, customer success teams
 
@@ -98,7 +100,7 @@ You can run both the frontend and backend of Prysm in a single unified Docker en
 
 1. Navigate to the Login page.
 2. Enter your registered email ID and password.
-3. Upon successful authentication, `/` becomes the main dashboard. Logged-out users at `/` see the landing page, and logged-in users at `/` go straight to the dashboard.
+3. Upon successful authentication, `/` becomes the main dashboard. Logged-out users at `/` see the Landing Page with interactive demos and feature highlights, and logged-in users at `/` go straight to the dashboard.
 
 ### Navigation Overview
 
