@@ -168,6 +168,7 @@ Key components include:
 
 Ensures all critical feedback trends are communicated promptly.
 
+- **In-App Notification Modal**: A built-in UI component alerting users of trends and updates directly within the application.
 - **Slack Alerts**: Integrated via Slack API to deliver messages directly to channels.
 - **Email Alerts**: Sent automatically through Gmail or Microsoft Graph APIs.
 - **Custom Thresholds**: Admins can set trigger limits, e.g., alert when negative feedback exceeds 100 mentions per day.

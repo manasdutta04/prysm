@@ -12,9 +12,9 @@ The following files are managed by another teammate. Under no circumstances shou
 * **[gmailUser.model.js](file:///c:/Coding%20Workspace/prysm/backend/src/models/users/gmailUser.model.js)**: Contains secondary user modeling. Do not modify.
 
 ### B. Scoped Dashboard Ingestion
-* The Fetch Data button on the Dashboard is strictly scoped to execute scrapes for X (Twitter) and the Apple App Store only.
-* Do NOT trigger automated Gmail API fetches from the dashboard. Gmail syncing is handled separately by the teammate's Gmail button flows on the Connect page.
-* Gmail feedbacks are loaded from the database and filtered by timeframe dates, but the dashboard must never make active requests to Google API.
+* The Fetch Data button on the Dashboard is responsible for executing ingestion sweeps across all connected apps (X, App Store, Play Store, and Gmail).
+* The dashboard backend controller has been updated to trigger automated Gmail API fetches and Play Store syncs directly when requested.
+* All data is persisted into the database, after which it is filtered by timeframe for the analysis workflow.
 
 ---
 
