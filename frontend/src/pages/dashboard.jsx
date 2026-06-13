@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./dashboard.css";
+import { Link } from "react-router-dom";
 // import { useAuthStore } from "../store/useAuthStore";
 // import { useNavigate } from "react-router-dom";
 import ConnectGmailButton from "../components/ConnectGmailButton";
@@ -30,6 +31,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeMetricTab, setActiveMetricTab] = useState("satisfaction");
   const { addNotification } = useNotificationStore();
+  const hasNoData = !isLoading && (!data || data.summary.totalFeedback === 0);
 
   const [startDate, setStartDate] = useState(() => {
     const date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -88,6 +90,10 @@ export default function DashboardPage() {
       setLastFetchedTime(parseInt(savedTime, 10));
     }
   }, []);
+
+  useEffect(() => {
+    loadDashboardData(true);
+  }, [loadDashboardData]);
 
   const handleFetchData = async () => {
     setIsFetching(true);
@@ -245,41 +251,89 @@ export default function DashboardPage() {
   return (
     <div className="dashboard-page">
       <div className="dashboard-main-section">
-        {/* Main Summary Widget */}
-        <div className="dashboard-summary-widget">
-          <div className="widget-header">
-            <Sparkles className="widget-icon neutral" size={20} />
-            <h3 className="widget-title">AI Summary</h3>
+        {/* Main Summary Widget or Onboarding Card */}
+        {hasNoData ? (
+          <div className="dashboard-onboarding-widget">
+            <div className="onboarding-header">
+              <Sparkles className="onboarding-icon text-brand" size={24} style={{ color: "#CCFF00" }} />
+              <h3 className="onboarding-title">No Feedback Data Found</h3>
+              <p className="onboarding-subtitle">
+                Prysm hasn't ingested any feedback records for this timeframe yet. To start generating AI-driven sentiment insights, please connect an integration or upload a CSV file.
+              </p>
+            </div>
+
+            <div className="onboarding-cards">
+              <div className="onboarding-card">
+                <div className="onboarding-card-header">
+                  <div className="onboarding-card-icon-container">
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-brand" style={{ color: "#CCFF00" }} xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
+                    </svg>
+                  </div>
+                  <h4 className="onboarding-card-title">Connect Apps</h4>
+                </div>
+                <p className="onboarding-card-desc">
+                  Link live channels including App Store, Play Store, X (Twitter), or Gmail to scrape reviews in real-time.
+                </p>
+                <Link to="/connect-apps" className="onboarding-card-link">
+                  Go to Connect Apps &rarr;
+                </Link>
+              </div>
+
+              <div className="onboarding-card">
+                <div className="onboarding-card-header">
+                  <div className="onboarding-card-icon-container">
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-brand" style={{ color: "#CCFF00" }} xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/>
+                    </svg>
+                  </div>
+                  <h4 className="onboarding-card-title">Upload Custom Data</h4>
+                </div>
+                <p className="onboarding-card-desc">
+                  Import any spreadsheet of customer logs or feedback surveys. Drag and drop a CSV file to preview and insert.
+                </p>
+                <Link to="/custom-data" className="onboarding-card-link">
+                  Go to Custom Data &rarr;
+                </Link>
+              </div>
+            </div>
           </div>
-
-          {isLoading ? (
-            <SkeletonLoader />
-          ) : data ? (
-            <div className="summary-content">
-              <div className="insights-section">
-                <h4 className="section-title">Key Insights</h4>
-                <ul className="insights-list">
-                  {data.summary.keyInsights.map((insight, idx) => (
-                    <li key={idx}>{insight}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="improvements-section">
-                <h4 className="section-title">Areas to Improve</h4>
-                <ul className="improvements-list">
-                  {data.summary.improvements.map((improvement, idx) => (
-                    <li key={idx}>{improvement}</li>
-                  ))}
-                </ul>
-              </div>
+        ) : (
+          <div className="dashboard-summary-widget">
+            <div className="widget-header">
+              <Sparkles className="widget-icon neutral" size={20} />
+              <h3 className="widget-title">AI Summary</h3>
             </div>
-          ) : (
-            <div className="empty-state">
-              <p>No data available. Click "Fetch Data" to load feedback.</p>
-            </div>
-          )}
-        </div>
+
+            {isLoading ? (
+              <SkeletonLoader />
+            ) : data ? (
+              <div className="summary-content">
+                <div className="insights-section">
+                  <h4 className="section-title">Key Insights</h4>
+                  <ul className="insights-list">
+                    {data.summary.keyInsights.map((insight, idx) => (
+                      <li key={idx}>{insight}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="improvements-section">
+                  <h4 className="section-title">Areas to Improve</h4>
+                  <ul className="improvements-list">
+                    {data.summary.improvements.map((improvement, idx) => (
+                      <li key={idx}>{improvement}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <div className="empty-state">
+                <p>No data available. Click "Fetch Data" to load feedback.</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Action Buttons Section */}
         <div className="dashboard-actions">
@@ -323,7 +377,7 @@ export default function DashboardPage() {
           {/* Sentiment Distribution Matrix */}
           {isLoading ? (
             <GaugeSkeleton />
-          ) : data ? (
+          ) : data && !hasNoData ? (
             <>
               <div className="sentiment-matrix">
                 <div className="matrix-label">Feedback Distribution</div>
@@ -426,288 +480,292 @@ export default function DashboardPage() {
       </div>
 
       {/* Bottom Widgets Row */}
-      <div className="dashboard-widgets-row">
-        {/* Positive Points Widget */}
-        <div className="dashboard-widget-card">
-          <div className="widget-card-header">
-            <Smile className="widget-icon positive" size={20} />
-            <h4 className="widget-card-title">What's Working</h4>
-          </div>
-          {isLoading ? (
-            <SkeletonLoader className="card-skeleton" />
-          ) : data ? (
-            <div className="widget-card-content">
-              <div className="points-list">
-                {data.positivePoints.map((item, idx) => (
-                  <div key={idx} className="point-item">
-                    <div className="point-header">
-                      <CheckCircle2 size={14} className="point-icon positive" />
-                      <span className="point-text">{item.point}</span>
-                    </div>
-                    <span className="point-mentions">
-                      {item.mentions} mentions
-                    </span>
-                  </div>
-                ))}
-              </div>
+      {!hasNoData && (
+        <div className="dashboard-widgets-row">
+          {/* Positive Points Widget */}
+          <div className="dashboard-widget-card">
+            <div className="widget-card-header">
+              <Smile className="widget-icon positive" size={20} />
+              <h4 className="widget-card-title">What's Working</h4>
             </div>
-          ) : (
-            <div className="empty-state-small">No data available</div>
-          )}
-        </div>
-
-        {/* Negative Points Widget */}
-        <div className="dashboard-widget-card">
-          <div className="widget-card-header">
-            <Frown className="widget-icon negative" size={20} />
-            <h4 className="widget-card-title">Needs Attention</h4>
-          </div>
-          {isLoading ? (
-            <SkeletonLoader className="card-skeleton" />
-          ) : data ? (
-            <div className="widget-card-content">
-              <div className="points-list">
-                {data.negativePoints.map((item, idx) => (
-                  <div key={idx} className="point-item">
-                    <div className="point-header">
-                      <XCircle size={14} className="point-icon negative" />
-                      <span className="point-text">{item.point}</span>
+            {isLoading ? (
+              <SkeletonLoader className="card-skeleton" />
+            ) : data ? (
+              <div className="widget-card-content">
+                <div className="points-list">
+                  {data.positivePoints.map((item, idx) => (
+                    <div key={idx} className="point-item">
+                      <div className="point-header">
+                        <CheckCircle2 size={14} className="point-icon positive" />
+                        <span className="point-text">{item.point}</span>
+                      </div>
+                      <span className="point-mentions">
+                        {item.mentions} mentions
+                      </span>
                     </div>
-                    <span className="point-mentions">
-                      {item.mentions} mentions
-                    </span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
+            ) : (
+              <div className="empty-state-small">No data available</div>
+            )}
+          </div>
+
+          {/* Negative Points Widget */}
+          <div className="dashboard-widget-card">
+            <div className="widget-card-header">
+              <Frown className="widget-icon negative" size={20} />
+              <h4 className="widget-card-title">Needs Attention</h4>
             </div>
-          ) : (
-            <div className="empty-state-small">No data available</div>
-          )}
-        </div>
-
-        {/* Metrics Widget */}
-        <div className="dashboard-widget-card">
-          <div className="widget-card-header">
-            <Activity className="widget-icon metrics" size={20} />
-            <h4 className="widget-card-title">Performance Metrics</h4>
-          </div>
-          {isLoading ? (
-            <SkeletonLoader className="card-skeleton" />
-          ) : data ? (
-            <div className="widget-card-content">
-              {/* Metric Tabs */}
-              <div className="metric-tabs">
-                <button
-                  className={`metric-tab ${activeMetricTab === "satisfaction" ? "active" : ""}`}
-                  onClick={() => setActiveMetricTab("satisfaction")}
-                >
-                  Satisfaction
-                </button>
-                <button
-                  className={`metric-tab ${activeMetricTab === "response" ? "active" : ""}`}
-                  onClick={() => setActiveMetricTab("response")}
-                >
-                  Response Time
-                </button>
-                <button
-                  className={`metric-tab ${activeMetricTab === "volume" ? "active" : ""}`}
-                  onClick={() => setActiveMetricTab("volume")}
-                >
-                  Volume
-                </button>
+            {isLoading ? (
+              <SkeletonLoader className="card-skeleton" />
+            ) : data ? (
+              <div className="widget-card-content">
+                <div className="points-list">
+                  {data.negativePoints.map((item, idx) => (
+                    <div key={idx} className="point-item">
+                      <div className="point-header">
+                        <XCircle size={14} className="point-icon negative" />
+                        <span className="point-text">{item.point}</span>
+                      </div>
+                      <span className="point-mentions">
+                        {item.mentions} mentions
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
+            ) : (
+              <div className="empty-state-small">No data available</div>
+            )}
+          </div>
 
-              {/* Metric Content */}
-              <div className="metric-content">
-                {activeMetricTab === "satisfaction" && (
-                  <div className="metric-detail">
-                    <div className="metric-info">
-                      <div className="metric-header">
-                        <span className="metric-label">Satisfaction Score</span>
-                        {data.metrics.trend === "up" ? (
-                          <ArrowUp size={14} className="trend-icon up" />
-                        ) : (
-                          <ArrowDown size={14} className="trend-icon down" />
-                        )}
-                      </div>
-                      <div className="metric-values">
-                        <span className="metric-current">
-                          {data.metrics.satisfactionScore}
-                        </span>
-                        <span className="metric-previous">
-                          / {data.metrics.previousScore}
-                        </span>
-                        <span className="metric-improvement positive">
-                          +{data.metrics.improvement}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="metric-chart">
-                      <MiniAreaChart
-                        data={data.metrics.history.satisfaction}
-                        color="#8b5cf6"
-                      />
-                    </div>
-                  </div>
-                )}
+          {/* Metrics Widget */}
+          <div className="dashboard-widget-card">
+            <div className="widget-card-header">
+              <Activity className="widget-icon metrics" size={20} />
+              <h4 className="widget-card-title">Performance Metrics</h4>
+            </div>
+            {isLoading ? (
+              <SkeletonLoader className="card-skeleton" />
+            ) : data ? (
+              <div className="widget-card-content">
+                {/* Metric Tabs */}
+                <div className="metric-tabs">
+                  <button
+                    className={`metric-tab ${activeMetricTab === "satisfaction" ? "active" : ""}`}
+                    onClick={() => setActiveMetricTab("satisfaction")}
+                  >
+                    Satisfaction
+                  </button>
+                  <button
+                    className={`metric-tab ${activeMetricTab === "response" ? "active" : ""}`}
+                    onClick={() => setActiveMetricTab("response")}
+                  >
+                    Response Time
+                  </button>
+                  <button
+                    className={`metric-tab ${activeMetricTab === "volume" ? "active" : ""}`}
+                    onClick={() => setActiveMetricTab("volume")}
+                  >
+                    Volume
+                  </button>
+                </div>
 
-                {activeMetricTab === "response" && (
-                  <div className="metric-detail">
-                    <div className="metric-info">
-                      <div className="metric-header">
-                        <span className="metric-label">Avg. Response Time</span>
-                        <ArrowDown size={14} className="trend-icon up" />
-                      </div>
-                      <div className="metric-values">
-                        <span className="metric-current">
-                          {data.metrics.responseTime}
-                        </span>
-                        <span className="metric-previous">
-                          / {data.metrics.previousResponseTime}
-                        </span>
-                        <span className="metric-improvement positive">
-                          Improved
-                        </span>
-                      </div>
-                    </div>
-                    <div className="metric-chart">
-                      <MiniAreaChart
-                        data={data.metrics.history.responseTime}
-                        color="#22c55e"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {activeMetricTab === "volume" && (
-                  <div className="metric-detail">
-                    <div className="metric-info">
-                      <div className="metric-header">
-                        <span className="metric-label">Feedback Volume</span>
-                        <ArrowUp size={14} className="trend-icon up" />
-                      </div>
-                      <div className="metric-values">
-                        <span className="metric-current">
-                          {data.metrics.feedbackVolume}
-                        </span>
-                        <span className="metric-previous">
-                          / {data.metrics.previousVolume}
-                        </span>
-                        <span className="metric-improvement positive">
-                          +
-                          {Math.round(
-                            ((data.metrics.feedbackVolume -
-                              data.metrics.previousVolume) /
-                              data.metrics.previousVolume) *
-                              100,
+                {/* Metric Content */}
+                <div className="metric-content">
+                  {activeMetricTab === "satisfaction" && (
+                    <div className="metric-detail">
+                      <div className="metric-info">
+                        <div className="metric-header">
+                          <span className="metric-label">Satisfaction Score</span>
+                          {data.metrics.trend === "up" ? (
+                            <ArrowUp size={14} className="trend-icon up" />
+                          ) : (
+                            <ArrowDown size={14} className="trend-icon down" />
                           )}
-                          %
-                        </span>
+                        </div>
+                        <div className="metric-values">
+                          <span className="metric-current">
+                            {data.metrics.satisfactionScore}
+                          </span>
+                          <span className="metric-previous">
+                            / {data.metrics.previousScore}
+                          </span>
+                          <span className="metric-improvement positive">
+                            +{data.metrics.improvement}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="metric-chart">
+                        <MiniAreaChart
+                          data={data.metrics.history.satisfaction}
+                          color="#8b5cf6"
+                        />
                       </div>
                     </div>
-                    <div className="metric-chart">
-                      <MiniAreaChart
-                        data={data.metrics.history.volume}
-                        color="#3b82f6"
-                      />
+                  )}
+
+                  {activeMetricTab === "response" && (
+                    <div className="metric-detail">
+                      <div className="metric-info">
+                        <div className="metric-header">
+                          <span className="metric-label">Avg. Response Time</span>
+                          <ArrowDown size={14} className="trend-icon up" />
+                        </div>
+                        <div className="metric-values">
+                          <span className="metric-current">
+                            {data.metrics.responseTime}
+                          </span>
+                          <span className="metric-previous">
+                            / {data.metrics.previousResponseTime}
+                          </span>
+                          <span className="metric-improvement positive">
+                            Improved
+                          </span>
+                        </div>
+                      </div>
+                      <div className="metric-chart">
+                        <MiniAreaChart
+                          data={data.metrics.history.responseTime}
+                          color="#22c55e"
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+
+                  {activeMetricTab === "volume" && (
+                    <div className="metric-detail">
+                      <div className="metric-info">
+                        <div className="metric-header">
+                          <span className="metric-label">Feedback Volume</span>
+                          <ArrowUp size={14} className="trend-icon up" />
+                        </div>
+                        <div className="metric-values">
+                          <span className="metric-current">
+                            {data.metrics.feedbackVolume}
+                          </span>
+                          <span className="metric-previous">
+                            / {data.metrics.previousVolume}
+                          </span>
+                          <span className="metric-improvement positive">
+                            +
+                            {Math.round(
+                              ((data.metrics.feedbackVolume -
+                                data.metrics.previousVolume) /
+                                data.metrics.previousVolume) *
+                                100,
+                            )}
+                            %
+                          </span>
+                        </div>
+                      </div>
+                      <div className="metric-chart">
+                        <MiniAreaChart
+                          data={data.metrics.history.volume}
+                          color="#3b82f6"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="empty-state-small">No data available</div>
-          )}
+            ) : (
+              <div className="empty-state-small">No data available</div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Feedback Sources Line Chart */}
-      <div className="feedback-sources-chart">
-        <div className="chart-header">
-          <Layers className="widget-icon neutral" size={20} />
-          <h3 className="chart-title">Source Breakdown</h3>
-        </div>
-        {isLoading ? (
-          <SkeletonLoader className="chart-skeleton" />
-        ) : data ? (
-          <div className="chart-container">
-            <LineChart
-              xAxis={[
-                {
-                  data: data.feedbackSources.months,
-                  scaleType: "point",
-                },
-              ]}
-              series={[
-                {
-                  data: data.feedbackSources.sources.twitter,
-                  label: "Twitter (X)",
-                  color: "#1DA1F2",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-                {
-                  data: data.feedbackSources.sources.playstore,
-                  label: "Play Store",
-                  color: "#34A853",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-                {
-                  data: data.feedbackSources.sources.appstore,
-                  label: "App Store",
-                  color: "#007AFF",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-                {
-                  data: data.feedbackSources.sources.email,
-                  label: "Email",
-                  color: "#EA4335",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-                {
-                  data: data.feedbackSources.sources.customData,
-                  label: "Custom Data (.csv)",
-                  color: "#FBBC04",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-              ]}
-              height={400}
-              margin={{ top: 20, right: 20, bottom: 30, left: 60 }}
-              sx={{
-                "& .MuiLineElement-root": {
-                  strokeWidth: 3,
-                },
-                "& .MuiChartsAxis-root": {
-                  "& .MuiChartsAxis-line": {
-                    stroke: "rgba(255, 255, 255, 0.2)",
-                  },
-                  "& .MuiChartsAxis-tick": {
-                    stroke: "rgba(255, 255, 255, 0.2)",
-                  },
-                  "& .MuiChartsAxis-tickLabel": {
-                    fill: "rgba(255, 255, 255, 0.7)",
-                  },
-                },
-                "& .MuiChartsLegend-root": {
-                  "& .MuiChartsLegend-label": {
-                    fill: "rgba(255, 255, 255, 0.8)",
-                  },
-                },
-                "& .MuiChartsGrid-line": {
-                  stroke: "rgba(255, 255, 255, 0.1)",
-                },
-              }}
-              grid={{ vertical: true, horizontal: true }}
-            />
+      {!hasNoData && (
+        <div className="feedback-sources-chart">
+          <div className="chart-header">
+            <Layers className="widget-icon neutral" size={20} />
+            <h3 className="chart-title">Source Breakdown</h3>
           </div>
-        ) : (
-          <div className="empty-state">No data available</div>
-        )}
-      </div>
+          {isLoading ? (
+            <SkeletonLoader className="chart-skeleton" />
+          ) : data ? (
+            <div className="chart-container">
+              <LineChart
+                xAxis={[
+                  {
+                    data: data.feedbackSources.months,
+                    scaleType: "point",
+                  },
+                ]}
+                series={[
+                  {
+                    data: data.feedbackSources.sources.twitter,
+                    label: "Twitter (X)",
+                    color: "#1DA1F2",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                  {
+                    data: data.feedbackSources.sources.playstore,
+                    label: "Play Store",
+                    color: "#34A853",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                  {
+                    data: data.feedbackSources.sources.appstore,
+                    label: "App Store",
+                    color: "#007AFF",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                  {
+                    data: data.feedbackSources.sources.email,
+                    label: "Email",
+                    color: "#EA4335",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                  {
+                    data: data.feedbackSources.sources.customData,
+                    label: "Custom Data (.csv)",
+                    color: "#FBBC04",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                ]}
+                height={400}
+                margin={{ top: 20, right: 20, bottom: 30, left: 60 }}
+                sx={{
+                  "& .MuiLineElement-root": {
+                    strokeWidth: 3,
+                  },
+                  "& .MuiChartsAxis-root": {
+                    "& .MuiChartsAxis-line": {
+                      stroke: "rgba(255, 255, 255, 0.2)",
+                    },
+                    "& .MuiChartsAxis-tick": {
+                      stroke: "rgba(255, 255, 255, 0.2)",
+                    },
+                    "& .MuiChartsAxis-tickLabel": {
+                      fill: "rgba(255, 255, 255, 0.7)",
+                    },
+                  },
+                  "& .MuiChartsLegend-root": {
+                    "& .MuiChartsLegend-label": {
+                      fill: "rgba(255, 255, 255, 0.8)",
+                    },
+                  },
+                  "& .MuiChartsGrid-line": {
+                    stroke: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+                grid={{ vertical: true, horizontal: true }}
+              />
+            </div>
+          ) : (
+            <div className="empty-state">No data available</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
