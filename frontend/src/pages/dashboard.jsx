@@ -22,6 +22,8 @@ import {
   XCircle,
   ArrowUp,
   ArrowDown,
+  Target,
+  Zap,
 } from "lucide-react";
 
 const FETCH_STATUSES = [
@@ -458,6 +460,76 @@ export default function DashboardPage() {
         y += 8;
       });
 
+      // Connection & Sync Matrix
+      checkPage(55);
+      sectionHeader("Connection & Sync Matrix");
+      
+      const sumArray = (arr) => (Array.isArray(arr) ? arr.reduce((a, b) => a + b, 0) : 0);
+      const savedAppsObj = localStorage.getItem("connectedApps");
+      const connectedAppsObj = savedAppsObj ? JSON.parse(savedAppsObj) : {};
+
+      const matrixRows = [
+        {
+          source: "Gmail",
+          account: connectedAppsObj.Gmail?.isConnected
+            ? (authUser?.email || "Connected")
+            : "—",
+          volume: sumArray(data.feedbackSources?.sources?.email),
+        },
+        {
+          source: "Play Store",
+          account: connectedAppsObj["Play Store"]?.isConnected
+            ? (connectedAppsObj["Play Store"]?.appId || connectedAppsObj["Play Store"]?.appName || "Connected")
+            : "—",
+          volume: sumArray(data.feedbackSources?.sources?.playstore),
+        },
+        {
+          source: "App Store",
+          account: connectedAppsObj["App Store"]?.isConnected
+            ? (connectedAppsObj["App Store"]?.appId || connectedAppsObj["App Store"]?.appName || "Connected")
+            : "—",
+          volume: sumArray(data.feedbackSources?.sources?.appstore),
+        },
+        {
+          source: "Twitter (X)",
+          account: (connectedAppsObj.X?.isConnected || connectedAppsObj["X"]?.isConnected)
+            ? `@${connectedAppsObj.X?.appName || connectedAppsObj["X"]?.appName || "Connected"}`
+            : "—",
+          volume: sumArray(data.feedbackSources?.sources?.twitter),
+        },
+      ];
+
+      // Draw table header
+      pdf.setFillColor(10, 10, 10);
+      pdf.rect(margin, y, contentW, 8, "F");
+      pdf.setFontSize(8);
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("SOURCE / CHANNEL", margin + 3, y + 5.5);
+      pdf.text("CONNECTED ACCOUNT / IDENTIFIER", margin + 43, y + 5.5);
+      pdf.text("VOLUME", margin + 137, y + 5.5);
+      y += 9;
+
+      // Draw table rows
+      matrixRows.forEach((row, i) => {
+        pdf.setFillColor(i % 2 === 0 ? 250 : 244, i % 2 === 0 ? 250 : 244, i % 2 === 0 ? 250 : 244);
+        pdf.rect(margin, y, contentW, 8, "F");
+        pdf.setFontSize(8);
+        pdf.setTextColor(60, 60, 60);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(row.source, margin + 3, y + 5.5);
+        
+        const accountStr = String(row.account);
+        const truncatedAccount = accountStr.length > 45 ? accountStr.substring(0, 42) + "..." : accountStr;
+        pdf.text(truncatedAccount, margin + 43, y + 5.5);
+        
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(10, 10, 10);
+        pdf.text(String(row.volume), margin + 137, y + 5.5);
+        y += 9;
+      });
+      y += 5;
+
       // ── PAGE 3: AI INSIGHTS ──────────────────────────────────
       pdf.addPage();
       y = margin;
@@ -746,39 +818,99 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="dashboard-summary-widget">
-            <div className="widget-header">
-              <Sparkles className="widget-icon neutral" size={20} />
-              <h3 className="widget-title">AI Summary</h3>
+          <div className="dashboard-left-column">
+            <div className="dashboard-summary-widget">
+              <div className="widget-header">
+                <Sparkles className="widget-icon neutral" size={20} />
+                <h3 className="widget-title">AI Summary</h3>
+              </div>
+
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : data ? (
+                <div className="summary-content">
+                  <div className="insights-section">
+                    <h4 className="section-title">Key Insights</h4>
+                    <ul className="insights-list">
+                      {data.summary.keyInsights.map((insight, idx) => (
+                        <li key={idx}>{insight}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="improvements-section">
+                    <h4 className="section-title">Areas to Improve</h4>
+                    <ul className="improvements-list">
+                      {data.summary.improvements.map((improvement, idx) => (
+                        <li key={idx}>{improvement}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <p>No data available. Click "Fetch Data" to load feedback.</p>
+                </div>
+              )}
             </div>
 
-            {isLoading ? (
-              <SkeletonLoader />
-            ) : data ? (
-              <div className="summary-content">
-                <div className="insights-section">
-                  <h4 className="section-title">Key Insights</h4>
-                  <ul className="insights-list">
-                    {data.summary.keyInsights.map((insight, idx) => (
-                      <li key={idx}>{insight}</li>
-                    ))}
-                  </ul>
-                </div>
+            {/* Strategic Priority & Action Matrix Widget */}
+            <div className="dashboard-action-matrix-widget">
+              <div className="widget-header">
+                <Target className="widget-icon positive" size={20} style={{ color: "#CCFF00" }} />
+                <h3 className="widget-title">Strategic Priority Matrix</h3>
+              </div>
+              
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : data ? (
+                <div className="matrix-quadrants">
+                  <div className="matrix-quadrant critical">
+                    <div className="quadrant-badge">Immediate Fix</div>
+                    <p className="quadrant-text">
+                      {data.negativePoints?.[0]?.point 
+                        ? `Resolve issues with: ${data.negativePoints[0].point}`
+                        : "No critical negative friction points detected."}
+                    </p>
+                    <div className="quadrant-meta">High Urgency · {data.negativePoints?.[0]?.mentions || 0} Mentions</div>
+                  </div>
 
-                <div className="improvements-section">
-                  <h4 className="section-title">Areas to Improve</h4>
-                  <ul className="improvements-list">
-                    {data.summary.improvements.map((improvement, idx) => (
-                      <li key={idx}>{improvement}</li>
-                    ))}
-                  </ul>
+                  <div className="matrix-quadrant leverage">
+                    <div className="quadrant-badge">Growth Lever</div>
+                    <p className="quadrant-text">
+                      {data.positivePoints?.[0]?.point
+                        ? `Promote and enhance: ${data.positivePoints[0].point}`
+                        : "Build customer advocacy around recent updates."}
+                    </p>
+                    <div className="quadrant-meta">High Impact · {data.positivePoints?.[0]?.mentions || 0} Mentions</div>
+                  </div>
+
+                  <div className="matrix-quadrant quick-win">
+                    <div className="quadrant-badge">Quick Win</div>
+                    <p className="quadrant-text">
+                      {data.summary.improvements?.[0]
+                        ? `Address recommendation: ${data.summary.improvements[0]}`
+                        : "Conduct lightweight UI polishing and performance tune-ups."}
+                    </p>
+                    <div className="quadrant-meta">Medium Urgency · Low Effort</div>
+                  </div>
+
+                  <div className="matrix-quadrant monitor">
+                    <div className="quadrant-badge">Strategic Monitor</div>
+                    <p className="quadrant-text">
+                      {data.summary.negativeSentiment > 35 
+                        ? "High friction spike. Closely track and review upcoming release feedback." 
+                        : "Sentiment is healthy. Capture long-tail feature requests for the roadmap."}
+                    </p>
+                    <div className="quadrant-meta">Continuous Assessment</div>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="empty-state">
-                <p>No data available. Click "Fetch Data" to load feedback.</p>
-              </div>
-            )}
+              ) : (
+                <div className="empty-state">
+                  <p>No actionable items available.</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
