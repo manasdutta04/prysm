@@ -22,6 +22,7 @@ const FeedbackSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     default: {},
   },
+  rating: { type: Number, default: null },
 
   // 6) Timestamp (feedback creation time)
   timestamp: { type: Date, required: true, default: Date.now },

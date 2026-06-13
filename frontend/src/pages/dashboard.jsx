@@ -30,7 +30,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeMetricTab, setActiveMetricTab] = useState("satisfaction");
   const { addNotification } = useNotificationStore();
-  
+
   const [startDate, setStartDate] = useState(() => {
     const date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     return date.toISOString().split("T")[0];
@@ -39,41 +39,48 @@ export default function DashboardPage() {
     return new Date().toISOString().split("T")[0];
   });
 
-  const loadDashboardData = useCallback(async (skipScrape = true) => {
-    setIsLoading(true);
-    try {
-      const savedApps = localStorage.getItem("connectedApps");
-      const connectedApps = savedApps ? JSON.parse(savedApps) : {};
+  const loadDashboardData = useCallback(
+    async (skipScrape = true) => {
+      setIsLoading(true);
+      try {
+        const savedApps = localStorage.getItem("connectedApps");
+        const connectedApps = savedApps ? JSON.parse(savedApps) : {};
 
-      const savedProvider = localStorage.getItem("prysm_llm_provider") || "";
-      const savedKey = localStorage.getItem("prysm_llm_key") || "";
-      const savedUrl = localStorage.getItem("prysm_llm_local_url") || "";
-      const savedModel = localStorage.getItem("prysm_llm_model") || "";
+        const savedProvider = localStorage.getItem("prysm_llm_provider") || "";
+        const savedKey = localStorage.getItem("prysm_llm_key") || "";
+        const savedUrl = localStorage.getItem("prysm_llm_local_url") || "";
+        const savedModel = localStorage.getItem("prysm_llm_model") || "";
 
-      const res = await axiosInstance.post("/dashboard/fetch-and-analyze", {
-        startDate,
-        endDate,
-        connectedApps,
-        skipScraping: skipScrape
-      }, {
-        headers: {
-          "X-LLM-Provider": savedProvider,
-          "X-LLM-Key": savedKey,
-          "X-LLM-Local-Url": savedUrl,
-          "X-LLM-Model": savedModel
-        }
-      });
+        const res = await axiosInstance.post(
+          "/dashboard/fetch-and-analyze",
+          {
+            startDate,
+            endDate,
+            connectedApps,
+            skipScraping: skipScrape,
+          },
+          {
+            headers: {
+              "X-LLM-Provider": savedProvider,
+              "X-LLM-Key": savedKey,
+              "X-LLM-Local-Url": savedUrl,
+              "X-LLM-Model": savedModel,
+            },
+          },
+        );
 
-      setData(res.data);
-      return res.data;
-    } catch (error) {
-      console.error("Dashboard Load Error:", error);
-      toast.error("Failed to load dashboard data");
-      setData(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [startDate, endDate]);
+        setData(res.data);
+        return res.data;
+      } catch (error) {
+        console.error("Dashboard Load Error:", error);
+        toast.error("Failed to load dashboard data");
+        setData(null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [startDate, endDate],
+  );
 
   useEffect(() => {
     const savedTime = localStorage.getItem("lastFetchedTime");
@@ -81,10 +88,6 @@ export default function DashboardPage() {
       setLastFetchedTime(parseInt(savedTime, 10));
     }
   }, []);
-
-  useEffect(() => {
-    loadDashboardData(true);
-  }, [loadDashboardData]);
 
   const handleFetchData = async () => {
     setIsFetching(true);
@@ -116,7 +119,7 @@ export default function DashboardPage() {
         addNotification({
           title: "Feedback Ingest Completed",
           description: `Ingested new updates. Analyzed ${summary.totalFeedback} feedbacks total. Sentiment is ${summary.positiveSentiment}% positive.`,
-          category: "system"
+          category: "system",
         });
 
         // 2. Trend alert based on satisfaction score
@@ -124,7 +127,7 @@ export default function DashboardPage() {
           addNotification({
             title: `Satisfaction Trend Alert`,
             description: `Overall satisfaction is ${metrics.satisfactionScore.toFixed(1)} / 5.0 (${metrics.improvement > 0 ? "+" : ""}${metrics.improvement}% change).`,
-            category: "trend"
+            category: "trend",
           });
         }
 
@@ -133,7 +136,7 @@ export default function DashboardPage() {
           addNotification({
             title: "Top Trend Insight",
             description: summary.keyInsights[0],
-            category: "trend"
+            category: "trend",
           });
         }
 
@@ -141,8 +144,8 @@ export default function DashboardPage() {
         if (summary.negativeSentiment > 35) {
           addNotification({
             title: "Critical Feedback Surge",
-            description: `Friction alert: ${summary.negativeSentiment}% of reviews carry negative sentiments. Top issue: ${summary.improvements?.[0] || 'Needs attention'}.`,
-            category: "alert"
+            description: `Friction alert: ${summary.negativeSentiment}% of reviews carry negative sentiments. Top issue: ${summary.improvements?.[0] || "Needs attention"}.`,
+            category: "alert",
           });
         }
       }
@@ -308,7 +311,9 @@ export default function DashboardPage() {
             variant="default"
             size="lg"
           >
-            <RefreshCw className={isFetching ? "spinning mr-2 h-4 w-4" : "mr-2 h-4 w-4"} />
+            <RefreshCw
+              className={isFetching ? "spinning mr-2 h-4 w-4" : "mr-2 h-4 w-4"}
+            />
             Fetch Data
           </LiquidButton>
           <div className="last-fetched">
