@@ -24,6 +24,18 @@ import {
   ArrowDown,
 } from "lucide-react";
 
+const FETCH_STATUSES = [
+  "Initializing feedback connectors...",
+  "Contacting App Store & Play Store APIs...",
+  "Ingesting reviews and feedback streams...",
+  "Aggregating recent feedback data...",
+  "Engaging AI Sentiment Analytics Engine...",
+  "Processing sentiment classification...",
+  "Extracting key positive insights...",
+  "Identifying areas that need improvement...",
+  "Finalizing dashboard analysis report..."
+];
+
 export default function DashboardPage() {
   const [lastFetchedTime, setLastFetchedTime] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
@@ -33,6 +45,44 @@ export default function DashboardPage() {
   const { addNotification } = useNotificationStore();
   const { authUser } = useAuthStore();
   const hasNoData = !isLoading && (!data || data.summary.totalFeedback === 0);
+
+  const [fetchProgress, setFetchProgress] = useState(0);
+  const [fetchStatusIndex, setFetchStatusIndex] = useState(0);
+
+  useEffect(() => {
+    let interval;
+    if (isFetching) {
+      setFetchProgress(0);
+      setFetchStatusIndex(0);
+      interval = setInterval(() => {
+        setFetchProgress((prev) => {
+          if (prev >= 99) return 99;
+          
+          // Starts fast, slows down as it gets closer to 99%
+          let increment = 1;
+          if (prev < 35) increment = 8;
+          else if (prev < 65) increment = 5;
+          else if (prev < 85) increment = 3;
+          else if (prev < 95) increment = 2;
+          
+          const nextVal = prev + increment;
+          
+          // Map percentage to status messages
+          const statusStep = Math.floor((nextVal / 100) * FETCH_STATUSES.length);
+          setFetchStatusIndex(Math.min(statusStep, FETCH_STATUSES.length - 1));
+          
+          return Math.min(nextVal, 99);
+        });
+      }, 700);
+    } else {
+      setFetchProgress(0);
+      setFetchStatusIndex(0);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isFetching]);
+
 
   const [startDate, setStartDate] = useState(() => {
     const date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -607,6 +657,48 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-page">
+      {isFetching && (
+        <div className="fetch-overlay-container">
+          <div className="fetch-overlay-content">
+            <div
+              aria-label="Orange and tan hamster running in a metal wheel"
+              role="img"
+              className="wheel-and-hamster"
+            >
+              <div className="wheel"></div>
+              <div className="hamster">
+                <div className="hamster__body">
+                  <div className="hamster__head">
+                    <div className="hamster__ear"></div>
+                    <div className="hamster__eye"></div>
+                    <div className="hamster__nose"></div>
+                  </div>
+                  <div className="hamster__limb hamster__limb--fr"></div>
+                  <div className="hamster__limb hamster__limb--fl"></div>
+                  <div className="hamster__limb hamster__limb--br"></div>
+                  <div className="hamster__limb hamster__limb--bl"></div>
+                  <div className="hamster__tail"></div>
+                </div>
+              </div>
+              <div className="spoke"></div>
+            </div>
+            
+            <div className="fetch-overlay-text-wrapper">
+              <div className="fetch-progress-pct">{fetchProgress}%</div>
+              <div className="fetch-status-text">{FETCH_STATUSES[fetchStatusIndex]}</div>
+              <div className="fetch-progress-wrap">
+                <div className="fetch-progress-bar">
+                  <div 
+                    className="fetch-progress-fill" 
+                    style={{ width: `${fetchProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="dashboard-main-section">
         {/* Main Summary Widget or Onboarding Card */}
         {hasNoData ? (
