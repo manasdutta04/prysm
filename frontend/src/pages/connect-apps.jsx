@@ -48,6 +48,7 @@ export default function ConnectAppsPage() {
     appId: playstoreAppId,
     checkStatus,
     disconnect: disconnectPlaystore,
+    hasChecked: playstoreHasChecked,
   } = usePlaystoreStore();
 
   // Check Play Store connection status on page load
@@ -59,7 +60,12 @@ export default function ConnectAppsPage() {
   useEffect(() => {
     if (playstoreConnected && playstoreAppName) {
       setConnectedApps((prev) => {
-        const existingLastSync = prev["Play Store"]?.lastSync ?? null;
+        // Fallback to local storage if state doesn't have it (e.g. during mount race condition)
+        const savedStr = localStorage.getItem("connectedApps");
+        const savedApps = savedStr ? JSON.parse(savedStr) : {};
+        const savedLastSync = savedApps["Play Store"]?.lastSync ?? null;
+
+        const existingLastSync = prev["Play Store"]?.lastSync ?? savedLastSync;
         return {
           ...prev,
           "Play Store": {
@@ -71,14 +77,15 @@ export default function ConnectAppsPage() {
           },
         };
       });
-    } else if (!playstoreConnected) {
+    } else if (playstoreHasChecked && !playstoreConnected) {
+      // Only delete if the backend status check has completed and confirms it's disconnected
       setConnectedApps((prev) => {
         const updated = { ...prev };
         delete updated["Play Store"];
         return updated;
       });
     }
-  }, [playstoreConnected, playstoreAppName, playstoreAppId]);
+  }, [playstoreConnected, playstoreAppName, playstoreAppId, playstoreHasChecked]);
 
   React.useEffect(() => {
     localStorage.setItem("connectedApps", JSON.stringify(connectedApps));
@@ -253,6 +260,7 @@ export default function ConnectAppsPage() {
   };
 
   const formatTime = (timestamp) => {
+    if (!timestamp) return "Never";
     return new Date(timestamp).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",

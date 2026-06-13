@@ -682,9 +682,7 @@ export default function DashboardPage() {
               </div>
               <div className="spoke"></div>
             </div>
-            
             <div className="fetch-overlay-text-wrapper">
-              <div className="fetch-progress-pct">{fetchProgress}%</div>
               <div className="fetch-status-text">{FETCH_STATUSES[fetchStatusIndex]}</div>
               <div className="fetch-progress-wrap">
                 <div className="fetch-progress-bar">
@@ -1173,13 +1171,6 @@ export default function DashboardPage() {
                     curve: "catmullRom",
                     showMark: false,
                   },
-                  {
-                    data: data.feedbackSources.sources.customData,
-                    label: "Custom Data (.csv)",
-                    color: "#FBBC04",
-                    curve: "catmullRom",
-                    showMark: false,
-                  },
                 ]}
                 height={400}
                 margin={{ top: 20, right: 20, bottom: 30, left: 60 }}
@@ -1198,10 +1189,11 @@ export default function DashboardPage() {
                       fill: "rgba(255, 255, 255, 0.7)",
                     },
                   },
-                  "& .MuiChartsLegend-root": {
-                    "& .MuiChartsLegend-label": {
-                      fill: "rgba(255, 255, 255, 0.8)",
-                    },
+                  "& .MuiChartsLegend-root text": {
+                    fill: "#ffffff !important",
+                  },
+                  "& .MuiChartsLegend-label": {
+                    fill: "#ffffff !important",
                   },
                   "& .MuiChartsGrid-line": {
                     stroke: "rgba(255, 255, 255, 0.1)",

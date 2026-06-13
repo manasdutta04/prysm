@@ -1286,4 +1286,17 @@
   }
 }
 
+/* Style all text elements in the main line chart to be white */
+.feedback-sources-chart svg text,
+.feedback-sources-chart svg tspan,
+.feedback-sources-chart svg .MuiChartsLegend-root text,
+.feedback-sources-chart svg .MuiChartsLegend-root tspan,
+.feedback-sources-chart svg .MuiChartsLegend-label,
+.MuiChartsLegend-root text,
+.MuiChartsLegend-root tspan,
+.MuiChartsLegend-label {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
 
