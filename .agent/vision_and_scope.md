@@ -11,14 +11,14 @@ The core user experience is structured around the following sequence:
 ```text
 [1. User Authentication]  --- Enforced by a dedicated /login route (with separate public layout).
            │
-[2. Ingestion Connectors] --- User connects Gmail, X, or searches App Store on Connect Apps.
+[2. Ingestion Connectors] --- User connects Gmail, X, or searches App Store / Play Store on Connect Apps.
            │
 [3. Custom Uploads]       --- Drag-and-drop CSV uploads for manual entries.
            │
 [4. Fetch & Timeframe]    --- User selects Date Timeframe bounds (From -> To) on the Dashboard
            │                  and clicks "Fetch Data".
            │
-[5. Ingestion Pipeline]   --- Backend triggers active scrapers for App Store & X, parses and
+[5. Ingestion Pipeline]   --- Backend triggers active scrapers for App Store, Play Store & X, parses and
            │                  persists records in MongoDB Feedback model.
            │
 [6. Processing & AI]      --- Queries DB for feedbacks in date range, runs dynamic analysis,
@@ -43,7 +43,7 @@ Located under **Connect Apps**. Allows the user to link their platforms:
 1. **Gmail**: Standard OAuth configuration managed through Google Redirect.
 2. **X (Twitter)**: Public Nitter RSS scraper.
 3. **App Store**: Searches the App Store and locks onto an application ID.
-4. **Play Store**: Planned connector.
+4. **Play Store**: Searches the Play Store and locks onto an application ID to fetch reviews.
 
 ### C. Custom Data
 Allows importing CSV files. Columns are normalized (`source`, `date`, `comment`/`feedback`), associated with the user, and saved to MongoDB.
@@ -53,6 +53,12 @@ Instead of raw comments logs, the **History** tab displays historical logs of co
 * Card items show: timeframe range, execution timestamp, total volume, and overall satisfaction score.
 * Includes a multi-colored inline sentiment progress bar.
 * Expandable section lists the exact Key Insights and Areas to Improve calculated for that run.
+
+### E. Account Management & Settings
+Allows users to manage their profile data and configure API keys.
+
+### F. Documentation & Support
+Provides access to system architecture details, feature explanations, and help resources.
 
 ---
 

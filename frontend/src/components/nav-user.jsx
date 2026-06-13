@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useAuthStore } from "@/store/useAuthStore"
+import { useNotificationStore } from "@/store/useNotificationStore"
 
 import {
   Avatar,
@@ -26,7 +27,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
@@ -37,6 +37,8 @@ export function NavUser({
   const { isMobile } = useSidebar()
   const { logout } = useAuthStore()
   const navigate = useNavigate()
+  const { notifications, setModalOpen } = useNotificationStore()
+  const unreadCount = notifications.filter(n => !n.read).length
 
   const handleLogout = async () => {
     await logout()
@@ -48,32 +50,34 @@ export function NavUser({
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              <Avatar className="h-8 w-8 rounded-lg">
+            <button
+              type="button"
+              className="glass-profile-card flex w-full items-center gap-3 text-left text-sm text-sidebar-foreground cursor-pointer focus:outline-none"
+              style={{ margin: 0 }}
+            >
+              <Avatar className="h-9 w-9 rounded-lg avatar-glow">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg" name={user.name} />
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+              <div className="grid flex-1 min-w-0 text-left text-sm leading-tight">
+                <span className="truncate font-semibold text-white/95">{user.name}</span>
+                <span className="truncate text-xs text-white/40">{user.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
+              <ChevronsUpDown className="ml-auto size-4 text-white/40" />
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl border border-white/10 bg-[#0A0A0A]/95 backdrop-blur-xl shadow-2xl p-1.5"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}>
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+              <div className="flex items-center gap-3 px-2 py-2 text-left text-sm">
+                <Avatar className="h-9 w-9 rounded-lg avatar-glow">
                   <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback className="rounded-lg" name={user.name} />
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 min-w-0 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
@@ -92,9 +96,29 @@ export function NavUser({
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/settings")}>
+              <DropdownMenuItem onClick={() => setModalOpen(true)}>
                 <Bell />
-                Notifications
+                <span>Notifications</span>
+                {unreadCount > 0 && (
+                  <span 
+                    style={{
+                      marginLeft: "auto",
+                      display: "flex",
+                      height: "1rem",
+                      width: "1rem",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "9999px",
+                      background: "#CCFF00",
+                      fontSize: "9px",
+                      fontWeight: "bold",
+                      color: "#000000",
+                      fontFamily: "monospace"
+                    }}
+                  >
+                    {unreadCount}
+                  </span>
+                )}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

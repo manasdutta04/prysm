@@ -31,6 +31,14 @@ const PROVIDER_MODELS = {
   ollama: [] // Dynamically loaded from user device
 };
 
+const PROVIDERS = [
+  { id: "gemini", label: "Gemini", sublabel: "Google", icon: "/gemini.svg" },
+  { id: "openai", label: "OpenAI", sublabel: "GPT", icon: "/openai.svg" },
+  { id: "claude", label: "Claude", sublabel: "Anthropic", icon: "/claude.svg" },
+  { id: "groq", label: "Groq", sublabel: "LLaMA", icon: "/groq.svg" },
+  { id: "ollama", label: "Ollama", sublabel: "Local", icon: "/ollama.svg" },
+];
+
 export default function SettingsPage() {
   const [provider, setProvider] = useState("gemini");
   const [apiKey, setApiKey] = useState("");
@@ -207,161 +215,213 @@ export default function SettingsPage() {
 
   return (
     <div className="settings-page">
-      <div className="page-header">
-        <h1 className="page-title">System Settings</h1>
-        <p className="page-subtitle">
-          Configure your preferred Large Language Model (LLM) provider and API credentials. All settings are kept locally in your browser.
-        </p>
-      </div>
+      <section className="settings-provider-strip">
+        {PROVIDERS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            className={`provider-tile liquid-glass-card${provider === p.id ? " active" : ""}`}
+            onClick={() => handleConfigChange("provider", p.id)}
+          >
+            <div className="provider-tile-icon">
+              <img src={p.icon} alt={p.label} />
+            </div>
+            <div className="provider-tile-text">
+              <span className="provider-tile-name">{p.label}</span>
+              <span className="provider-tile-sub">{p.sublabel}</span>
+            </div>
+          </button>
+        ))}
+      </section>
 
-      <div className="settings-container-centered">
-        <div className="settings-card">
-          <div className="card-header-with-icon">
-            <Cpu className="header-icon blue" size={22} />
-            <h2 className="card-title">LLM Configuration</h2>
-          </div>
-          <p className="card-desc">
-            Select an LLM provider and configure the credentials to power the feedback analysis engine.
-          </p>
-
-          <div className="card-content">
-            {/* LLM Provider Selection */}
-            <div className="setting-control-group">
-              <span className="control-name block mb-05">Model Provider</span>
-              <select
-                value={provider}
-                onChange={(e) => handleConfigChange("provider", e.target.value)}
-                className="settings-select"
-              >
-                <option value="gemini">Gemini (Google)</option>
-                <option value="openai">OpenAI (GPT)</option>
-                <option value="claude">Claude (Anthropic)</option>
-                <option value="groq">Groq (LLaMA)</option>
-                <option value="ollama">Ollama (Local Host)</option>
-              </select>
+      <div className="settings-layout">
+        <div className="settings-main">
+          <section className="settings-panel liquid-glass-card">
+            <div className="panel-header">
+              <Cpu className="panel-icon" size={20} />
+              <div>
+                <h2 className="panel-title">Model Configuration</h2>
+                <p className="panel-desc">Choose the model version used for feedback analysis.</p>
+              </div>
             </div>
 
-            {/* LLM Model Selection */}
-            <div className="setting-control-group">
-              <span className="control-name block mb-05">Model Version</span>
-              {provider === "ollama" ? (
-                <select
-                  value={model}
-                  onChange={(e) => {
-                    setModel(e.target.value);
-                    setTestResult(null);
-                  }}
-                  className="settings-select"
-                  disabled={isOllamaLoading || ollamaModels.length === 0}
-                >
-                  {isOllamaLoading ? (
-                    <option value="">Checking local models...</option>
-                  ) : ollamaModels.length > 0 ? (
-                    ollamaModels.map((m) => (
-                      <option key={m} value={m}>
-                        {m}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="not_available">not available</option>
-                  )}
-                </select>
-              ) : (
-                <select
-                  value={model}
-                  onChange={(e) => {
-                    setModel(e.target.value);
-                    setTestResult(null);
-                  }}
-                  className="settings-select"
-                >
-                  {(PROVIDER_MODELS[provider] || []).map((m) => (
-                    <option key={m.value} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
-                </select>
-              )}
-              <span className="control-hint highlight">{getModelDetails()}</span>
-            </div>
-
-            {/* API Key Input (Hidden for Ollama) */}
-            {provider !== "ollama" ? (
+            <div className="panel-body">
               <div className="setting-control-group">
-                <span className="control-name flex-align gap-05 mb-05">
-                  <Key size={14} /> API Key
-                </span>
-                <input
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => handleConfigChange("key", e.target.value)}
-                  placeholder="Paste your API key here"
-                  className="settings-text-input"
-                />
-                <span className="control-hint">Your API key is never stored on our server, only sent with requests.</span>
-              </div>
-            ) : (
-              /* Local Host URL Input (Visible only for Ollama) */
-              <div className="setting-control-group">
-                <span className="control-name flex-align gap-05 mb-05">
-                  <Globe size={14} /> Ollama Endpoint URL
-                </span>
-                <input
-                  type="text"
-                  value={localUrl}
-                  onChange={(e) => handleConfigChange("url", e.target.value)}
-                  placeholder="e.g. http://localhost:11434"
-                  className="settings-text-input"
-                />
-                <span className="control-hint">The base API endpoint URL of your local Ollama runtime.</span>
-              </div>
-            )}
-
-
-
-            {/* Ollama suggestions container */}
-            {provider === "ollama" && (
-              <div className="ollama-suggestions-box">
-                <span className="suggestions-title">💡 Local Ollama Suggestions</span>
-                <p className="suggestions-desc">
-                  To run a local model, open your terminal and pull it before testing connection:
-                </p>
-                <div className="code-snippets-container">
-                  <code>ollama run llama4</code>
-                  <code>ollama run gemma3</code>
-                  <code>ollama run mistral-v0.4</code>
-                </div>
-              </div>
-            )}
-
-            {/* Test Connection result box */}
-            {testResult && (
-              <div className={`connection-status-box ${testResult.success ? "success" : "error"}`}>
-                {testResult.success ? (
-                  <CheckCircle2 className="status-icon success-icon" size={16} />
+                <span className="control-name block mb-05">Model Version</span>
+                {provider === "ollama" ? (
+                  <select
+                    value={model}
+                    onChange={(e) => {
+                      setModel(e.target.value);
+                      setTestResult(null);
+                    }}
+                    className="settings-select"
+                    disabled={isOllamaLoading || ollamaModels.length === 0}
+                  >
+                    {isOllamaLoading ? (
+                      <option value="">Checking local models...</option>
+                    ) : ollamaModels.length > 0 ? (
+                      ollamaModels.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="not_available">not available</option>
+                    )}
+                  </select>
                 ) : (
-                  <XCircle className="status-icon error-icon" size={16} />
+                  <select
+                    value={model}
+                    onChange={(e) => {
+                      setModel(e.target.value);
+                      setTestResult(null);
+                    }}
+                    className="settings-select"
+                  >
+                    {(PROVIDER_MODELS[provider] || []).map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
                 )}
-                <span className="status-message">{testResult.message}</span>
+                <span className="control-hint highlight">{getModelDetails()}</span>
               </div>
-            )}
-          </div>
+            </div>
+          </section>
 
-          <div className="settings-footer-actions">
-            <button
-              className="btn-test-settings"
-              onClick={handleTestConnection}
-              disabled={isTesting}
-            >
-              <Activity className={`btn-icon ${isTesting ? "animate-pulse" : ""}`} size={16} />
-              <span>{isTesting ? "Testing..." : "Test Connection"}</span>
-            </button>
-            <button className="btn-save-settings" onClick={handleSave}>
-              <Save className="btn-icon" size={16} />
-              <span>Save Config</span>
-            </button>
-          </div>
+          <section className="settings-panel liquid-glass-card">
+            <div className="panel-header">
+              {provider !== "ollama" ? (
+                <Key className="panel-icon" size={20} />
+              ) : (
+                <Globe className="panel-icon" size={20} />
+              )}
+              <div>
+                <h2 className="panel-title">
+                  {provider !== "ollama" ? "API Credentials" : "Local Endpoint"}
+                </h2>
+                <p className="panel-desc">
+                  {provider !== "ollama"
+                    ? "Your key is stored locally in the browser and sent only with analysis requests."
+                    : "Point Prysm at your local Ollama runtime."}
+                </p>
+              </div>
+            </div>
+
+            <div className="panel-body">
+              {provider !== "ollama" ? (
+                <div className="setting-control-group">
+                  <span className="control-name flex-align gap-05 mb-05">
+                    <Key size={14} /> API Key
+                  </span>
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => handleConfigChange("key", e.target.value)}
+                    placeholder="Paste your API key here"
+                    className="settings-text-input"
+                  />
+                  <span className="control-hint">
+                    Never stored on our servers — BYOK only.
+                  </span>
+                </div>
+              ) : (
+                <div className="setting-control-group">
+                  <span className="control-name flex-align gap-05 mb-05">
+                    <Globe size={14} /> Ollama Endpoint URL
+                  </span>
+                  <input
+                    type="text"
+                    value={localUrl}
+                    onChange={(e) => handleConfigChange("url", e.target.value)}
+                    placeholder="e.g. http://localhost:11434"
+                    className="settings-text-input"
+                  />
+                  <span className="control-hint">
+                    The base API endpoint URL of your local Ollama runtime.
+                  </span>
+                </div>
+              )}
+
+              {provider === "ollama" && (
+                <div className="ollama-suggestions-box">
+                  <span className="suggestions-title">Local Ollama Suggestions</span>
+                  <p className="suggestions-desc">
+                    Pull a model in your terminal before testing the connection:
+                  </p>
+                  <div className="code-snippets-container">
+                    <code>ollama run llama4</code>
+                    <code>ollama run gemma3</code>
+                    <code>ollama run mistral-v0.4</code>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
+
+        <aside className="settings-aside">
+          <section className="settings-panel liquid-glass-card">
+            <div className="panel-header">
+              <Activity className="panel-icon" size={20} />
+              <div>
+                <h2 className="panel-title">Active Setup</h2>
+                <p className="panel-desc">Summary of your current LLM configuration.</p>
+              </div>
+            </div>
+
+            <div className="panel-body">
+              <dl className="config-summary">
+                <div className="config-summary-row">
+                  <dt>Provider</dt>
+                  <dd>{PROVIDERS.find((p) => p.id === provider)?.label}</dd>
+                </div>
+                <div className="config-summary-row">
+                  <dt>Model</dt>
+                  <dd>{model === "not_available" ? "Unavailable" : model}</dd>
+                </div>
+                <div className="config-summary-row">
+                  <dt>Auth</dt>
+                  <dd>
+                    {provider === "ollama"
+                      ? localUrl
+                      : apiKey
+                        ? "Key configured"
+                        : "No key set"}
+                  </dd>
+                </div>
+              </dl>
+
+              {testResult && (
+                <div className={`connection-status-box ${testResult.success ? "success" : "error"}`}>
+                  {testResult.success ? (
+                    <CheckCircle2 className="status-icon success-icon" size={16} />
+                  ) : (
+                    <XCircle className="status-icon error-icon" size={16} />
+                  )}
+                  <span className="status-message">{testResult.message}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="settings-footer-actions">
+              <button
+                className="btn-test-settings"
+                onClick={handleTestConnection}
+                disabled={isTesting}
+              >
+                <Activity className={`btn-icon ${isTesting ? "animate-pulse" : ""}`} size={16} />
+                <span>{isTesting ? "Testing..." : "Test Connection"}</span>
+              </button>
+              <button className="btn-save-settings" onClick={handleSave}>
+                <Save className="btn-icon" size={16} />
+                <span>Save Config</span>
+              </button>
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
   );

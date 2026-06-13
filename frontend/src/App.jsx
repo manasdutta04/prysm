@@ -8,8 +8,6 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
-import { Loader2 } from "lucide-react";
-
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/login";
 import TermsPage from "./pages/terms";
@@ -22,12 +20,21 @@ import HelpSupportPage from "./pages/help-support";
 import DocsPage from "./pages/docs";
 import SettingsPage from "./pages/settings";
 import AccountPage from "./pages/account";
+import { NotificationModal } from "./components/notification-modal";
 
 import { useAuthStore } from "./store/useAuthStore";
+import { useNotificationStore } from "./store/useNotificationStore";
 
 function PrivateLayout() {
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        overflow: "hidden",
+        background: "#0A0A0A",
+      }}
+    >
       <SidebarProvider>
         <AppSidebar />
         <div
@@ -52,7 +59,10 @@ function PrivateLayout() {
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
               </div>
-              <div className="text-2xl font-bold" style={{ fontFamily: "Borel, cursive" }}>
+              <div
+                className="text-2xl font-bold"
+                style={{ fontFamily: "Borel, cursive" }}
+              >
                 prysm
               </div>
               <div></div>
@@ -63,6 +73,7 @@ function PrivateLayout() {
                 minHeight: 0,
                 overflow: "auto",
                 WebkitOverflowScrolling: "touch",
+                padding: "2rem",
               }}
             >
               <Outlet />
@@ -74,25 +85,64 @@ function PrivateLayout() {
   );
 }
 
+function HamsterLoader() {
+  return (
+    <div className="prysm-loader-container">
+      <div
+        aria-label="Orange and tan hamster running in a metal wheel"
+        role="img"
+        className="wheel-and-hamster"
+      >
+        <div className="wheel"></div>
+        <div className="hamster">
+          <div className="hamster__body">
+            <div className="hamster__head">
+              <div className="hamster__ear"></div>
+              <div className="hamster__eye"></div>
+              <div className="hamster__nose"></div>
+            </div>
+            <div className="hamster__limb hamster__limb--fr"></div>
+            <div className="hamster__limb hamster__limb--fl"></div>
+            <div className="hamster__limb hamster__limb--br"></div>
+            <div className="hamster__limb hamster__limb--bl"></div>
+            <div className="hamster__tail"></div>
+          </div>
+        </div>
+        <div className="spoke"></div>
+      </div>
+    </div>
+  );
+}
+
 function ProtectedRoute({ children }) {
-  const { authUser } = useAuthStore();
+  const { authUser, isCheckingAuth } = useAuthStore();
+  if (isCheckingAuth) {
+    return <HamsterLoader />;
+  }
   return authUser ? children : <Navigate to="/login" replace />;
 }
 
+function LoginPageWrapper() {
+  const { authUser, isCheckingAuth } = useAuthStore();
+  if (isCheckingAuth) {
+    return <HamsterLoader />;
+  }
+  return authUser ? <Navigate to="/dashboard" replace /> : <LoginPage />;
+}
+
 function App() {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser, checkAuth } = useAuthStore();
+  const { loadNotifications } = useNotificationStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <Loader2 className="h-8 w-8 text-primary animate-spin" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (authUser) {
+      loadNotifications();
+    }
+  }, [authUser, loadNotifications]);
 
   return (
     <>
@@ -119,13 +169,11 @@ function App() {
           },
         }}
       />
+      <NotificationModal />
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route
-          path="/login"
-          element={authUser ? <Navigate to="/dashboard" replace /> : <LoginPage />}
-        />
+        <Route path="/login" element={<LoginPageWrapper />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/docs" element={<DocsPage />} />
@@ -146,7 +194,10 @@ function App() {
           <Route path="/account" element={<AccountPage />} />
         </Route>
 
-        <Route path="*" element={<Navigate to={authUser ? "/dashboard" : "/"} replace />} />
+        <Route
+          path="*"
+          element={<Navigate to={authUser ? "/dashboard" : "/"} replace />}
+        />
       </Routes>
     </>
   );

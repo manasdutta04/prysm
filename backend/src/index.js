@@ -2,6 +2,7 @@ import express from "express";
 import { connectDB } from "./lib/db.js";
 // import connectDB from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
+import playstoreRoutes from "./routes/playstore.route.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -14,13 +15,13 @@ import customDataRoutes from "./routes/customData.route.js";
 import dashboardRoutes from "./routes/dashboard.route.js";
 
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-//middlewares
+// middlewares
 app.use(express.json());
 app.use(cookieParser());
-
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -29,13 +30,13 @@ app.use(
 );
 
 //for local mongodb testing
-
 // connectDB("mongodb://localhost:27017/prysm-users").then(() => {
 //   console.log("Mongodb Connected");
 // });
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/playstore", playstoreRoutes);
 
 app.use("/api/auth/google", googleRoutes);
 

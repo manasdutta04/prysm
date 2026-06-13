@@ -2,17 +2,21 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./dashboard.css";
 // import { useAuthStore } from "../store/useAuthStore";
 // import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import ConnectGmailButton from "../components/ConnectGmailButton";
+import FetchEmailsButton from "../components/FetchEmailsButton";
+import { Button, LiquidButton } from "@/components/ui/liquid-glass-button";
 import toast from "react-hot-toast";
 import { LineChart } from "@mui/x-charts/LineChart";
 import axiosInstance from "../lib/axios";
+import { useNotificationStore } from "../store/useNotificationStore";
 import {
   RefreshCw,
   Download,
-  List,
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
+  Sparkles,
+  Smile,
+  Frown,
+  Activity,
+  Layers,
   CheckCircle2,
   XCircle,
   ArrowUp,
@@ -25,6 +29,7 @@ export default function DashboardPage() {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeMetricTab, setActiveMetricTab] = useState("satisfaction");
+  const { addNotification } = useNotificationStore();
 
   const [startDate, setStartDate] = useState(() => {
     const date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -65,6 +70,7 @@ export default function DashboardPage() {
         );
 
         setData(res.data);
+        return res.data;
       } catch (error) {
         console.error("Dashboard Load Error:", error);
         toast.error("Failed to load dashboard data");
@@ -88,7 +94,7 @@ export default function DashboardPage() {
     toast.loading("Fetching latest feedback data...", { id: "fetching" });
 
     try {
-      await loadDashboardData(false);
+      const result = await loadDashboardData(false);
       const now = Date.now();
       setLastFetchedTime(now);
       localStorage.setItem("lastFetchedTime", now.toString());
@@ -104,6 +110,45 @@ export default function DashboardPage() {
         localStorage.setItem("connectedApps", JSON.stringify(connectedApps));
       }
       toast.success("Feedback synced successfully!", { id: "fetching" });
+
+      // Trigger dynamic real-time notifications from the fetch results!
+      if (result && result.summary) {
+        const { summary, metrics } = result;
+
+        // 1. System sync success
+        addNotification({
+          title: "Feedback Ingest Completed",
+          description: `Ingested new updates. Analyzed ${summary.totalFeedback} feedbacks total. Sentiment is ${summary.positiveSentiment}% positive.`,
+          category: "system",
+        });
+
+        // 2. Trend alert based on satisfaction score
+        if (metrics && typeof metrics.satisfactionScore === "number") {
+          addNotification({
+            title: `Satisfaction Trend Alert`,
+            description: `Overall satisfaction is ${metrics.satisfactionScore.toFixed(1)} / 5.0 (${metrics.improvement > 0 ? "+" : ""}${metrics.improvement}% change).`,
+            category: "trend",
+          });
+        }
+
+        // 3. Highlight top insight
+        if (summary.keyInsights && summary.keyInsights[0]) {
+          addNotification({
+            title: "Top Trend Insight",
+            description: summary.keyInsights[0],
+            category: "trend",
+          });
+        }
+
+        // 4. Warning alert if negative sentiment is high
+        if (summary.negativeSentiment > 35) {
+          addNotification({
+            title: "Critical Feedback Surge",
+            description: `Friction alert: ${summary.negativeSentiment}% of reviews carry negative sentiments. Top issue: ${summary.improvements?.[0] || "Needs attention"}.`,
+            category: "alert",
+          });
+        }
+      }
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch fresh reviews", { id: "fetching" });
@@ -203,13 +248,8 @@ export default function DashboardPage() {
         {/* Main Summary Widget */}
         <div className="dashboard-summary-widget">
           <div className="widget-header">
-            <List className="widget-icon" />
-            <div className="widget-title-section">
-              <h3 className="widget-title">Summary</h3>
-              <p className="widget-subtitle">
-                Shows things to improve and overall feedback insights
-              </p>
-            </div>
+            <Sparkles className="widget-icon neutral" size={20} />
+            <h3 className="widget-title">AI Summary</h3>
           </div>
 
           {isLoading ? (
@@ -264,15 +304,18 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <Button
+          <LiquidButton
             onClick={handleFetchData}
             disabled={isFetching}
-            className="action-button fetch-button"
+            className="action-button fetch-button text-black font-bold tracking-wide rounded-xl border-none"
             variant="default"
+            size="lg"
           >
-            <RefreshCw className={isFetching ? "spinning" : ""} />
-            Fetch and Analyze
-          </Button>
+            <RefreshCw
+              className={isFetching ? "spinning mr-2 h-4 w-4" : "mr-2 h-4 w-4"}
+            />
+            Fetch Data
+          </LiquidButton>
           <div className="last-fetched">
             Last Fetched time → {getTimeAgo(lastFetchedTime)}
           </div>
@@ -370,14 +413,15 @@ export default function DashboardPage() {
             </>
           ) : null}
 
-          <Button
+          <LiquidButton
             onClick={handleDownloadPDF}
-            className="action-button download-button"
+            className="action-button download-button text-white font-semibold tracking-wide border border-white/10 rounded-xl"
             variant="outline"
+            size="lg"
           >
-            <Download />
+            <Download className="mr-2 h-4 w-4" />
             Download as .pdf
-          </Button>
+          </LiquidButton>
         </div>
       </div>
 
@@ -386,13 +430,8 @@ export default function DashboardPage() {
         {/* Positive Points Widget */}
         <div className="dashboard-widget-card">
           <div className="widget-card-header">
-            <div className="widget-card-icon positive">
-              <TrendingUp />
-            </div>
-            <div>
-              <h4 className="widget-card-title">Positive Points</h4>
-              <p className="widget-card-subtitle">as per feedback</p>
-            </div>
+            <Smile className="widget-icon positive" size={20} />
+            <h4 className="widget-card-title">What's Working</h4>
           </div>
           {isLoading ? (
             <SkeletonLoader className="card-skeleton" />
@@ -420,13 +459,8 @@ export default function DashboardPage() {
         {/* Negative Points Widget */}
         <div className="dashboard-widget-card">
           <div className="widget-card-header">
-            <div className="widget-card-icon negative">
-              <TrendingDown />
-            </div>
-            <div>
-              <h4 className="widget-card-title">Negative Points</h4>
-              <p className="widget-card-subtitle">as per feedback</p>
-            </div>
+            <Frown className="widget-icon negative" size={20} />
+            <h4 className="widget-card-title">Needs Attention</h4>
           </div>
           {isLoading ? (
             <SkeletonLoader className="card-skeleton" />
@@ -454,15 +488,8 @@ export default function DashboardPage() {
         {/* Metrics Widget */}
         <div className="dashboard-widget-card">
           <div className="widget-card-header">
-            <div className="widget-card-icon metrics">
-              <BarChart3 />
-            </div>
-            <div>
-              <h4 className="widget-card-title">Improvement Metrics</h4>
-              <p className="widget-card-subtitle">
-                metrics to visualize improvement from the last time
-              </p>
-            </div>
+            <Activity className="widget-icon metrics" size={20} />
+            <h4 className="widget-card-title">Performance Metrics</h4>
           </div>
           {isLoading ? (
             <SkeletonLoader className="card-skeleton" />
@@ -597,11 +624,8 @@ export default function DashboardPage() {
       {/* Feedback Sources Line Chart */}
       <div className="feedback-sources-chart">
         <div className="chart-header">
-          <BarChart3 className="chart-icon" />
-          <div>
-            <h3 className="chart-title">Feedback Source Comparison</h3>
-            <p className="chart-subtitle">Monthly feedback volume by source</p>
-          </div>
+          <Layers className="widget-icon neutral" size={20} />
+          <h3 className="chart-title">Source Breakdown</h3>
         </div>
         {isLoading ? (
           <SkeletonLoader className="chart-skeleton" />

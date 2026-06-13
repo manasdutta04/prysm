@@ -1,10 +1,13 @@
-import Feedback from "../models/raw feedbacks/feedback.model.js";
-import User from "../models/users/user.model.js";
+import Feedback from "../models/raw_feedbacks/feedback.model.js";
+// import User from "../models/users/user.model.js";
 import { fetchXFeedback } from "../lib/xScraper.js";
 import { fetchAppStoreReviews } from "../lib/appStoreScraper.js";
-import { fetchEmails, fetchEmailDetails } from "../lib/fetchemail.js";
 import AnalysisHistory from "../models/analysis/analysisHistory.model.js";
 import axios from "axios";
+import User from "../models/users/user.model.js";
+import PlaystoreUser from "../models/users/playstoreUser.model.js";
+import gplay from "google-play-scraper";
+import { fetchEmails, fetchEmailDetails } from "../lib/fetchemail.js";
 
 // Helper keyword dictionaries for rule-based analysis
 const POSITIVE_KEYWORDS = [
@@ -447,9 +450,106 @@ export const fetchAndAnalyzeData = async (req, res) => {
         console.log("App Store not connected. Skipping App Store sync.");
       }
 
-      console.log(
-        `Sync Summary: Gmail=${syncedCount.gmail}, X=${syncedCount.x}, AppStore=${syncedCount.appstore}`,
-      );
+      // Play Store Scraper
+      if (connectedApps["Play Store"]?.isConnected) {
+        const appId = connectedApps["Play Store"].appId;
+        let playstoreAppId = appId;
+        if (!playstoreAppId) {
+          const playstoreUser = await PlaystoreUser.findOne({
+            userId,
+            isConnected: true,
+          });
+          if (playstoreUser) {
+            playstoreAppId = playstoreUser.appId;
+          }
+        }
+
+        if (playstoreAppId) {
+          try {
+            const result = await gplay.reviews({
+              appId: playstoreAppId,
+              lang: "en",
+              country: "us",
+              sort: gplay.sort.NEWEST,
+              num: 100,
+            });
+            const reviews = result.data || [];
+            for (const review of reviews) {
+              const existing = await Feedback.findOne({
+                userId,
+                externalId: review.id,
+                source: "playstore",
+              });
+              if (!existing) {
+                await Feedback.create({
+                  userId,
+                  source: "playstore",
+                  externalId: review.id,
+                  content: review.text,
+                  timestamp: new Date(review.date),
+                  metadata: {
+                    userName: review.userName,
+                    score: review.score,
+                    thumbsUp: review.thumbsUp,
+                    appId: playstoreAppId,
+                    replyText: review.replyText || "",
+                  },
+                });
+              }
+            }
+          } catch (err) {
+            console.warn("Play Store Sync Warning:", err.message);
+          }
+        }
+      }
+
+      // Gmail Sync
+      if (connectedApps["Gmail"]?.isConnected) {
+        const userDoc = await User.findById(userId);
+        if (userDoc?.gmail?.accessToken) {
+          try {
+            const emailList = await fetchEmails(userDoc);
+            if (emailList?.messages && emailList.messages.length > 0) {
+              for (const msg of emailList.messages) {
+                const fullEmail = await fetchEmailDetails(userDoc, msg.id);
+                const headers = fullEmail.payload?.headers || [];
+                const subject =
+                  headers.find((h) => h.name === "Subject")?.value ||
+                  "No Subject";
+                const from =
+                  headers.find((h) => h.name === "From")?.value ||
+                  "Unknown Sender";
+                const date =
+                  headers.find((h) => h.name === "Date")?.value ||
+                  new Date().toISOString();
+                const snippet = fullEmail.snippet;
+
+                const existing = await Feedback.findOne({
+                  userId,
+                  externalId: msg.id,
+                  source: "gmail",
+                });
+                if (!existing) {
+                  await Feedback.create({
+                    userId,
+                    source: "gmail",
+                    externalId: msg.id,
+                    content: snippet || subject,
+                    metadata: {
+                      subject,
+                      from,
+                      threadId: msg.threadId,
+                    },
+                    timestamp: new Date(date),
+                  });
+                }
+              }
+            }
+          } catch (err) {
+            console.warn("Gmail Sync Warning:", err.message);
+          }
+        }
+      }
     }
 
     // 2) Load all feedback from MongoDB within date range

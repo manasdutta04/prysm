@@ -1,66 +1,28 @@
-/* ===== Account Page Container ===== */
 .account-page {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
-  width: 100%;
-  min-height: 100%;
-  box-sizing: border-box;
-}
-
-/* ===== Header ===== */
-.account-page .page-header {
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
-.account-page .page-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
-}
-
-.account-page .page-subtitle {
-  font-size: 1.125rem;
-  color: #a1a1aa;
-  margin: 0;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.5;
-}
-
-/* ===== Main Layout ===== */
-.account-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 2rem;
-  align-items: start;
+  gap: 1.5rem;
+  padding: 0;
+  padding-bottom: 2rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: 100%;
+  box-sizing: border-box;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-@media (max-width: 900px) {
-  .account-layout {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
+.account-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  width: 100%;
 }
 
-/* ===== Profile Overview Card ===== */
 .profile-overview-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.25rem;
+  border-radius: 2rem;
   padding: 2rem 1.5rem;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -74,7 +36,6 @@
   text-align: center;
 }
 
-/* circular avatar glow */
 .large-avatar-glow {
   position: relative;
   width: 110px;
@@ -85,14 +46,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 20px rgba(204, 255, 0, 0.15);
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .large-avatar-glow:hover {
-  border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.25);
+  border-color: rgba(204, 255, 0, 0.5);
+  box-shadow: 0 0 30px rgba(204, 255, 0, 0.35);
 }
 
 .profile-avatar-img {
@@ -102,9 +63,10 @@
 }
 
 .profile-avatar-initials {
+  font-family: 'Geist', sans-serif;
   font-size: 2.25rem;
-  font-weight: 700;
-  color: #60a5fa;
+  font-weight: 800;
+  color: #CCFF00;
   letter-spacing: 0.5px;
 }
 
@@ -127,22 +89,25 @@
 }
 
 .user-display-name {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: #ffffff;
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  font-weight: normal;
+  color: #F5F5F0;
   margin: 0;
 }
 
 .user-role-badge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #60a5fa;
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  padding: 0.25rem 0.75rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: #CCFF00;
+  background: rgba(204, 255, 0, 0.05);
+  border: 1px solid rgba(204, 255, 0, 0.15);
+  padding: 0.35rem 0.85rem;
   border-radius: 2rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.12em;
 }
 
 .divider-line {
@@ -152,7 +117,6 @@
   margin: 1.75rem 0;
 }
 
-/* metadata items list */
 .profile-metadata-list {
   width: 100%;
   display: flex;
@@ -167,7 +131,7 @@
 }
 
 .meta-icon {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.35);
   flex-shrink: 0;
 }
 
@@ -178,46 +142,46 @@
 }
 
 .meta-label {
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.12em;
 }
 
 .meta-value {
+  font-family: 'Geist', sans-serif;
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
 }
 
 .meta-value.text-green {
-  color: #10b981;
+  color: #CCFF00;
 }
 
-/* ===== Account Forms Container ===== */
 .account-forms-container {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.25rem;
 }
 
 .account-form-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.25rem;
+  border-radius: 2rem;
   padding: 2rem;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 }
 
 .form-card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #ffffff;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #F5F5F0;
   margin: 0 0 1.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   padding-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .glass-form {
@@ -233,13 +197,15 @@
 }
 
 .form-label {
-  font-size: 0.8125rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
   padding-left: 0.25rem;
 }
 
-/* input with absolute positioning icons */
 .input-with-icon {
   position: relative;
   width: 100%;
@@ -250,61 +216,63 @@
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.35);
   pointer-events: none;
   transition: color 0.2s ease;
 }
 
 .input-with-icon input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.75rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  padding: 0.85rem 1rem 0.85rem 2.75rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.35);
   color: #ffffff;
+  font-family: 'Geist', sans-serif;
   font-size: 0.9rem;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
 }
 
 .input-with-icon input:focus {
-  border-color: rgba(59, 130, 246, 0.5);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  border-color: rgba(204, 255, 0, 0.5);
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.12);
 }
 
-.input-with-icon input:focus + .input-icon {
-  color: #60a5fa;
+.input-with-icon:focus-within .input-icon {
+  color: #CCFF00;
 }
 
 .input-with-icon input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.35);
 }
 
-/* Form Action Button */
 .glass-form .btn {
   align-self: flex-start;
-  min-width: 150px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: #ffffff;
+  min-width: 160px;
+  background: #CCFF00;
+  color: #0A0A0A;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.5rem;
+  font-family: 'Geist', sans-serif;
   font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.85rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 18px rgba(204, 255, 0, 0.2);
 }
 
 .glass-form .btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  background: #ddff33;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(204, 255, 0, 0.35);
 }
 
 .glass-form .btn:active:not(:disabled) {
@@ -312,17 +280,22 @@
 }
 
 .glass-form .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.4;
   cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .account-page {
-    padding: 1rem;
+@media (max-width: 900px) {
+  .account-layout {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
+}
+
+@media (max-width: 600px) {
   .account-form-card {
-    padding: 1.25rem;
+    padding: 1.5rem;
   }
   .glass-form .btn {
     width: 100%;
