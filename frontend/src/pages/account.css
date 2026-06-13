@@ -1,45 +1,84 @@
 .account-page {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 0;
-  padding-bottom: 2rem;
+  gap: 1.25rem;
   width: 100%;
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
-  min-height: 100%;
+  min-height: calc(100dvh - 4rem);
   box-sizing: border-box;
   font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #fff;
+  padding-bottom: 2rem;
 }
 
 .account-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
-  align-items: start;
   width: 100%;
 }
 
-.profile-overview-card {
-  border-radius: 2rem;
-  padding: 2rem 1.5rem;
+.settings-panel {
+  border-radius: 1.75rem;
+  padding: 1.75rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 1.5rem;
 }
 
-.avatar-section {
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.panel-icon {
+  color: #CCFF00;
+  filter: drop-shadow(0 0 6px rgba(204, 255, 0, 0.35));
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.panel-title {
+  font-family: 'Geist', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.panel-desc {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+}
+
+.panel-body {
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Integrated Avatar Uploader */
+.avatar-upload-container {
+  display: flex;
   align-items: center;
-  gap: 1rem;
-  text-align: center;
+  gap: 1.5rem;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .large-avatar-glow {
   position: relative;
-  width: 110px;
-  height: 110px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.03);
   border: 2px solid rgba(255, 255, 255, 0.1);
@@ -49,6 +88,7 @@
   box-shadow: 0 0 20px rgba(204, 255, 0, 0.15);
   overflow: hidden;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .large-avatar-glow:hover {
@@ -64,16 +104,15 @@
 
 .profile-avatar-initials {
   font-family: 'Geist', sans-serif;
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: #CCFF00;
-  letter-spacing: 0.5px;
 }
 
 .avatar-edit-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,106 +127,32 @@
   opacity: 1;
 }
 
-.user-display-name {
+.avatar-upload-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.avatar-user-name {
   font-family: 'Instrument Serif', serif;
   font-style: italic;
-  font-size: 1.5rem;
-  font-weight: normal;
+  font-size: 1.6rem;
   color: #F5F5F0;
   margin: 0;
 }
 
-.user-role-badge {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  color: #CCFF00;
-  background: rgba(204, 255, 0, 0.05);
-  border: 1px solid rgba(204, 255, 0, 0.15);
-  padding: 0.35rem 0.85rem;
-  border-radius: 2rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+.avatar-user-status {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
 }
 
-.divider-line {
-  width: 100%;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  margin: 1.75rem 0;
-}
-
-.profile-metadata-list {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.metadata-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.meta-icon {
-  color: rgba(255, 255, 255, 0.35);
-  flex-shrink: 0;
-}
-
-.meta-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.meta-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-
-.meta-value {
-  font-family: 'Geist', sans-serif;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 500;
-}
-
-.meta-value.text-green {
-  color: #CCFF00;
-}
-
-.account-forms-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.account-form-card {
-  border-radius: 2rem;
-  padding: 2rem;
-}
-
-.form-card-title {
-  font-family: 'Geist', sans-serif;
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #F5F5F0;
-  margin: 0 0 1.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
+/* Forms and Controls */
 .glass-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  width: 100%;
 }
 
 .form-group {
@@ -198,9 +163,9 @@
 
 .form-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   padding-left: 0.25rem;
@@ -216,29 +181,29 @@
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.3);
   pointer-events: none;
   transition: color 0.2s ease;
 }
 
 .input-with-icon input {
   width: 100%;
-  padding: 0.85rem 1rem 0.85rem 2.75rem;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.35);
   color: #ffffff;
   font-family: 'Geist', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   outline: none;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
 }
 
 .input-with-icon input:focus {
-  border-color: rgba(204, 255, 0, 0.5);
+  border-color: rgba(204, 255, 0, 0.45);
   background: rgba(0, 0, 0, 0.45);
-  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.12);
+  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.08);
 }
 
 .input-with-icon:focus-within .input-icon {
@@ -246,58 +211,214 @@
 }
 
 .input-with-icon input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.3);
 }
 
-.glass-form .btn {
-  align-self: flex-start;
-  min-width: 160px;
-  background: #CCFF00;
-  color: #0A0A0A;
-  border: none;
-  padding: 0.85rem 1.5rem;
-  font-family: 'Geist', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 700;
-  border-radius: 0.85rem;
-  cursor: pointer;
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-family: 'Geist', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 18px rgba(204, 255, 0, 0.2);
+  padding: 0.75rem 1.25rem;
 }
 
-.glass-form .btn:hover:not(:disabled) {
+.btn-primary {
+  align-self: flex-start;
+  min-width: 150px;
+  background: #CCFF00;
+  color: #0A0A0A;
+  box-shadow: 0 4px 18px rgba(204, 255, 0, 0.15);
+}
+
+.btn-primary:hover:not(:disabled) {
   background: #ddff33;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(204, 255, 0, 0.35);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(204, 255, 0, 0.25);
 }
 
-.glass-form .btn:active:not(:disabled) {
+.btn-primary:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.glass-form .btn:disabled {
+.btn-primary:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
 }
 
-@media (max-width: 900px) {
-  .account-layout {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
+/* Danger Zone Styling */
+.danger-zone-panel {
+  border-color: rgba(239, 68, 68, 0.22) !important;
+}
+
+.danger-zone-panel:hover {
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.06) !important;
+}
+
+.danger-icon {
+  color: #ef4444 !important;
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.35)) !important;
+}
+
+.danger-title {
+  color: #ef4444 !important;
+}
+
+.danger-zone-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.danger-zone-desc {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+  max-width: 600px;
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
+}
+
+.btn-danger:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-danger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Custom Confirmation Modal Styling */
+.account-confirm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  background: rgba(8, 8, 8, 0.6);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  animation: modalFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.account-confirm-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 440px;
+  width: 90%;
+  padding: 2rem;
+  border-radius: 1.75rem;
+  background: rgba(15, 15, 15, 0.9) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7) !important;
+  animation: modalScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.confirm-modal-title {
+  font-family: 'Geist', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ef4444;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.confirm-modal-desc {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.confirm-modal-actions .btn-cancel {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.confirm-modal-actions .btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.confirm-modal-actions .btn-confirm-delete {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+}
+
+.confirm-modal-actions .btn-confirm-delete:hover:not(:disabled) {
+  background: #f87171;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45);
+}
+
+.confirm-modal-actions .btn-confirm-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
 @media (max-width: 600px) {
-  .account-form-card {
-    padding: 1.5rem;
+  .settings-panel {
+    padding: 1.25rem;
   }
-  .glass-form .btn {
+  .avatar-upload-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .btn-primary,
+  .btn-danger {
+    width: 100%;
+  }
+  .confirm-modal-actions {
+    flex-direction: column-reverse;
+  }
+  .confirm-modal-actions .btn {
     width: 100%;
   }
 }

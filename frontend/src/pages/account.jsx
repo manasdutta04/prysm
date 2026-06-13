@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { User, Mail, Lock, Shield, Camera, Calendar, Award } from "lucide-react";
+import { User, Mail, Lock, Shield, Camera } from "lucide-react";
 import toast from "react-hot-toast";
+import axiosInstance from "../lib/axios";
 import "./account.css";
 
 export default function AccountPage() {
@@ -18,6 +19,8 @@ export default function AccountPage() {
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isClearingHistory, setIsClearingHistory] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -71,6 +74,25 @@ export default function AccountPage() {
     }
   };
 
+  const handleConfirmClearHistory = async () => {
+    setIsClearingHistory(true);
+    try {
+      const res = await axiosInstance.post("/auth/clear-history");
+      toast.success(
+        `Successfully cleared history! Deleted ${res.data.feedbacksDeleted} feedbacks and ${res.data.reportsDeleted} reports.`
+      );
+      setShowConfirmModal(false);
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 1500);
+    } catch (error) {
+      console.error("Clear History Error:", error);
+      toast.error(error.response?.data?.message || "Failed to clear history");
+    } finally {
+      setIsClearingHistory(false);
+    }
+  };
+
   const initials = authUser?.fullName
     ? authUser.fullName
         .split(" ")
@@ -89,62 +111,71 @@ export default function AccountPage() {
 
   return (
     <div className="account-page">
-      <div className="account-layout">
-        <div className="profile-overview-card liquid-glass-card">
-          <div className="avatar-section">
-            <div className="large-avatar-glow">
-              {authUser?.profilePic ? (
-                <img
-                  src={authUser.profilePic}
-                  alt={authUser.fullName}
-                  className="profile-avatar-img"
-                />
-              ) : (
-                <div className="profile-avatar-initials">{initials}</div>
-              )}
-              <button 
-                className="avatar-edit-overlay"
-                onClick={() => toast.success("Avatar upload simulation triggered")}
+      {/* Custom Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="account-confirm-modal-overlay">
+          <div className="account-confirm-modal liquid-glass-card">
+            <h3 className="confirm-modal-title">Clear Account History?</h3>
+            <p className="confirm-modal-desc">
+              Are you sure you want to delete all feedback data, scraped reviews, custom CSV uploads, and generated reports? This action is permanent and cannot be undone.
+            </p>
+            <div className="confirm-modal-actions">
+              <button
+                className="btn btn-cancel"
+                onClick={() => setShowConfirmModal(false)}
+                disabled={isClearingHistory}
               >
-                <Camera size={16} />
+                Cancel
               </button>
-            </div>
-            <h2 className="user-display-name">{authUser?.fullName}</h2>
-            <span className="user-role-badge">Administrator</span>
-          </div>
-
-          <div className="divider-line" />
-
-          <div className="profile-metadata-list">
-            <div className="metadata-item">
-              <Shield size={16} className="meta-icon" />
-              <div className="meta-info">
-                <span className="meta-label">System Role</span>
-                <span className="meta-value">Owner / Admin</span>
-              </div>
-            </div>
-            <div className="metadata-item">
-              <Calendar size={16} className="meta-icon" />
-              <div className="meta-info">
-                <span className="meta-label">Member Since</span>
-                <span className="meta-value">{memberSince}</span>
-              </div>
-            </div>
-            <div className="metadata-item">
-              <Award size={16} className="meta-icon" />
-              <div className="meta-info">
-                <span className="meta-label">Account Status</span>
-                <span className="meta-value text-green">Verified</span>
-              </div>
+              <button
+                className="btn btn-confirm-delete"
+                onClick={handleConfirmClearHistory}
+                disabled={isClearingHistory}
+              >
+                {isClearingHistory ? "Clearing..." : "Delete Permanently"}
+              </button>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Right Side: Account Forms */}
-        <div className="account-forms-container">
-          {/* Profile Details Form */}
-          <div className="account-form-card liquid-glass-card">
-            <h2 className="form-card-title">Profile Details</h2>
+      <div className="account-layout">
+        {/* Profile Details Panel */}
+        <div className="settings-panel liquid-glass-card">
+          <div className="panel-header">
+            <User className="panel-icon" size={20} />
+            <div>
+              <h2 className="panel-title">Profile Details</h2>
+              <p className="panel-desc">Manage your public profile information and email address.</p>
+            </div>
+          </div>
+
+          <div className="panel-body">
+            {/* Integrated Avatar & Basic Info */}
+            <div className="avatar-upload-container">
+              <div className="large-avatar-glow">
+                {authUser?.profilePic ? (
+                  <img
+                    src={authUser.profilePic}
+                    alt={authUser.fullName}
+                    className="profile-avatar-img"
+                  />
+                ) : (
+                  <div className="profile-avatar-initials">{initials}</div>
+                )}
+                <button
+                  className="avatar-edit-overlay"
+                  onClick={() => toast.success("Avatar upload simulation triggered")}
+                >
+                  <Camera size={16} />
+                </button>
+              </div>
+              <div className="avatar-upload-info">
+                <h3 className="avatar-user-name">{authUser?.fullName}</h3>
+                <p className="avatar-user-status">Verified Account • Member since {memberSince}</p>
+              </div>
+            </div>
+
             <form onSubmit={handleProfileSubmit} className="glass-form">
               <div className="form-group">
                 <label className="form-label">Full Name</label>
@@ -185,10 +216,19 @@ export default function AccountPage() {
               </button>
             </form>
           </div>
+        </div>
 
-          {/* Change Password Form */}
-          <div className="account-form-card liquid-glass-card">
-            <h2 className="form-card-title">Security & Password</h2>
+        {/* Change Password Panel */}
+        <div className="settings-panel liquid-glass-card">
+          <div className="panel-header">
+            <Lock className="panel-icon" size={20} />
+            <div>
+              <h2 className="panel-title">Security & Password</h2>
+              <p className="panel-desc">Update your password to keep your account secure.</p>
+            </div>
+          </div>
+
+          <div className="panel-body">
             <form onSubmit={handlePasswordSubmit} className="glass-form">
               <div className="form-group">
                 <label className="form-label">New Password</label>
@@ -228,6 +268,29 @@ export default function AccountPage() {
                 {isUpdatingPassword ? "Updating password..." : "Update Password"}
               </button>
             </form>
+          </div>
+        </div>
+
+        {/* Clear History Danger Zone Panel */}
+        <div className="settings-panel liquid-glass-card danger-zone-panel">
+          <div className="panel-header">
+            <Shield className="panel-icon danger-icon" size={20} />
+            <div>
+              <h2 className="panel-title danger-title">Danger Zone</h2>
+              <p className="panel-desc">Irreversible account actions and history cleanup.</p>
+            </div>
+          </div>
+
+          <div className="panel-body danger-zone-content">
+            <p className="danger-zone-desc">
+              Permanently delete all ingested reviews, custom CSV uploads, and generated AI analysis history associated with your account. This action is irreversible.
+            </p>
+            <button
+              onClick={() => setShowConfirmModal(true)}
+              className="btn btn-danger"
+            >
+              Clear History
+            </button>
           </div>
         </div>
       </div>
