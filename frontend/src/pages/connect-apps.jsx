@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import "./connect-apps.css";
-import ConnectGmailButton from "../components/ConnectGmailButton";
-import FetchEmailsButton from "../components/FetchEmailsButton";
 import { AppStoreConnectModal } from "@/components/app-store-connect-modal";
 import { XConnectModal } from "@/components/x-connect-modal";
 import {
@@ -33,6 +31,25 @@ export default function ConnectAppsPage() {
     localStorage.setItem("connectedApps", JSON.stringify(connectedApps));
   }, [connectedApps]);
 
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("gmail") === "connected") {
+      setConnectedApps((prev) => ({
+        ...prev,
+        Gmail: {
+          isConnected: true,
+          appName: "Gmail",
+          appIcon:
+            "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+          lastSync: Date.now(),
+        },
+      }));
+
+      window.history.replaceState({}, "", "/connect-apps");
+    }
+  }, []);
+
   const apps = [
     {
       name: "Gmail",
@@ -57,13 +74,22 @@ export default function ConnectAppsPage() {
   ];
 
   const handleConnectClick = (appName) => {
+    if (appName === "Gmail") {
+      window.location.href = "http://localhost:5000/api/auth/google/connect";
+      return;
+    }
+
     if (appName === "App Store") {
       setIsConnectModalOpen(true);
-    } else if (appName === "X") {
-      setIsXModalOpen(true);
-    } else {
-      toast("Integration coming soon!", { icon: "🚧" });
+      return;
     }
+
+    if (appName === "X") {
+      setIsXModalOpen(true);
+      return;
+    }
+
+    toast("Integration coming soon!", { icon: "🚧" });
   };
 
   const handleAppStoreConnected = (appData) => {
@@ -187,11 +213,6 @@ export default function ConnectAppsPage() {
             </div>
           );
         })}
-        <div>
-          <h1>Gmail Integration Test</h1>
-          <ConnectGmailButton />
-          <FetchEmailsButton />
-        </div>
       </div>
 
       <AppStoreConnectModal

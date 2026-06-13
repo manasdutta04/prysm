@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./dashboard.css";
 // import { useAuthStore } from "../store/useAuthStore";
 // import { useNavigate } from "react-router-dom";
-import ConnectGmailButton from "../components/ConnectGmailButton";
-import FetchEmailsButton from "../components/FetchEmailsButton";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { LineChart } from "@mui/x-charts/LineChart";
@@ -27,7 +25,7 @@ export default function DashboardPage() {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeMetricTab, setActiveMetricTab] = useState("satisfaction");
-  
+
   const [startDate, setStartDate] = useState(() => {
     const date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     return date.toISOString().split("T")[0];
@@ -36,40 +34,47 @@ export default function DashboardPage() {
     return new Date().toISOString().split("T")[0];
   });
 
-  const loadDashboardData = useCallback(async (skipScrape = true) => {
-    setIsLoading(true);
-    try {
-      const savedApps = localStorage.getItem("connectedApps");
-      const connectedApps = savedApps ? JSON.parse(savedApps) : {};
+  const loadDashboardData = useCallback(
+    async (skipScrape = true) => {
+      setIsLoading(true);
+      try {
+        const savedApps = localStorage.getItem("connectedApps");
+        const connectedApps = savedApps ? JSON.parse(savedApps) : {};
 
-      const savedProvider = localStorage.getItem("prysm_llm_provider") || "";
-      const savedKey = localStorage.getItem("prysm_llm_key") || "";
-      const savedUrl = localStorage.getItem("prysm_llm_local_url") || "";
-      const savedModel = localStorage.getItem("prysm_llm_model") || "";
+        const savedProvider = localStorage.getItem("prysm_llm_provider") || "";
+        const savedKey = localStorage.getItem("prysm_llm_key") || "";
+        const savedUrl = localStorage.getItem("prysm_llm_local_url") || "";
+        const savedModel = localStorage.getItem("prysm_llm_model") || "";
 
-      const res = await axiosInstance.post("/dashboard/fetch-and-analyze", {
-        startDate,
-        endDate,
-        connectedApps,
-        skipScraping: skipScrape
-      }, {
-        headers: {
-          "X-LLM-Provider": savedProvider,
-          "X-LLM-Key": savedKey,
-          "X-LLM-Local-Url": savedUrl,
-          "X-LLM-Model": savedModel
-        }
-      });
+        const res = await axiosInstance.post(
+          "/dashboard/fetch-and-analyze",
+          {
+            startDate,
+            endDate,
+            connectedApps,
+            skipScraping: skipScrape,
+          },
+          {
+            headers: {
+              "X-LLM-Provider": savedProvider,
+              "X-LLM-Key": savedKey,
+              "X-LLM-Local-Url": savedUrl,
+              "X-LLM-Model": savedModel,
+            },
+          },
+        );
 
-      setData(res.data);
-    } catch (error) {
-      console.error("Dashboard Load Error:", error);
-      toast.error("Failed to load dashboard data");
-      setData(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [startDate, endDate]);
+        setData(res.data);
+      } catch (error) {
+        console.error("Dashboard Load Error:", error);
+        toast.error("Failed to load dashboard data");
+        setData(null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [startDate, endDate],
+  );
 
   useEffect(() => {
     const savedTime = localStorage.getItem("lastFetchedTime");
@@ -77,10 +82,6 @@ export default function DashboardPage() {
       setLastFetchedTime(parseInt(savedTime, 10));
     }
   }, []);
-
-  useEffect(() => {
-    loadDashboardData(true);
-  }, [loadDashboardData]);
 
   const handleFetchData = async () => {
     setIsFetching(true);
@@ -270,7 +271,7 @@ export default function DashboardPage() {
             variant="default"
           >
             <RefreshCw className={isFetching ? "spinning" : ""} />
-            Fetch Data
+            Fetch and Analyze
           </Button>
           <div className="last-fetched">
             Last Fetched time → {getTimeAgo(lastFetchedTime)}

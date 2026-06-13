@@ -19,9 +19,10 @@ const FeedbackSchema = new mongoose.Schema({
 
   // 5) Flexible metadata (varies by platform)
   metadata: {
-    type: mongoose.Schema.Types.Mixed, // allows JSON object
+    type: mongoose.Schema.Types.Mixed,
     default: {},
   },
+  rating: { type: Number, default: null },
 
   // 6) Timestamp (feedback creation time)
   timestamp: { type: Date, required: true, default: Date.now },
