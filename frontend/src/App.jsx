@@ -19,6 +19,7 @@ import DocsPage from "./pages/docs";
 import SettingsPage from "./pages/settings";
 import AccountPage from "./pages/account";
 import { NotificationModal } from "./components/notification-modal";
+import NotFoundPage from "./components/ui/404-page-not-found";
 
 import { useAuthStore } from "./store/useAuthStore";
 import { useNotificationStore } from "./store/useNotificationStore";
@@ -194,7 +195,7 @@ function App() {
 
         <Route
           path="*"
-          element={<Navigate to="/" replace />}
+          element={<NotFoundPage />}
         />
       </Routes>
     </>
