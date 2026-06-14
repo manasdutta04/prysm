@@ -31,6 +31,7 @@ graph TD
         AIOrchestrator --> LLM[Dynamic API Invocations: OpenAI, Gemini, Claude, Groq, Ollama]
         
         LLM --> Analysis[Compute Sentiment, Group Topics, Extract Insights]
+        Analysis --> PDF[Generate PDF Report with Strategic Priority Matrix]
         Analysis --> HistoryStore[Save Results to AnalysisHistory Model]
         Analysis --> Response[Send JSON Payload to Dashboard UI]
     end

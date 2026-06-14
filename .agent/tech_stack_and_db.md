@@ -9,7 +9,7 @@ Prysm is built on a React, Express.js, and MongoDB stack.
 * **Frontend Framework**: React.js configured with Vite.
 * **Backend Framework**: Node.js and Express.js.
 * **Database Access**: MongoDB Atlas queried via Mongoose.
-* **Zustand Store**: Session JWT storage and profile updates handled client-side inside [useAuthStore.js](file:///c:/Coding%20Workspace/prysm/frontend/src/store/useAuthStore.js).
+* **Zustand Store**: Session JWT storage and profile updates handled client-side inside [useAuthStore.js](file:///c:/Coding%20Workspace/prysm/frontend/src/store/useAuthStore.js) alongside `usePlaystoreStore.js`.
 * **Charts & Icons**: Lucide Icons and `@mui/x-charts` for dashboard comparison trends.
 
 ---
@@ -22,7 +22,7 @@ prysm/
 ├── frontend/             # Vite React client
 │   ├── src/
 │   ├── components/   # Modals (x-connect, app-sidebar, notification-modal)
-│   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy
+│   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy, LandingPage
 │   ├── store/        # Zustand stores
 │   └── lib/          # axios.js instance pointing to backend
 ├── backend/              # Express API server
