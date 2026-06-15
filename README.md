@@ -14,6 +14,7 @@ Conventional feedback analysis often involves manual reading and categorization 
 - Slack & email notifications
 - Exportable PDF Reports with Strategic Priority Matrix
 - Data history clearing capabilities
+- SEO optimized with Open Graph metadata for social sharing
 - Unique Angle: Goes beyond sentiment → actually tells teams what to fix
 - Target Users: Product managers, Large organisations, customer success teams
 
