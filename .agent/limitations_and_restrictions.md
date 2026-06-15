@@ -45,7 +45,7 @@ The following files are managed by another teammate. Under no circumstances shou
 ### A. Layout Separation
 * **Authenticated vs Public**: The root route (`/`) is auth-aware: unauthenticated users see the Landing Page, while authenticated users see the Dashboard inside the authenticated sidebar layout. Public pages (`/login`, `/terms`, `/privacy`, and public documentation views) must remain separate from the authenticated sidebar layout. Any layout leaks (such as the sidebar appearing on the landing page) are prohibited.
 * **Redirection Rules**:
-  * Unauthenticated users hitting `/` see the Landing Page, `/login` see the LoginPage, `/terms` see the TermsPage, `/privacy` see the PrivacyPage. Any protected or invalid route redirects to `/`.
-  * Authenticated users hitting `/` see the Dashboard as the home page. Authenticated users hitting `/login` or any invalid route are redirected to `/`.
+  * Unauthenticated users hitting `/` see the Landing Page, `/login` see the LoginPage, `/terms` see the TermsPage, `/privacy` see the PrivacyPage. Any protected route redirects to `/`. Any invalid route now renders a dedicated 404 Not Found page.
+  * Authenticated users hitting `/` see the Dashboard as the home page. Authenticated users hitting `/login` are redirected to `/`, while any invalid route renders the 404 Not Found page.
   * Do not reintroduce a frontend `/dashboard` route. Dashboard API endpoints under `/api/dashboard` remain valid backend routes and should not be renamed as part of frontend navigation changes.
 * **Sidebar Integrity**: The sidebar footer must dynamically fetch active session data from `useAuthStore` rather than relying on static placeholders. Sizing of the sidebar container is fixed via `className="w-64 shrink-0"` to prevent dynamic layout shifts caused by user email/name text length.

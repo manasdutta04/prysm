@@ -21,17 +21,19 @@ prysm/
 ├── .agent/               # AI Agent documentation files
 ├── frontend/             # Vite React client
 │   ├── src/
-│   ├── components/   # Modals (x-connect, app-sidebar, notification-modal)
+│   ├── components/   # Modals (x-connect, app-sidebar, notification-modal, 404-page-not-found)
 │   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy, LandingPage
 │   ├── store/        # Zustand stores
 │   └── lib/          # axios.js instance pointing to backend
+│   └── vercel.json   # Vercel rewrite configuration for SPA routing
 ├── backend/              # Express API server
 │   ├── src/
 │   │   ├── controllers/  # auth, customData, google, appstore, dashboard controllers
 │   │   ├── routes/       # API routes
 │   │   ├── lib/          # db, xScraper, appStoreScraper utilities
 │   │   └── models/       # Mongoose Schemas (feedback, user, analysisHistory)
-└── agents.md             # High-level entry index pointing here
+├── agents.md             # High-level entry index pointing here
+└── vercel.json           # Root Vercel rewrite configuration
 ```
 
 ---
