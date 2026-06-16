@@ -20,6 +20,7 @@ Prysm is built on a React, Express.js, and MongoDB stack.
 prysm/
 ├── .agent/               # AI Agent documentation files
 ├── frontend/             # Vite React client
+│   ├── index.html    # Frontend entry point containing Open Graph metadata
 │   ├── src/
 │   ├── components/   # Modals (x-connect, app-sidebar, notification-modal, 404-page-not-found)
 │   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy, LandingPage
