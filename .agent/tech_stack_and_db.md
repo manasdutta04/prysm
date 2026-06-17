@@ -24,6 +24,7 @@ prysm/
 │   ├── src/
 │   ├── components/   # Modals (x-connect, app-sidebar, notification-modal, 404-page-not-found)
 │   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy, LandingPage
+│   │   └── components2/ # Page content modules (docContent.js, privacy-content.js, terms-content.js)
 │   ├── store/        # Zustand stores
 │   └── lib/          # axios.js instance pointing to backend
 │   └── vercel.json   # Vercel rewrite configuration for SPA routing

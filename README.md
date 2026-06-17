@@ -87,6 +87,9 @@ You can run both the frontend and backend of Prysm in a single unified Docker en
    docker compose down
    ```
 
+### Deploying with Vercel
+The frontend is configured for deployment on Vercel as a Single Page Application (SPA). The repository includes `vercel.json` files with rewrite rules to support client-side routing and the dedicated 404 error page.
+
 ### Manual Installation & Local Dev Setup
 
 ### User Registration
@@ -107,8 +110,9 @@ You can run both the frontend and backend of Prysm in a single unified Docker en
 
 After logging in, users can access all major features through the left-hand navigation panel. The navigation menu includes the following options:
 
-- **Dashboard**: Displays real-time analytics, sentiment summaries, trending topics, and AI-generated insights.
-- **Connect Apps**: Integrates Prysm with third-party platforms such as Gmail, Slack, Twitter (X), Facebook, Google Play, and the App Store.
+- **Connect Apps**: Integrates Prysm with third-party platforms such as Gmail, Slack, Twitter (X), Facebook, Google Play, and the App Store. Play Store integration includes store state management.
+
+- **Dashboard**: Displays real-time analytics, sentiment summaries, trending topics, and AI-generated insights. Features a premium glassmorphic UI.
 - **Custom Data**: Allows users to upload manual feedback files in CSV or Excel format.
 - **History**: Provides a chronological record of processed feedback sessions and alerts.
 - **Settings**: Allows users to configure application preferences and manage API keys for LLM integrations.
