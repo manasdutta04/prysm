@@ -8,6 +8,7 @@ export const usePlaystoreStore = create((set) => ({
   appName: null,
   isLoading: false,
   isFetching: false,
+  hasChecked: false,
 
   // Check connection status on page load
   checkStatus: async () => {
@@ -17,9 +18,11 @@ export const usePlaystoreStore = create((set) => ({
         isConnected: res.data.isConnected,
         appId: res.data.appId || null,
         appName: res.data.appName || null,
+        hasChecked: true,
       });
     } catch (error) {
       console.log("Error in checkStatus", error.message);
+      set({ hasChecked: true });
     }
   },
 

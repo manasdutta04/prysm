@@ -5,6 +5,7 @@ import {
   checkAuth,
   logout,
   updateProfile,
+  clearHistory,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 
@@ -24,5 +25,8 @@ router.get("/check", protectRoute, checkAuth);
 
 // Update Profile Details
 router.put("/update-profile", protectRoute, updateProfile);
+
+// Clear User History and Feedback
+router.post("/clear-history", protectRoute, clearHistory);
 
 export default router;

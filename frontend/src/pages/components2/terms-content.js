@@ -33,9 +33,9 @@ const termsContent = [
     id: "data-license",
     title: "4. Feedback Data & License",
     content: [
-      "Users retain full ownership of all uploaded files, reviews, emails, feedback records, comments, datasets, and related content processed through Prysm.",
+      "Users retain full ownership of all uploaded files, reviews, feedback records, comments, datasets, and related content processed through Prysm.",
       "By using the platform, users grant Prysm a limited, non-exclusive license solely for collecting, storing, processing, analyzing, and visualizing such data.",
-      "Feedback synchronized from connected services may be stored in MongoDB-backed systems to support analytics, historical reporting, trend detection, dashboards, and AI-generated insights.",
+      "Feedback synchronized from connected services may be stored at our company database to support analytics, historical reporting, trend detection, dashboards, and AI-generated insights.",
       "Prysm does not claim ownership of customer data."
     ]
   },
@@ -65,6 +65,24 @@ const termsContent = [
       "Users should independently verify outputs before making operational, legal, financial, or business decisions.",
       "To the maximum extent permitted by law, Prysm shall not be liable for indirect, incidental, consequential, or special damages arising from the use of the platform, including loss of profits, business interruption, or loss of data.",
       "Continued use of Prysm constitutes acceptance of these Terms and any future revisions."
+    ]
+  },
+
+  {
+    id: "governing-law-india",
+    title: "7. Governing Law & Jurisdiction",
+    content: [
+      "These Terms of Service, their formulation, interpretation, and performance shall be governed by and construed in accordance with the laws of the Republic of India, without reference to conflict of laws principles.",
+      "Any dispute, controversy, or claim arising out of or relating to these Terms, including the validity, invalidity, breach, or termination thereof, shall be subject to the exclusive jurisdiction of the courts located in Bengaluru, Karnataka, India."
+    ]
+  },
+
+  {
+    id: "grievance-officer-terms",
+    title: "8. Grievance Redressal Mechanism",
+    content: [
+      "In accordance with the Information Technology Act, 2000 and the rules made thereunder, if you have any complaints or grievances regarding the platform, services, or content, you may contact our Grievance Officer at:",
+      "We will address your concerns within the period mandated under the applicable Indian laws."
     ]
   }
 ];

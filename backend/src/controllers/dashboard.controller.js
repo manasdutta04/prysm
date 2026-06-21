@@ -1,5 +1,6 @@
 import Feedback from "../models/raw_feedbacks/feedback.model.js";
 // import User from "../models/users/user.model.js";
+// import User from "../models/users/user.model.js";
 import { fetchXFeedback } from "../lib/xScraper.js";
 import { fetchAppStoreReviews } from "../lib/appStoreScraper.js";
 import AnalysisHistory from "../models/analysis/analysisHistory.model.js";
@@ -11,6 +12,29 @@ import { fetchEmails, fetchEmailDetails } from "../lib/fetchemail.js";
 
 // Helper keyword dictionaries for rule-based analysis
 const POSITIVE_KEYWORDS = [
+  "love",
+  "great",
+  "good",
+  "excellent",
+  "awesome",
+  "fast",
+  "happy",
+  "best",
+  "perfect",
+  "smooth",
+  "amazing",
+  "wonderful",
+  "helpful",
+  "easy",
+  "satisfied",
+  "recommend",
+  "cool",
+  "outstanding",
+  "impressed",
+  "superb",
+  "nice",
+  "regular",
+  "seamless",
   "love",
   "great",
   "good",
@@ -60,6 +84,29 @@ const NEGATIVE_KEYWORDS = [
   "limit",
   "restrict",
   "problem",
+  "bad",
+  "slow",
+  "crash",
+  "error",
+  "fail",
+  "issue",
+  "bug",
+  "freeze",
+  "worst",
+  "broken",
+  "hate",
+  "useless",
+  "annoying",
+  "poor",
+  "difficult",
+  "disappointed",
+  "terrible",
+  "waste",
+  "garbage",
+  "trash",
+  "limit",
+  "restrict",
+  "problem",
 ];
 
 const TOPICS = [
@@ -75,7 +122,18 @@ const TOPICS = [
       "stuck",
       "load",
     ],
+    keywords: [
+      "slow",
+      "performance",
+      "lag",
+      "freeze",
+      "speed",
+      "crash",
+      "stuck",
+      "load",
+    ],
     positiveSummary: "Fast loading times and responsive design",
+    negativeSummary: "Mobile app crashes and occasional freezes",
     negativeSummary: "Mobile app crashes and occasional freezes",
   },
   {
@@ -90,7 +148,18 @@ const TOPICS = [
       "signup",
       "access",
     ],
+    keywords: [
+      "login",
+      "signin",
+      "auth",
+      "account",
+      "register",
+      "password",
+      "signup",
+      "access",
+    ],
     positiveSummary: "Excellent UI and smooth onboarding",
+    negativeSummary: "Login issues after recent updates",
     negativeSummary: "Login issues after recent updates",
   },
   {
@@ -105,7 +174,18 @@ const TOPICS = [
       "charge",
       "refund",
     ],
+    keywords: [
+      "payment",
+      "pay",
+      "billing",
+      "checkout",
+      "card",
+      "price",
+      "charge",
+      "refund",
+    ],
     positiveSummary: "Seamless payment integration and checkout",
+    negativeSummary: "Payment gateway issues during checkout",
     negativeSummary: "Payment gateway issues during checkout",
   },
   {
@@ -118,7 +198,17 @@ const TOPICS = [
       "ticket",
       "assistance",
     ],
+    keywords: [
+      "support",
+      "help",
+      "customer service",
+      "agent",
+      "ticket",
+      "assistance",
+    ],
     positiveSummary: "Helpful and supportive customer success team",
+    negativeSummary: "Slow response times from customer support",
+  },
     negativeSummary: "Slow response times from customer support",
   },
 ];
@@ -131,6 +221,20 @@ function cleanJsonResponse(text) {
   return JSON.parse(cleaned.trim());
 }
 
+async function analyzeFeedbacksWithLLM(
+  feedbacks,
+  provider,
+  apiKey,
+  localUrl,
+  modelName,
+) {
+  const truncatedFeedbacks = feedbacks
+    .slice(0, 300)
+    .map((f, index) => {
+      const text = (f.content || "").substring(0, 300).replace(/[\r\n]+/g, " ");
+      return `${index + 1}. Source: ${f.source} | Content: ${text}`;
+    })
+    .join("\n");
 async function analyzeFeedbacksWithLLM(
   feedbacks,
   provider,
@@ -188,6 +292,17 @@ ${truncatedFeedbacks}`;
           : provider === "groq"
             ? "llama-3.3-70b-versatile"
             : "llama3");
+  const selectedModel =
+    modelName ||
+    (provider === "gemini"
+      ? "gemini-2.0-flash"
+      : provider === "openai"
+        ? "gpt-4o-mini"
+        : provider === "claude"
+          ? "claude-3-5-sonnet-20241022"
+          : provider === "groq"
+            ? "llama-3.3-70b-versatile"
+            : "llama3");
 
   if (provider === "gemini") {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
@@ -203,9 +318,35 @@ ${truncatedFeedbacks}`;
         headers: { "Content-Type": "application/json" },
       },
     );
+    const response = await axios.post(
+      url,
+      {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
     responseText = response.data.candidates[0].content.parts[0].text;
   } else if (provider === "openai") {
     const url = "https://api.openai.com/v1/chat/completions";
+    const response = await axios.post(
+      url,
+      {
+        model: selectedModel,
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
     const response = await axios.post(
       url,
       {
@@ -238,9 +379,38 @@ ${truncatedFeedbacks}`;
         },
       },
     );
+    const response = await axios.post(
+      url,
+      {
+        model: selectedModel,
+        max_tokens: 4000,
+        messages: [{ role: "user", content: prompt }],
+      },
+      {
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+      },
+    );
     responseText = response.data.content[0].text;
   } else if (provider === "groq") {
     const url = "https://api.groq.com/openai/v1/chat/completions";
+    const response = await axios.post(
+      url,
+      {
+        model: selectedModel,
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
     const response = await axios.post(
       url,
       {
@@ -271,6 +441,18 @@ ${truncatedFeedbacks}`;
         headers: { "Content-Type": "application/json" },
       },
     );
+    const response = await axios.post(
+      url,
+      {
+        model: selectedModel,
+        messages: [{ role: "user", content: prompt }],
+        format: "json",
+        stream: false,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
     responseText = response.data.message.content;
   } else {
     throw new Error(`Unsupported LLM provider: ${provider}`);
@@ -286,11 +468,23 @@ export const fetchAndAnalyzeData = async (req, res) => {
     connectedApps = {},
     skipScraping = false,
   } = req.body;
+  const {
+    startDate,
+    endDate,
+    connectedApps = {},
+    skipScraping = false,
+  } = req.body;
   const userId = req.user._id;
 
   const llmProvider =
     req.headers["x-llm-provider"] || req.get("x-llm-provider");
+  const llmProvider =
+    req.headers["x-llm-provider"] || req.get("x-llm-provider");
   const llmKey = req.headers["x-llm-key"] || req.get("x-llm-key");
+  const llmLocalUrl =
+    req.headers["x-llm-local-url"] ||
+    req.get("x-llm-local-url") ||
+    "http://localhost:11434";
   const llmLocalUrl =
     req.headers["x-llm-local-url"] ||
     req.get("x-llm-local-url") ||
@@ -301,14 +495,24 @@ export const fetchAndAnalyzeData = async (req, res) => {
     const start = startDate
       ? new Date(startDate)
       : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const start = startDate
+      ? new Date(startDate)
+      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const end = endDate ? new Date(endDate) : new Date();
 
     console.log(
       `Starting ingest/analytics from ${start.toISOString()} to ${end.toISOString()} (skipScraping: ${skipScraping})`,
     );
     console.log("Connected Apps:", JSON.stringify(connectedApps, null, 2));
+    console.log(
+      `Starting ingest/analytics from ${start.toISOString()} to ${end.toISOString()} (skipScraping: ${skipScraping})`,
+    );
+    console.log("Connected Apps:", JSON.stringify(connectedApps, null, 2));
 
     // 1) Scraping & Ingestion
+    const connectedUser = await User.findById(userId);
+    let syncedCount = { gmail: 0, x: 0, appstore: 0 };
+
     const connectedUser = await User.findById(userId);
     let syncedCount = { gmail: 0, x: 0, appstore: 0 };
 
@@ -366,15 +570,75 @@ export const fetchAndAnalyzeData = async (req, res) => {
         );
       }
 
+      // Gmail sync (uses the user's saved OAuth token)
+      if (
+        connectedApps.Gmail?.isConnected &&
+        connectedUser?.gmail?.accessToken
+      ) {
+        try {
+          console.log("Starting Gmail sync...");
+          const emailList = await fetchEmails(connectedUser);
+          let gmailCount = 0;
+
+          for (const msg of emailList.messages || []) {
+            const fullEmail = await fetchEmailDetails(connectedUser, msg.id);
+            const headers = fullEmail.payload?.headers || [];
+            const subject =
+              headers.find((h) => h.name === "Subject")?.value || "No Subject";
+            const from =
+              headers.find((h) => h.name === "From")?.value || "Unknown Sender";
+            const date =
+              headers.find((h) => h.name === "Date")?.value ||
+              new Date().toISOString();
+            const snippet = fullEmail.snippet || subject;
+
+            const existing = await Feedback.findOne({
+              userId,
+              externalId: msg.id,
+            });
+            if (!existing) {
+              await Feedback.create({
+                userId,
+                source: "gmail",
+                externalId: msg.id,
+                content: snippet,
+                timestamp: new Date(date),
+                metadata: {
+                  subject,
+                  from,
+                  threadId: msg.threadId,
+                },
+              });
+              gmailCount++;
+            }
+          }
+          syncedCount.gmail = gmailCount;
+          console.log(`Gmail sync completed: ${gmailCount} new emails saved.`);
+        } catch (err) {
+          console.warn("Gmail Sync Warning:", err.message);
+        }
+      } else {
+        console.log(
+          "Gmail not connected or no access token. Skipping Gmail sync.",
+        );
+      }
+
       // X (Twitter) Scraper
       if (connectedApps.X?.isConnected && connectedApps.X?.appName) {
         try {
+          console.log(`Starting X sync for handle: ${connectedApps.X.appName}`);
           console.log(`Starting X sync for handle: ${connectedApps.X.appName}`);
           const handle = connectedApps.X.appName;
           const tweets = await fetchXFeedback(handle, start, end);
           let xCount = 0;
 
+          let xCount = 0;
+
           for (const item of tweets) {
+            const existing = await Feedback.findOne({
+              userId,
+              externalId: item.id,
+            });
             const existing = await Feedback.findOne({
               userId,
               externalId: item.id,
@@ -387,15 +651,21 @@ export const fetchAndAnalyzeData = async (req, res) => {
                 content: item.text,
                 timestamp: item.timestamp,
                 metadata: { author: item.author, link: item.link },
+                metadata: { author: item.author, link: item.link },
               });
+              xCount++;
               xCount++;
             }
           }
           syncedCount.x = xCount;
           console.log(`X sync completed: ${xCount} new tweets saved.`);
+          syncedCount.x = xCount;
+          console.log(`X sync completed: ${xCount} new tweets saved.`);
         } catch (err) {
           console.warn("X Sync Warning:", err.message);
         }
+      } else {
+        console.log("X not connected. Skipping X sync.");
       } else {
         console.log("X not connected. Skipping X sync.");
       }
@@ -407,15 +677,30 @@ export const fetchAndAnalyzeData = async (req, res) => {
       ) {
         const appId =
           connectedApps["App Store"].appId || connectedApps["App Store"].id;
+      if (
+        connectedApps["App Store"]?.isConnected &&
+        connectedApps["App Store"]?.appName
+      ) {
+        const appId =
+          connectedApps["App Store"].appId || connectedApps["App Store"].id;
         if (appId) {
           try {
+            console.log(
+              `Starting App Store sync for app: ${connectedApps["App Store"].appName} (ID: ${appId})`,
+            );
             console.log(
               `Starting App Store sync for app: ${connectedApps["App Store"].appName} (ID: ${appId})`,
             );
             const reviews = await fetchAppStoreReviews(appId, start, end);
             let appstoreCount = 0;
 
+            let appstoreCount = 0;
+
             for (const item of reviews) {
+              const existing = await Feedback.findOne({
+                userId,
+                externalId: item.id,
+              });
               const existing = await Feedback.findOne({
                 userId,
                 externalId: item.id,
@@ -432,10 +717,20 @@ export const fetchAndAnalyzeData = async (req, res) => {
                     rating: item.rating,
                     title: item.title,
                   },
+                  metadata: {
+                    author: item.author,
+                    rating: item.rating,
+                    title: item.title,
+                  },
                 });
+                appstoreCount++;
                 appstoreCount++;
               }
             }
+            syncedCount.appstore = appstoreCount;
+            console.log(
+              `App Store sync completed: ${appstoreCount} new reviews saved.`,
+            );
             syncedCount.appstore = appstoreCount;
             console.log(
               `App Store sync completed: ${appstoreCount} new reviews saved.`,
@@ -445,7 +740,11 @@ export const fetchAndAnalyzeData = async (req, res) => {
           }
         } else {
           console.log("App Store connected but no app ID found. Skipping.");
+        } else {
+          console.log("App Store connected but no app ID found. Skipping.");
         }
+      } else {
+        console.log("App Store not connected. Skipping App Store sync.");
       } else {
         console.log("App Store not connected. Skipping App Store sync.");
       }
@@ -455,6 +754,10 @@ export const fetchAndAnalyzeData = async (req, res) => {
         const appId = connectedApps["Play Store"].appId;
         let playstoreAppId = appId;
         if (!playstoreAppId) {
+          const playstoreUser = await PlaystoreUser.findOne({
+            userId,
+            isConnected: true,
+          });
           const playstoreUser = await PlaystoreUser.findOne({
             userId,
             isConnected: true,
@@ -480,6 +783,11 @@ export const fetchAndAnalyzeData = async (req, res) => {
                 externalId: review.id,
                 source: "playstore",
               });
+              const existing = await Feedback.findOne({
+                userId,
+                externalId: review.id,
+                source: "playstore",
+              });
               if (!existing) {
                 await Feedback.create({
                   userId,
@@ -492,6 +800,8 @@ export const fetchAndAnalyzeData = async (req, res) => {
                     score: review.score,
                     thumbsUp: review.thumbsUp,
                     appId: playstoreAppId,
+                    replyText: review.replyText || "",
+                  },
                     replyText: review.replyText || "",
                   },
                 });
@@ -522,8 +832,22 @@ export const fetchAndAnalyzeData = async (req, res) => {
                 const date =
                   headers.find((h) => h.name === "Date")?.value ||
                   new Date().toISOString();
+                const subject =
+                  headers.find((h) => h.name === "Subject")?.value ||
+                  "No Subject";
+                const from =
+                  headers.find((h) => h.name === "From")?.value ||
+                  "Unknown Sender";
+                const date =
+                  headers.find((h) => h.name === "Date")?.value ||
+                  new Date().toISOString();
                 const snippet = fullEmail.snippet;
 
+                const existing = await Feedback.findOne({
+                  userId,
+                  externalId: msg.id,
+                  source: "gmail",
+                });
                 const existing = await Feedback.findOne({
                   userId,
                   externalId: msg.id,
@@ -539,7 +863,9 @@ export const fetchAndAnalyzeData = async (req, res) => {
                       subject,
                       from,
                       threadId: msg.threadId,
+                      threadId: msg.threadId,
                     },
+                    timestamp: new Date(date),
                     timestamp: new Date(date),
                   });
                 }
@@ -556,8 +882,12 @@ export const fetchAndAnalyzeData = async (req, res) => {
     const feedbacks = await Feedback.find({
       userId,
       timestamp: { $gte: start, $lte: end },
+      timestamp: { $gte: start, $lte: end },
     });
 
+    console.log(
+      `Found ${feedbacks.length} feedbacks in MongoDB for this timeframe.`,
+    );
     console.log(
       `Found ${feedbacks.length} feedbacks in MongoDB for this timeframe.`,
     );
@@ -572,6 +902,7 @@ export const fetchAndAnalyzeData = async (req, res) => {
 
       const prevFeedbacks = await Feedback.find({
         userId,
+        timestamp: { $gte: prevStart, $lt: prevEnd },
         timestamp: { $gte: prevStart, $lt: prevEnd },
       });
 
@@ -590,6 +921,9 @@ export const fetchAndAnalyzeData = async (req, res) => {
         previousScore = Number(
           ((prevPos / prevFeedbacks.length) * 5).toFixed(1),
         );
+        previousScore = Number(
+          ((prevPos / prevFeedbacks.length) * 5).toFixed(1),
+        );
       }
     }
 
@@ -601,6 +935,7 @@ export const fetchAndAnalyzeData = async (req, res) => {
           negativeSentiment: 0,
           neutralSentiment: 0,
           keyInsights: ["No feedback found in selected timeframe."],
+          improvements: ["No feedback available to generate improvements."],
           improvements: ["No feedback available to generate improvements."],
         },
         positivePoints: [],
@@ -619,8 +954,32 @@ export const fetchAndAnalyzeData = async (req, res) => {
             responseTime: [0, 0, 0, 0, 0, 0, 0, 0],
             volume: [0, 0, 0, 0, 0, 0, 0, 0],
           },
+            volume: [0, 0, 0, 0, 0, 0, 0, 0],
+          },
         },
         feedbackSources: {
+          months: [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ],
+          sources: {
+            twitter: [],
+            playstore: [],
+            appstore: [],
+            email: [],
+            customData: [],
+          },
+        },
           months: [
             "Jan",
             "Feb",
@@ -662,6 +1021,13 @@ export const fetchAndAnalyzeData = async (req, res) => {
       llmProvider !== "";
     const isKeyValid =
       llmKey && llmKey !== "null" && llmKey !== "undefined" && llmKey !== "";
+    const isProviderValid =
+      llmProvider &&
+      llmProvider !== "null" &&
+      llmProvider !== "undefined" &&
+      llmProvider !== "";
+    const isKeyValid =
+      llmKey && llmKey !== "null" && llmKey !== "undefined" && llmKey !== "";
     const isOllama = llmProvider === "ollama";
 
     let useLLM = isProviderValid && (isOllama || isKeyValid);
@@ -669,6 +1035,16 @@ export const fetchAndAnalyzeData = async (req, res) => {
 
     if (useLLM) {
       try {
+        console.log(
+          `Analyzing feedback using LLM provider: ${llmProvider} and model: ${llmModel || "default"}`,
+        );
+        llmResult = await analyzeFeedbacksWithLLM(
+          feedbacks,
+          llmProvider,
+          llmKey,
+          llmLocalUrl,
+          llmModel,
+        );
         console.log(
           `Analyzing feedback using LLM provider: ${llmProvider} and model: ${llmModel || "default"}`,
         );
@@ -705,7 +1081,36 @@ export const fetchAndAnalyzeData = async (req, res) => {
         negativePoints = Array.isArray(llmResult.negativePoints)
           ? llmResult.negativePoints
           : [];
+
+        positiveCount =
+          typeof llmResult.positiveCount === "number"
+            ? llmResult.positiveCount
+            : 0;
+        negativeCount =
+          typeof llmResult.negativeCount === "number"
+            ? llmResult.negativeCount
+            : 0;
+        neutralCount =
+          typeof llmResult.neutralCount === "number"
+            ? llmResult.neutralCount
+            : 0;
+        keyInsights = Array.isArray(llmResult.keyInsights)
+          ? llmResult.keyInsights
+          : [];
+        improvements = Array.isArray(llmResult.improvements)
+          ? llmResult.improvements
+          : [];
+        positivePoints = Array.isArray(llmResult.positivePoints)
+          ? llmResult.positivePoints
+          : [];
+        negativePoints = Array.isArray(llmResult.negativePoints)
+          ? llmResult.negativePoints
+          : [];
       } catch (err) {
+        console.error(
+          "LLM Analysis failed, falling back to rule-based analysis:",
+          err.message,
+        );
         console.error(
           "LLM Analysis failed, falling back to rule-based analysis:",
           err.message,
@@ -722,10 +1127,17 @@ export const fetchAndAnalyzeData = async (req, res) => {
         negativeMentions: 0,
         mentions: 0,
       }));
+      const topicStats = TOPICS.map((t) => ({
+        ...t,
+        positiveMentions: 0,
+        negativeMentions: 0,
+        mentions: 0,
+      }));
       const lowercase = (txt) => (txt || "").toLowerCase();
 
       for (const fb of feedbacks) {
         const content = lowercase(fb.content);
+
 
         // Calculate Sentiment score
         let posScore = 0;
@@ -773,9 +1185,18 @@ export const fetchAndAnalyzeData = async (req, res) => {
         (a, b) => b.mentions - a.mentions,
       );
 
+      const sortedTopics = [...topicStats].sort(
+        (a, b) => b.mentions - a.mentions,
+      );
+
       positivePoints = sortedTopics
         .filter((t) => t.positiveMentions > 0)
+        .filter((t) => t.positiveMentions > 0)
         .slice(0, 5)
+        .map((t) => ({
+          point: t.positiveSummary,
+          mentions: t.positiveMentions,
+        }));
         .map((t) => ({
           point: t.positiveSummary,
           mentions: t.positiveMentions,
@@ -783,7 +1204,12 @@ export const fetchAndAnalyzeData = async (req, res) => {
 
       negativePoints = sortedTopics
         .filter((t) => t.negativeMentions > 0)
+        .filter((t) => t.negativeMentions > 0)
         .slice(0, 5)
+        .map((t) => ({
+          point: t.negativeSummary,
+          mentions: t.negativeMentions,
+        }));
         .map((t) => ({
           point: t.negativeSummary,
           mentions: t.negativeMentions,
@@ -793,7 +1219,13 @@ export const fetchAndAnalyzeData = async (req, res) => {
         keyInsights.push(
           `Customer satisfaction is high, with ${rulePosPct}% positive feedback overall.`,
         );
+        keyInsights.push(
+          `Customer satisfaction is high, with ${rulePosPct}% positive feedback overall.`,
+        );
       } else {
+        keyInsights.push(
+          `Customer sentiment is mixed; only ${rulePosPct}% of feedback is positive.`,
+        );
         keyInsights.push(
           `Customer sentiment is mixed; only ${rulePosPct}% of feedback is positive.`,
         );
@@ -808,7 +1240,16 @@ export const fetchAndAnalyzeData = async (req, res) => {
           keyInsights.push(
             `Primary customer complaints relate to ${topT.name}.`,
           );
+          improvements.push(
+            `Address critical ${lowercase(topT.name)} issues (mentioned by ${topT.mentions} users).`,
+          );
+          keyInsights.push(
+            `Primary customer complaints relate to ${topT.name}.`,
+          );
         } else {
+          keyInsights.push(
+            `Strong customer appreciation for ${topT.name} stability.`,
+          );
           keyInsights.push(
             `Strong customer appreciation for ${topT.name} stability.`,
           );
@@ -821,7 +1262,13 @@ export const fetchAndAnalyzeData = async (req, res) => {
           improvements.push(
             `Improve response and features in ${lowercase(secondT.name)} (mentioned in ${secondT.mentions} entries).`,
           );
+          improvements.push(
+            `Improve response and features in ${lowercase(secondT.name)} (mentioned in ${secondT.mentions} entries).`,
+          );
         } else {
+          keyInsights.push(
+            `Positive feedback received for recent updates on ${secondT.name}.`,
+          );
           keyInsights.push(
             `Positive feedback received for recent updates on ${secondT.name}.`,
           );
@@ -836,8 +1283,20 @@ export const fetchAndAnalyzeData = async (req, res) => {
         keyInsights.push(
           "Review feedback spikes by adjusting the timeframe filter.",
         );
+        keyInsights.push(
+          `Data imported across ${[...new Set(feedbacks.map((f) => f.source))].length} different channel(s).`,
+        );
+        keyInsights.push(
+          "Review feedback spikes by adjusting the timeframe filter.",
+        );
       }
       if (improvements.length === 0) {
+        improvements.push(
+          "Analyze neutral feedback items to discover subtle friction points.",
+        );
+        improvements.push(
+          "Ensure regular app reviews synchronization to track daily sentiment swings.",
+        );
         improvements.push(
           "Analyze neutral feedback items to discover subtle friction points.",
         );
@@ -850,6 +1309,9 @@ export const fetchAndAnalyzeData = async (req, res) => {
     const total = feedbacks.length;
     const totalCount =
       positiveCount + negativeCount + neutralCount || total || 1;
+    const total = feedbacks.length;
+    const totalCount =
+      positiveCount + negativeCount + neutralCount || total || 1;
     const posPct = Math.round((positiveCount / totalCount) * 100);
     const negPct = Math.round((negativeCount / totalCount) * 100);
     const neuPct = 100 - posPct - negPct;
@@ -859,6 +1321,7 @@ export const fetchAndAnalyzeData = async (req, res) => {
     const timeDiff = end.getTime() - start.getTime();
     const chunkMs = timeDiff / 8;
 
+
     const satisfactionHistory = [];
     const responseTimeHistory = [];
     const volumeHistory = [];
@@ -866,6 +1329,11 @@ export const fetchAndAnalyzeData = async (req, res) => {
     for (let i = 0; i < 8; i++) {
       const chunkStart = new Date(start.getTime() + i * chunkMs);
       const chunkEnd = new Date(start.getTime() + (i + 1) * chunkMs);
+
+      const chunkFeedbacks = feedbacks.filter(
+        (f) => f.timestamp >= chunkStart && f.timestamp < chunkEnd,
+      );
+
 
       const chunkFeedbacks = feedbacks.filter(
         (f) => f.timestamp >= chunkStart && f.timestamp < chunkEnd,
@@ -883,12 +1351,17 @@ export const fetchAndAnalyzeData = async (req, res) => {
         if (negScore > posScore) chunkNeg++;
       }
 
+
       const chunkTotal = chunkFeedbacks.length;
+      const score =
+        chunkTotal > 0 ? Number(((chunkPos / chunkTotal) * 5).toFixed(1)) : 4.0;
+
       const score =
         chunkTotal > 0 ? Number(((chunkPos / chunkTotal) * 5).toFixed(1)) : 4.0;
 
       satisfactionHistory.push(score);
       // Simulate declining response times (improving) as volume scales
+      responseTimeHistory.push(Number((3.8 - i * 0.2).toFixed(1)));
       responseTimeHistory.push(Number((3.8 - i * 0.2).toFixed(1)));
       volumeHistory.push(chunkTotal);
     }
@@ -900,8 +1373,10 @@ export const fetchAndAnalyzeData = async (req, res) => {
       appstore: Array(12).fill(0),
       email: Array(12).fill(0),
       customData: Array(12).fill(0),
+      customData: Array(12).fill(0),
     };
 
+    feedbacks.forEach((f) => {
     feedbacks.forEach((f) => {
       const month = f.timestamp.getMonth();
       const src = f.source;
@@ -926,9 +1401,23 @@ export const fetchAndAnalyzeData = async (req, res) => {
       "Nov",
       "Dec",
     ];
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
 
-    // 4) Save analysis snapshot to history if it's a fresh scrape run
-    if (!skipScraping && total > 0) {
+    // 4) Save analysis snapshot to history (always save after a full fetch-and-analyze)
+    if (total > 0) {
       try {
         await AnalysisHistory.create({
           userId,
@@ -954,6 +1443,12 @@ export const fetchAndAnalyzeData = async (req, res) => {
       previousVolume > 0
         ? Number((12 / Math.log10(previousVolume + 9)).toFixed(1))
         : 0;
+    const currentResponseTime =
+      total > 0 ? Number((12 / Math.log10(total + 9)).toFixed(1)) : 0;
+    const prevResponseTime =
+      previousVolume > 0
+        ? Number((12 / Math.log10(previousVolume + 9)).toFixed(1))
+        : 0;
 
     res.status(200).json({
       summary: {
@@ -963,12 +1458,22 @@ export const fetchAndAnalyzeData = async (req, res) => {
         neutralSentiment: neuPct,
         keyInsights,
         improvements,
+        improvements,
       },
       positivePoints,
       negativePoints,
       metrics: {
         satisfactionScore: currentScore,
         previousScore: previousScore,
+        improvement:
+          previousScore > 0
+            ? Number(
+                (
+                  ((currentScore - previousScore) / previousScore) *
+                  100
+                ).toFixed(1),
+              )
+            : 0,
         improvement:
           previousScore > 0
             ? Number(
@@ -988,14 +1493,21 @@ export const fetchAndAnalyzeData = async (req, res) => {
           responseTime: responseTimeHistory,
           volume: volumeHistory,
         },
+          volume: volumeHistory,
+        },
       },
       feedbackSources: {
         months,
         sources: sourceDistribution,
       },
+        sources: sourceDistribution,
+      },
     });
   } catch (error) {
     console.error("Dashboard Analysis Error:", error.message);
+    res
+      .status(500)
+      .json({ message: error.message || "Failed to analyze dashboard data" });
     res
       .status(500)
       .json({ message: error.message || "Failed to analyze dashboard data" });
@@ -1022,7 +1534,13 @@ export const getAnalysisHistory = async (req, res) => {
 export const testLlmConnection = async (req, res) => {
   const llmProvider =
     req.headers["x-llm-provider"] || req.get("x-llm-provider");
+  const llmProvider =
+    req.headers["x-llm-provider"] || req.get("x-llm-provider");
   const llmKey = req.headers["x-llm-key"] || req.get("x-llm-key");
+  const llmLocalUrl =
+    req.headers["x-llm-local-url"] ||
+    req.get("x-llm-local-url") ||
+    "http://localhost:11434";
   const llmLocalUrl =
     req.headers["x-llm-local-url"] ||
     req.get("x-llm-local-url") ||
@@ -1036,6 +1554,17 @@ export const testLlmConnection = async (req, res) => {
     return res.status(400).json({ message: "API key is required." });
   }
 
+  const selectedModel =
+    llmModel ||
+    (llmProvider === "gemini"
+      ? "gemini-2.0-flash"
+      : llmProvider === "openai"
+        ? "gpt-4o-mini"
+        : llmProvider === "claude"
+          ? "claude-3-5-sonnet-20241022"
+          : llmProvider === "groq"
+            ? "llama-3.3-70b-versatile"
+            : "llama3");
   const selectedModel =
     llmModel ||
     (llmProvider === "gemini"
@@ -1063,8 +1592,35 @@ export const testLlmConnection = async (req, res) => {
           timeout: 5000,
         },
       );
+      await axios.post(
+        url,
+        {
+          contents: [
+            { parts: [{ text: "Hello. Respond with one word: 'ok'." }] },
+          ],
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          timeout: 5000,
+        },
+      );
     } else if (llmProvider === "openai") {
       const url = "https://api.openai.com/v1/chat/completions";
+      await axios.post(
+        url,
+        {
+          model: selectedModel,
+          messages: [{ role: "user", content: "Hello" }],
+          max_tokens: 5,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${llmKey}`,
+          },
+          timeout: 5000,
+        },
+      );
       await axios.post(
         url,
         {
@@ -1098,8 +1654,39 @@ export const testLlmConnection = async (req, res) => {
           timeout: 5000,
         },
       );
+      await axios.post(
+        url,
+        {
+          model: selectedModel,
+          max_tokens: 5,
+          messages: [{ role: "user", content: "Hello" }],
+        },
+        {
+          headers: {
+            "content-type": "application/json",
+            "x-api-key": llmKey,
+            "anthropic-version": "2023-06-01",
+          },
+          timeout: 5000,
+        },
+      );
     } else if (llmProvider === "groq") {
       const url = "https://api.groq.com/openai/v1/chat/completions";
+      await axios.post(
+        url,
+        {
+          model: selectedModel,
+          messages: [{ role: "user", content: "Hello" }],
+          max_tokens: 5,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${llmKey}`,
+          },
+          timeout: 5000,
+        },
+      );
       await axios.post(
         url,
         {
@@ -1130,6 +1717,18 @@ export const testLlmConnection = async (req, res) => {
           timeout: 5000,
         },
       );
+      await axios.post(
+        url,
+        {
+          model: selectedModel,
+          messages: [{ role: "user", content: "Hello" }],
+          stream: false,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          timeout: 5000,
+        },
+      );
     } else {
       return res.status(400).json({ message: "Unsupported LLM provider." });
     }
@@ -1137,8 +1736,18 @@ export const testLlmConnection = async (req, res) => {
     return res
       .status(200)
       .json({ success: true, message: "Connection successful!" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Connection successful!" });
   } catch (error) {
     console.error("Test connection error:", error.message);
+    const details =
+      error.response?.data?.error?.message ||
+      error.response?.data?.message ||
+      error.message;
+    return res
+      .status(500)
+      .json({ success: false, message: `Connection failed: ${details}` });
     const details =
       error.response?.data?.error?.message ||
       error.response?.data?.message ||
@@ -1154,6 +1763,10 @@ export const getOllamaModels = async (req, res) => {
     req.headers["x-llm-local-url"] ||
     req.get("x-llm-local-url") ||
     "http://localhost:11434";
+  const localUrl =
+    req.headers["x-llm-local-url"] ||
+    req.get("x-llm-local-url") ||
+    "http://localhost:11434";
 
   try {
     const baseUrl = localUrl.replace(/\/$/, "");
@@ -1161,10 +1774,15 @@ export const getOllamaModels = async (req, res) => {
 
     const models = response.data?.models || [];
     const modelNames = models.map((m) => m.name);
+    const modelNames = models.map((m) => m.name);
 
     return res.status(200).json({ success: true, models: modelNames });
   } catch (error) {
     console.warn("Failed to fetch Ollama local models:", error.message);
+    return res.status(200).json({
+      success: false,
+      message: "Ollama local service is not active or unreachable.",
+    });
     return res.status(200).json({
       success: false,
       message: "Ollama local service is not active or unreachable.",

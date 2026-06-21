@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./dashboard.css";
-// import { useAuthStore } from "../store/useAuthStore";
-// import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ConnectGmailButton from "../components/ConnectGmailButton";
 import FetchEmailsButton from "../components/FetchEmailsButton";
 import { Button, LiquidButton } from "@/components/ui/liquid-glass-button";
@@ -9,6 +8,8 @@ import toast from "react-hot-toast";
 import { LineChart } from "@mui/x-charts/LineChart";
 import axiosInstance from "../lib/axios";
 import { useNotificationStore } from "../store/useNotificationStore";
+import { useAuthStore } from "../store/useAuthStore";
+import jsPDF from "jspdf";
 import {
   RefreshCw,
   Download,
@@ -21,7 +22,21 @@ import {
   XCircle,
   ArrowUp,
   ArrowDown,
+  Target,
+  Zap,
 } from "lucide-react";
+
+const FETCH_STATUSES = [
+  "Initializing feedback connectors...",
+  "Contacting App Store & Play Store APIs...",
+  "Ingesting reviews and feedback streams...",
+  "Aggregating recent feedback data...",
+  "Engaging AI Sentiment Analytics Engine...",
+  "Processing sentiment classification...",
+  "Extracting key positive insights...",
+  "Identifying areas that need improvement...",
+  "Finalizing dashboard analysis report..."
+];
 
 export default function DashboardPage() {
   const [lastFetchedTime, setLastFetchedTime] = useState(null);
@@ -30,6 +45,49 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeMetricTab, setActiveMetricTab] = useState("satisfaction");
   const { addNotification } = useNotificationStore();
+<<<<<<< HEAD
+=======
+  const { authUser } = useAuthStore();
+  const hasNoData = !isLoading && (!data || data.summary.totalFeedback === 0);
+
+  const [fetchProgress, setFetchProgress] = useState(0);
+  const [fetchStatusIndex, setFetchStatusIndex] = useState(0);
+
+  useEffect(() => {
+    let interval;
+    if (isFetching) {
+      setFetchProgress(0);
+      setFetchStatusIndex(0);
+      interval = setInterval(() => {
+        setFetchProgress((prev) => {
+          if (prev >= 99) return 99;
+          
+          // Starts fast, slows down as it gets closer to 99%
+          let increment = 1;
+          if (prev < 35) increment = 8;
+          else if (prev < 65) increment = 5;
+          else if (prev < 85) increment = 3;
+          else if (prev < 95) increment = 2;
+          
+          const nextVal = prev + increment;
+          
+          // Map percentage to status messages
+          const statusStep = Math.floor((nextVal / 100) * FETCH_STATUSES.length);
+          setFetchStatusIndex(Math.min(statusStep, FETCH_STATUSES.length - 1));
+          
+          return Math.min(nextVal, 99);
+        });
+      }, 700);
+    } else {
+      setFetchProgress(0);
+      setFetchStatusIndex(0);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isFetching]);
+
+>>>>>>> 30d488f4400f528040da1f5979454c2a0259335e
 
   const [startDate, setStartDate] = useState(() => {
     const date = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -39,9 +97,33 @@ export default function DashboardPage() {
     return new Date().toISOString().split("T")[0];
   });
 
+<<<<<<< HEAD
   const loadDashboardData = useCallback(
     async (skipScrape = true) => {
       setIsLoading(true);
+=======
+  // ── Page-load path: reads the last saved snapshot from DB (no LLM, no scraping) ──
+  const loadCachedResult = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await axiosInstance.get("/dashboard/latest-result");
+      if (res.data?.noData) {
+        setData(null);
+      } else {
+        setData(res.data);
+      }
+    } catch (error) {
+      console.error("Dashboard cache load error:", error);
+      setData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // ── Button path: scrapes + LLM analysis, saves snapshot to DB ──
+  const runFetchAndAnalyze = useCallback(
+    async (skipScrape = false) => {
+>>>>>>> 30d488f4400f528040da1f5979454c2a0259335e
       try {
         const savedApps = localStorage.getItem("connectedApps");
         const connectedApps = savedApps ? JSON.parse(savedApps) : {};
@@ -72,11 +154,17 @@ export default function DashboardPage() {
         setData(res.data);
         return res.data;
       } catch (error) {
+<<<<<<< HEAD
         console.error("Dashboard Load Error:", error);
         toast.error("Failed to load dashboard data");
         setData(null);
       } finally {
         setIsLoading(false);
+=======
+        console.error("Fetch & Analyze Error:", error);
+        toast.error("Failed to fetch fresh data");
+        return null;
+>>>>>>> 30d488f4400f528040da1f5979454c2a0259335e
       }
     },
     [startDate, endDate],
@@ -89,12 +177,20 @@ export default function DashboardPage() {
     }
   }, []);
 
+<<<<<<< HEAD
+=======
+  // On mount / page refresh: only load the cached snapshot — no LLM, no tokens burned
+  useEffect(() => {
+    loadCachedResult();
+  }, [loadCachedResult]);
+
+>>>>>>> 30d488f4400f528040da1f5979454c2a0259335e
   const handleFetchData = async () => {
     setIsFetching(true);
     toast.loading("Fetching latest feedback data...", { id: "fetching" });
 
     try {
-      const result = await loadDashboardData(false);
+      const result = await runFetchAndAnalyze(false);
       const now = Date.now();
       setLastFetchedTime(now);
       localStorage.setItem("lastFetchedTime", now.toString());
@@ -157,12 +253,504 @@ export default function DashboardPage() {
     }
   };
 
+
   const handleDownloadPDF = () => {
+    if (!data) {
+      toast.error("No data to export. Please fetch data first.");
+      return;
+    }
+
     toast.loading("Generating PDF report...", { id: "pdf" });
-    // Simulate PDF generation
-    setTimeout(() => {
-      toast.success("PDF downloaded successfully!", { id: "pdf" });
-    }, 2000);
+    try {
+      const pdf = new jsPDF("p", "mm", "a4");
+      const W = 210;
+      const H = 297;
+      const margin = 18;
+      const contentW = W - margin * 2;
+      const now = new Date();
+      const dateStr = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+      const reportId = `RPT-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}-${Math.floor(Math.random()*9000+1000)}`;
+
+      // ── Helpers ──────────────────────────────────────────────
+      let y = 0;
+      const checkPage = (needed = 10) => {
+        if (y + needed > H - 20) {
+          addFooter();
+          pdf.addPage();
+          y = margin;
+        }
+      };
+
+      const addFooter = () => {
+        const footerY = H - 12;
+        pdf.setDrawColor(204, 255, 0);
+        pdf.setLineWidth(0.3);
+        pdf.line(margin, footerY - 3, W - margin, footerY - 3);
+        pdf.setFontSize(7);
+        pdf.setTextColor(150, 150, 150);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Confidential — Generated by Prysm AI Analytics Platform", margin, footerY);
+        pdf.text(`Page ${pdf.getCurrentPageInfo().pageNumber}`, W - margin, footerY, { align: "right" });
+        pdf.text(reportId, W / 2, footerY, { align: "center" });
+      };
+
+      const sectionHeader = (title) => {
+        checkPage(14);
+        y += 4;
+        pdf.setFillColor(204, 255, 0);
+        pdf.rect(margin, y, 3, 6, "F");
+        pdf.setFontSize(11);
+        pdf.setTextColor(10, 10, 10);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(title.toUpperCase(), margin + 6, y + 4.5);
+        y += 10;
+        pdf.setDrawColor(220, 220, 220);
+        pdf.setLineWidth(0.2);
+        pdf.line(margin, y, W - margin, y);
+        y += 4;
+      };
+
+      const metricBox = (label, value, x, bw, color) => {
+        pdf.setFillColor(...color);
+        pdf.roundedRect(x, y, bw, 16, 2, 2, "F");
+        pdf.setFontSize(7);
+        pdf.setTextColor(80, 80, 80);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(label, x + bw / 2, y + 5, { align: "center" });
+        pdf.setFontSize(13);
+        pdf.setTextColor(10, 10, 10);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(String(value), x + bw / 2, y + 13, { align: "center" });
+      };
+
+      const bulletList = (items, prefix, prefixColor) => {
+        items.forEach((item) => {
+          checkPage(12);
+          const lines = pdf.splitTextToSize(item, contentW - 8);
+          pdf.setFillColor(...prefixColor);
+          pdf.circle(margin + 2, y + 2, 1.2, "F");
+          pdf.setFontSize(9);
+          pdf.setTextColor(40, 40, 40);
+          pdf.setFont("helvetica", "normal");
+          pdf.text(lines, margin + 6, y + 3.5);
+          y += lines.length * 5 + 3;
+        });
+      };
+
+      // ── PAGE 1: COVER ────────────────────────────────────────
+      // Dark header band
+      pdf.setFillColor(10, 10, 10);
+      pdf.rect(0, 0, W, 80, "F");
+
+      // Lime accent stripe
+      pdf.setFillColor(204, 255, 0);
+      pdf.rect(0, 76, W, 4, "F");
+
+      // Logo / brand name
+      pdf.setFontSize(36);
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Prysm", margin, 38);
+
+      pdf.setFontSize(9);
+      pdf.setTextColor(204, 255, 0);
+      pdf.setFont("helvetica", "normal");
+      pdf.text("AI-POWERED FEEDBACK INTELLIGENCE", margin, 48);
+
+      // Report title block
+      y = 96;
+      pdf.setFontSize(20);
+      pdf.setTextColor(10, 10, 10);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Dashboard Analytics Report", margin, y);
+      y += 8;
+      pdf.setFontSize(10);
+      pdf.setTextColor(90, 90, 90);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(`Timeframe: ${startDate} → ${endDate}`, margin, y);
+      y += 14;
+
+      // Info table
+      const infoRows = [
+        ["Report ID", reportId],
+        ["Generated On", `${dateStr} at ${timeStr}`],
+        ["Account", authUser?.fullName || authUser?.name || "—"],
+        ["Email", authUser?.email || "—"],
+        ["Total Feedbacks Analysed", String(data.summary.totalFeedback)],
+      ];
+      infoRows.forEach(([label, value]) => {
+        pdf.setFillColor(248, 248, 248);
+        pdf.rect(margin, y, contentW, 8, "F");
+        pdf.setFontSize(8);
+        pdf.setTextColor(100, 100, 100);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(label, margin + 3, y + 5.5);
+        pdf.setTextColor(20, 20, 20);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(value, margin + 65, y + 5.5);
+        y += 9;
+      });
+
+      // Disclaimer
+      y += 8;
+      pdf.setFontSize(7.5);
+      pdf.setTextColor(140, 140, 140);
+      pdf.setFont("helvetica", "italic");
+      const disclaimer = pdf.splitTextToSize(
+        "This report is auto-generated by the Prysm AI Analytics Platform. All insights are derived from aggregated user feedback data across connected channels. Data accuracy depends on the quality and volume of ingested reviews.",
+        contentW
+      );
+      pdf.text(disclaimer, margin, y);
+      y = H - 60;
+
+      // Cover bottom band
+      pdf.setFillColor(10, 10, 10);
+      pdf.rect(0, H - 32, W, 32, "F");
+      pdf.setFontSize(7);
+      pdf.setTextColor(120, 120, 120);
+      pdf.text("Confidential — For authorised recipients only", margin, H - 18);
+      pdf.setTextColor(204, 255, 0);
+      pdf.text("getprysm.vercel.app", W - margin, H - 18, { align: "right" });
+
+      // ── PAGE 2: SENTIMENT OVERVIEW ───────────────────────────
+      pdf.addPage();
+      y = margin;
+
+      // Page top accent
+      pdf.setFillColor(204, 255, 0);
+      pdf.rect(0, 0, W, 3, "F");
+      y = 12;
+
+      pdf.setFontSize(7);
+      pdf.setTextColor(150, 150, 150);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(`Prysm Dashboard Report  ·  ${dateStr}  ·  ${reportId}`, margin, y);
+      y = margin + 4;
+
+      sectionHeader("Sentiment Overview");
+
+      // Three metric boxes
+      const bw = (contentW - 8) / 3;
+      metricBox("POSITIVE", `${data.summary.positiveSentiment}%`, margin, bw, [230, 255, 210]);
+      metricBox("NEGATIVE", `${data.summary.negativeSentiment}%`, margin + bw + 4, bw, [255, 220, 220]);
+      metricBox("NEUTRAL", `${data.summary.neutralSentiment}%`, margin + (bw + 4) * 2, bw, [240, 240, 240]);
+      y += 22;
+
+      // Sentiment bar chart
+      const barData = [
+        { label: "Positive", pct: data.summary.positiveSentiment, r: 34, g: 197, b: 94 },
+        { label: "Negative", pct: data.summary.negativeSentiment, r: 239, g: 68, b: 68 },
+        { label: "Neutral", pct: data.summary.neutralSentiment, r: 160, g: 160, b: 160 },
+      ];
+      barData.forEach(({ label, pct, r, g, b }) => {
+        pdf.setFontSize(8);
+        pdf.setTextColor(60, 60, 60);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(label, margin, y + 4);
+        pdf.setFillColor(235, 235, 235);
+        pdf.roundedRect(margin + 28, y, contentW - 28 - 14, 5, 1, 1, "F");
+        pdf.setFillColor(r, g, b);
+        pdf.roundedRect(margin + 28, y, ((contentW - 28 - 14) * pct) / 100, 5, 1, 1, "F");
+        pdf.setFontSize(7.5);
+        pdf.setTextColor(60, 60, 60);
+        pdf.text(`${pct}%`, W - margin, y + 4, { align: "right" });
+        y += 10;
+      });
+
+      // Performance Metrics
+      sectionHeader("Performance Metrics");
+      const perfRows = [
+        ["Satisfaction Score", `${data.metrics?.satisfactionScore ?? "—"} / 5.0`],
+        ["Previous Score", `${data.metrics?.previousScore ?? "—"} / 5.0`],
+        ["Improvement", `+${data.metrics?.improvement ?? 0}%`],
+        ["Avg. Response Time", data.metrics?.responseTime ?? "—"],
+        ["Feedback Volume", String(data.metrics?.feedbackVolume ?? data.summary.totalFeedback)],
+      ];
+      perfRows.forEach(([label, value], i) => {
+        pdf.setFillColor(i % 2 === 0 ? 250 : 244, i % 2 === 0 ? 250 : 244, i % 2 === 0 ? 250 : 244);
+        pdf.rect(margin, y, contentW, 7, "F");
+        pdf.setFontSize(8.5);
+        pdf.setTextColor(60, 60, 60);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(label, margin + 3, y + 5);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(10, 10, 10);
+        pdf.text(value, W - margin - 3, y + 5, { align: "right" });
+        y += 8;
+      });
+
+      // Connection & Sync Matrix
+      checkPage(55);
+      sectionHeader("Connection & Sync Matrix");
+      
+      const sumArray = (arr) => (Array.isArray(arr) ? arr.reduce((a, b) => a + b, 0) : 0);
+      const savedAppsObj = localStorage.getItem("connectedApps");
+      const connectedAppsObj = savedAppsObj ? JSON.parse(savedAppsObj) : {};
+
+      const matrixRows = [
+        {
+          source: "Gmail",
+          account: connectedAppsObj.Gmail?.isConnected
+            ? (authUser?.email || "Connected")
+            : "—",
+          volume: sumArray(data.feedbackSources?.sources?.email),
+        },
+        {
+          source: "Play Store",
+          account: connectedAppsObj["Play Store"]?.isConnected
+            ? (connectedAppsObj["Play Store"]?.appId || connectedAppsObj["Play Store"]?.appName || "Connected")
+            : "—",
+          volume: sumArray(data.feedbackSources?.sources?.playstore),
+        },
+        {
+          source: "App Store",
+          account: connectedAppsObj["App Store"]?.isConnected
+            ? (connectedAppsObj["App Store"]?.appId || connectedAppsObj["App Store"]?.appName || "Connected")
+            : "—",
+          volume: sumArray(data.feedbackSources?.sources?.appstore),
+        },
+        {
+          source: "Twitter (X)",
+          account: (connectedAppsObj.X?.isConnected || connectedAppsObj["X"]?.isConnected)
+            ? `@${connectedAppsObj.X?.appName || connectedAppsObj["X"]?.appName || "Connected"}`
+            : "—",
+          volume: sumArray(data.feedbackSources?.sources?.twitter),
+        },
+      ];
+
+      // Draw table header
+      pdf.setFillColor(10, 10, 10);
+      pdf.rect(margin, y, contentW, 8, "F");
+      pdf.setFontSize(8);
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("SOURCE / CHANNEL", margin + 3, y + 5.5);
+      pdf.text("CONNECTED ACCOUNT / IDENTIFIER", margin + 43, y + 5.5);
+      pdf.text("VOLUME", margin + 137, y + 5.5);
+      y += 9;
+
+      // Draw table rows
+      matrixRows.forEach((row, i) => {
+        pdf.setFillColor(i % 2 === 0 ? 250 : 244, i % 2 === 0 ? 250 : 244, i % 2 === 0 ? 250 : 244);
+        pdf.rect(margin, y, contentW, 8, "F");
+        pdf.setFontSize(8);
+        pdf.setTextColor(60, 60, 60);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(row.source, margin + 3, y + 5.5);
+        
+        const accountStr = String(row.account);
+        const truncatedAccount = accountStr.length > 45 ? accountStr.substring(0, 42) + "..." : accountStr;
+        pdf.text(truncatedAccount, margin + 43, y + 5.5);
+        
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(10, 10, 10);
+        pdf.text(String(row.volume), margin + 137, y + 5.5);
+        y += 9;
+      });
+      y += 5;
+
+      // ── PAGE 3: AI INSIGHTS ──────────────────────────────────
+      pdf.addPage();
+      y = margin;
+      pdf.setFillColor(204, 255, 0);
+      pdf.rect(0, 0, W, 3, "F");
+      y = 12;
+      pdf.setFontSize(7);
+      pdf.setTextColor(150, 150, 150);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(`Prysm Dashboard Report  ·  ${dateStr}  ·  ${reportId}`, margin, y);
+      y = margin + 4;
+
+      sectionHeader("Key Insights");
+      bulletList(data.summary.keyInsights || [], "✓", [34, 197, 94]);
+
+      sectionHeader("Areas to Improve");
+      bulletList(data.summary.improvements || [], "→", [239, 68, 68]);
+
+      sectionHeader("What's Working Well");
+      if (data.positivePoints && data.positivePoints.length > 0) {
+        data.positivePoints.forEach(({ point, mentions }) => {
+          checkPage(12);
+          const lines = pdf.splitTextToSize(point, contentW - 20);
+          pdf.setFillColor(34, 197, 94);
+          pdf.circle(margin + 2, y + 2, 1.2, "F");
+          pdf.setFontSize(9);
+          pdf.setTextColor(40, 40, 40);
+          pdf.setFont("helvetica", "normal");
+          pdf.text(lines, margin + 6, y + 3.5);
+          pdf.setFontSize(7.5);
+          pdf.setTextColor(120, 120, 120);
+          pdf.text(`${mentions} mentions`, W - margin, y + 3.5, { align: "right" });
+          y += lines.length * 5 + 3;
+        });
+      }
+
+      sectionHeader("Needs Attention");
+      if (data.negativePoints && data.negativePoints.length > 0) {
+        data.negativePoints.forEach(({ point, mentions }) => {
+          checkPage(12);
+          const lines = pdf.splitTextToSize(point, contentW - 20);
+          pdf.setFillColor(239, 68, 68);
+          pdf.circle(margin + 2, y + 2, 1.2, "F");
+          pdf.setFontSize(9);
+          pdf.setTextColor(40, 40, 40);
+          pdf.setFont("helvetica", "normal");
+          pdf.text(lines, margin + 6, y + 3.5);
+          pdf.setFontSize(7.5);
+          pdf.setTextColor(120, 120, 120);
+          pdf.text(`${mentions} mentions`, W - margin, y + 3.5, { align: "right" });
+          y += lines.length * 5 + 3;
+        });
+      }
+
+      // ── STRATEGIC PRIORITY MATRIX ─────────────────────────────
+      checkPage(80);
+      sectionHeader("Strategic Priority Matrix");
+
+      const quadrants = [
+        {
+          label: "Immediate Fix",
+          labelColor: [239, 68, 68],
+          bgColor: [255, 240, 240],
+          text: data.negativePoints?.[0]?.point
+            ? `Resolve issues with: ${data.negativePoints[0].point}`
+            : "No critical negative friction points detected.",
+          meta: `High Urgency · ${data.negativePoints?.[0]?.mentions || 0} Mentions`,
+        },
+        {
+          label: "Growth Lever",
+          labelColor: [120, 170, 0],
+          bgColor: [245, 255, 220],
+          text: data.positivePoints?.[0]?.point
+            ? `Promote and enhance: ${data.positivePoints[0].point}`
+            : "Build customer advocacy around recent updates.",
+          meta: `High Impact · ${data.positivePoints?.[0]?.mentions || 0} Mentions`,
+        },
+        {
+          label: "Quick Win",
+          labelColor: [37, 99, 235],
+          bgColor: [235, 245, 255],
+          text: data.summary.improvements?.[0]
+            ? `Address: ${data.summary.improvements[0]}`
+            : "Conduct lightweight UI polishing and performance tune-ups.",
+          meta: "Medium Urgency · Low Effort",
+        },
+        {
+          label: "Strategic Monitor",
+          labelColor: [80, 80, 80],
+          bgColor: [245, 245, 245],
+          text: data.summary.negativeSentiment > 35
+            ? "High friction spike. Closely track and review upcoming release feedback."
+            : "Sentiment is healthy. Capture long-tail feature requests for the roadmap.",
+          meta: "Continuous Assessment",
+        },
+      ];
+
+      const qW = (contentW - 6) / 2;
+      const qH = 36;
+
+      for (let row = 0; row < 2; row++) {
+        checkPage(qH + 6);
+        for (let col = 0; col < 2; col++) {
+          const q = quadrants[row * 2 + col];
+          const qX = margin + col * (qW + 6);
+          const qY = y;
+
+          // Card background
+          pdf.setFillColor(...q.bgColor);
+          pdf.roundedRect(qX, qY, qW, qH, 2, 2, "F");
+
+          // Left accent stripe
+          pdf.setFillColor(...q.labelColor);
+          pdf.rect(qX, qY, 2.5, qH, "F");
+
+          // Badge label
+          pdf.setFontSize(7);
+          pdf.setFont("helvetica", "bold");
+          pdf.setTextColor(...q.labelColor);
+          pdf.text(q.label.toUpperCase(), qX + 6, qY + 7);
+
+          // Body text
+          pdf.setFontSize(8);
+          pdf.setFont("helvetica", "normal");
+          pdf.setTextColor(30, 30, 30);
+          const bodyLines = pdf.splitTextToSize(q.text, qW - 10);
+          pdf.text(bodyLines.slice(0, 2), qX + 6, qY + 14);
+
+          // Meta
+          pdf.setFontSize(6.5);
+          pdf.setTextColor(100, 100, 100);
+          pdf.text(q.meta, qX + 6, qY + qH - 5);
+        }
+        y += qH + 5;
+      }
+      y += 4;
+
+      // ── LAST PAGE: SIGNATURE / CERTIFICATION ─────────────────
+      checkPage(80);
+      sectionHeader("Report Certification");
+      y += 4;
+      pdf.setFontSize(9);
+      pdf.setTextColor(60, 60, 60);
+      pdf.setFont("helvetica", "normal");
+      const certText = pdf.splitTextToSize(
+        `This report was generated automatically by the Prysm AI Analytics engine on ${dateStr} at ${timeStr}. The data reflects feedback collected across all connected channels within the timeframe ${startDate} to ${endDate}. The analysis was performed using natural language processing models and is intended for internal product decision-making.`,
+        contentW
+      );
+      pdf.text(certText, margin, y);
+      y += certText.length * 5 + 10;
+
+      // Signature block
+      pdf.setDrawColor(180, 180, 180);
+      pdf.setLineWidth(0.3);
+      pdf.line(margin, y, margin + 70, y);
+      pdf.line(margin + 100, y, margin + 170, y);
+      y += 5;
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text("Authorised Account", margin, y);
+      pdf.text("Prysm Platform", margin + 100, y);
+      y += 5;
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(20, 20, 20);
+      pdf.text(authUser?.fullName || authUser?.name || "—", margin, y);
+      pdf.text("Prysm AI Engine v1.0", margin + 100, y);
+      y += 4;
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(7.5);
+      pdf.setTextColor(120, 120, 120);
+      pdf.text(authUser?.email || "", margin, y);
+      pdf.text(dateStr, margin + 100, y);
+
+      // Bottom brand block
+      y = H - 50;
+      pdf.setFillColor(10, 10, 10);
+      pdf.roundedRect(margin, y, contentW, 32, 3, 3, "F");
+      pdf.setFontSize(20);
+      pdf.setTextColor(204, 255, 0);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Prysm", W / 2, y + 14, { align: "center" });
+      pdf.setFontSize(7.5);
+      pdf.setTextColor(160, 160, 160);
+      pdf.setFont("helvetica", "normal");
+      pdf.text("AI-Powered Feedback Intelligence · getprysm.vercel.app", W / 2, y + 21, { align: "center" });
+      pdf.setTextColor(80, 80, 80);
+      pdf.text(`© ${now.getFullYear()} Prysm. All rights reserved.`, W / 2, y + 27, { align: "center" });
+
+      // Add footers to all pages
+      const totalPages = pdf.getNumberOfPages();
+      for (let p = 2; p <= totalPages; p++) {
+        pdf.setPage(p);
+        addFooter();
+      }
+
+      pdf.save(`prysm-report-${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}.pdf`);
+      toast.success("PDF report downloaded!", { id: "pdf" });
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      toast.error("Failed to generate PDF", { id: "pdf" });
+    }
   };
 
   const getTimeAgo = (timestamp) => {
@@ -244,42 +832,190 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-main-section">
-        {/* Main Summary Widget */}
-        <div className="dashboard-summary-widget">
-          <div className="widget-header">
-            <Sparkles className="widget-icon neutral" size={20} />
-            <h3 className="widget-title">AI Summary</h3>
+      {isFetching && (
+        <div className="fetch-overlay-container">
+          <div className="fetch-overlay-content">
+            <div
+              aria-label="Orange and tan hamster running in a metal wheel"
+              role="img"
+              className="wheel-and-hamster"
+            >
+              <div className="wheel"></div>
+              <div className="hamster">
+                <div className="hamster__body">
+                  <div className="hamster__head">
+                    <div className="hamster__ear"></div>
+                    <div className="hamster__eye"></div>
+                    <div className="hamster__nose"></div>
+                  </div>
+                  <div className="hamster__limb hamster__limb--fr"></div>
+                  <div className="hamster__limb hamster__limb--fl"></div>
+                  <div className="hamster__limb hamster__limb--br"></div>
+                  <div className="hamster__limb hamster__limb--bl"></div>
+                  <div className="hamster__tail"></div>
+                </div>
+              </div>
+              <div className="spoke"></div>
+            </div>
+            <div className="fetch-overlay-text-wrapper">
+              <div className="fetch-status-text">{FETCH_STATUSES[fetchStatusIndex]}</div>
+              <div className="fetch-progress-wrap">
+                <div className="fetch-progress-bar">
+                  <div 
+                    className="fetch-progress-fill" 
+                    style={{ width: `${fetchProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
           </div>
-
-          {isLoading ? (
-            <SkeletonLoader />
-          ) : data ? (
-            <div className="summary-content">
-              <div className="insights-section">
-                <h4 className="section-title">Key Insights</h4>
-                <ul className="insights-list">
-                  {data.summary.keyInsights.map((insight, idx) => (
-                    <li key={idx}>{insight}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="improvements-section">
-                <h4 className="section-title">Areas to Improve</h4>
-                <ul className="improvements-list">
-                  {data.summary.improvements.map((improvement, idx) => (
-                    <li key={idx}>{improvement}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ) : (
-            <div className="empty-state">
-              <p>No data available. Click "Fetch Data" to load feedback.</p>
-            </div>
-          )}
         </div>
+      )}
+
+      <div className="dashboard-main-section">
+        {/* Main Summary Widget or Onboarding Card */}
+        {hasNoData ? (
+          <div className="dashboard-onboarding-widget">
+            <div className="onboarding-header">
+              <Sparkles className="onboarding-icon text-brand" size={24} style={{ color: "#CCFF00" }} />
+              <h3 className="onboarding-title">No Feedback Data Found</h3>
+              <p className="onboarding-subtitle">
+                Prysm hasn't ingested any feedback records for this timeframe yet. To start generating AI-driven sentiment insights, please connect an integration or upload a CSV file.
+              </p>
+            </div>
+
+            <div className="onboarding-cards">
+              <div className="onboarding-card">
+                <div className="onboarding-card-header">
+                  <div className="onboarding-card-icon-container">
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-brand" style={{ color: "#CCFF00" }} xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
+                    </svg>
+                  </div>
+                  <h4 className="onboarding-card-title">Connect Apps</h4>
+                </div>
+                <p className="onboarding-card-desc">
+                  Link live channels including App Store, Play Store, X (Twitter), or Gmail to scrape reviews in real-time.
+                </p>
+                <Link to="/connect-apps" className="onboarding-card-link">
+                  Go to Connect Apps &rarr;
+                </Link>
+              </div>
+
+              <div className="onboarding-card">
+                <div className="onboarding-card-header">
+                  <div className="onboarding-card-icon-container">
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-brand" style={{ color: "#CCFF00" }} xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/>
+                    </svg>
+                  </div>
+                  <h4 className="onboarding-card-title">Upload Custom Data</h4>
+                </div>
+                <p className="onboarding-card-desc">
+                  Import any spreadsheet of customer logs or feedback surveys. Drag and drop a CSV file to preview and insert.
+                </p>
+                <Link to="/custom-data" className="onboarding-card-link">
+                  Go to Custom Data &rarr;
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="dashboard-left-column">
+            <div className="dashboard-summary-widget">
+              <div className="widget-header">
+                <Sparkles className="widget-icon neutral" size={20} />
+                <h3 className="widget-title">AI Summary</h3>
+              </div>
+
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : data ? (
+                <div className="summary-content">
+                  <div className="insights-section">
+                    <h4 className="section-title">Key Insights</h4>
+                    <ul className="insights-list">
+                      {data.summary.keyInsights.map((insight, idx) => (
+                        <li key={idx}>{insight}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="improvements-section">
+                    <h4 className="section-title">Areas to Improve</h4>
+                    <ul className="improvements-list">
+                      {data.summary.improvements.map((improvement, idx) => (
+                        <li key={idx}>{improvement}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <p>No data available. Click "Fetch Data" to load feedback.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Strategic Priority & Action Matrix Widget */}
+            <div className="dashboard-action-matrix-widget">
+              <div className="widget-header">
+                <Target className="widget-icon positive" size={20} style={{ color: "#CCFF00" }} />
+                <h3 className="widget-title">Strategic Priority Matrix</h3>
+              </div>
+              
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : data ? (
+                <div className="matrix-quadrants">
+                  <div className="matrix-quadrant critical">
+                    <div className="quadrant-badge">Immediate Fix</div>
+                    <p className="quadrant-text">
+                      {data.negativePoints?.[0]?.point 
+                        ? `Resolve issues with: ${data.negativePoints[0].point}`
+                        : "No critical negative friction points detected."}
+                    </p>
+                    <div className="quadrant-meta">High Urgency · {data.negativePoints?.[0]?.mentions || 0} Mentions</div>
+                  </div>
+
+                  <div className="matrix-quadrant leverage">
+                    <div className="quadrant-badge">Growth Lever</div>
+                    <p className="quadrant-text">
+                      {data.positivePoints?.[0]?.point
+                        ? `Promote and enhance: ${data.positivePoints[0].point}`
+                        : "Build customer advocacy around recent updates."}
+                    </p>
+                    <div className="quadrant-meta">High Impact · {data.positivePoints?.[0]?.mentions || 0} Mentions</div>
+                  </div>
+
+                  <div className="matrix-quadrant quick-win">
+                    <div className="quadrant-badge">Quick Win</div>
+                    <p className="quadrant-text">
+                      {data.summary.improvements?.[0]
+                        ? `Address recommendation: ${data.summary.improvements[0]}`
+                        : "Conduct lightweight UI polishing and performance tune-ups."}
+                    </p>
+                    <div className="quadrant-meta">Medium Urgency · Low Effort</div>
+                  </div>
+
+                  <div className="matrix-quadrant monitor">
+                    <div className="quadrant-badge">Strategic Monitor</div>
+                    <p className="quadrant-text">
+                      {data.summary.negativeSentiment > 35 
+                        ? "High friction spike. Closely track and review upcoming release feedback." 
+                        : "Sentiment is healthy. Capture long-tail feature requests for the roadmap."}
+                    </p>
+                    <div className="quadrant-meta">Continuous Assessment</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <p>No actionable items available.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons Section */}
         <div className="dashboard-actions">
@@ -323,7 +1059,7 @@ export default function DashboardPage() {
           {/* Sentiment Distribution Matrix */}
           {isLoading ? (
             <GaugeSkeleton />
-          ) : data ? (
+          ) : data && !hasNoData ? (
             <>
               <div className="sentiment-matrix">
                 <div className="matrix-label">Feedback Distribution</div>
@@ -426,288 +1162,286 @@ export default function DashboardPage() {
       </div>
 
       {/* Bottom Widgets Row */}
-      <div className="dashboard-widgets-row">
-        {/* Positive Points Widget */}
-        <div className="dashboard-widget-card">
-          <div className="widget-card-header">
-            <Smile className="widget-icon positive" size={20} />
-            <h4 className="widget-card-title">What's Working</h4>
-          </div>
-          {isLoading ? (
-            <SkeletonLoader className="card-skeleton" />
-          ) : data ? (
-            <div className="widget-card-content">
-              <div className="points-list">
-                {data.positivePoints.map((item, idx) => (
-                  <div key={idx} className="point-item">
-                    <div className="point-header">
-                      <CheckCircle2 size={14} className="point-icon positive" />
-                      <span className="point-text">{item.point}</span>
-                    </div>
-                    <span className="point-mentions">
-                      {item.mentions} mentions
-                    </span>
-                  </div>
-                ))}
-              </div>
+      {!hasNoData && (
+        <div className="dashboard-widgets-row">
+          {/* Positive Points Widget */}
+          <div className="dashboard-widget-card">
+            <div className="widget-card-header">
+              <Smile className="widget-icon positive" size={20} />
+              <h4 className="widget-card-title">What's Working</h4>
             </div>
-          ) : (
-            <div className="empty-state-small">No data available</div>
-          )}
-        </div>
-
-        {/* Negative Points Widget */}
-        <div className="dashboard-widget-card">
-          <div className="widget-card-header">
-            <Frown className="widget-icon negative" size={20} />
-            <h4 className="widget-card-title">Needs Attention</h4>
-          </div>
-          {isLoading ? (
-            <SkeletonLoader className="card-skeleton" />
-          ) : data ? (
-            <div className="widget-card-content">
-              <div className="points-list">
-                {data.negativePoints.map((item, idx) => (
-                  <div key={idx} className="point-item">
-                    <div className="point-header">
-                      <XCircle size={14} className="point-icon negative" />
-                      <span className="point-text">{item.point}</span>
+            {isLoading ? (
+              <SkeletonLoader className="card-skeleton" />
+            ) : data ? (
+              <div className="widget-card-content">
+                <div className="points-list">
+                  {data.positivePoints.map((item, idx) => (
+                    <div key={idx} className="point-item">
+                      <div className="point-header">
+                        <CheckCircle2 size={14} className="point-icon positive" />
+                        <span className="point-text">{item.point}</span>
+                      </div>
+                      <span className="point-mentions">
+                        {item.mentions} mentions
+                      </span>
                     </div>
-                    <span className="point-mentions">
-                      {item.mentions} mentions
-                    </span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
+            ) : (
+              <div className="empty-state-small">No data available</div>
+            )}
+          </div>
+
+          {/* Negative Points Widget */}
+          <div className="dashboard-widget-card">
+            <div className="widget-card-header">
+              <Frown className="widget-icon negative" size={20} />
+              <h4 className="widget-card-title">Needs Attention</h4>
             </div>
-          ) : (
-            <div className="empty-state-small">No data available</div>
-          )}
-        </div>
-
-        {/* Metrics Widget */}
-        <div className="dashboard-widget-card">
-          <div className="widget-card-header">
-            <Activity className="widget-icon metrics" size={20} />
-            <h4 className="widget-card-title">Performance Metrics</h4>
-          </div>
-          {isLoading ? (
-            <SkeletonLoader className="card-skeleton" />
-          ) : data ? (
-            <div className="widget-card-content">
-              {/* Metric Tabs */}
-              <div className="metric-tabs">
-                <button
-                  className={`metric-tab ${activeMetricTab === "satisfaction" ? "active" : ""}`}
-                  onClick={() => setActiveMetricTab("satisfaction")}
-                >
-                  Satisfaction
-                </button>
-                <button
-                  className={`metric-tab ${activeMetricTab === "response" ? "active" : ""}`}
-                  onClick={() => setActiveMetricTab("response")}
-                >
-                  Response Time
-                </button>
-                <button
-                  className={`metric-tab ${activeMetricTab === "volume" ? "active" : ""}`}
-                  onClick={() => setActiveMetricTab("volume")}
-                >
-                  Volume
-                </button>
+            {isLoading ? (
+              <SkeletonLoader className="card-skeleton" />
+            ) : data ? (
+              <div className="widget-card-content">
+                <div className="points-list">
+                  {data.negativePoints.map((item, idx) => (
+                    <div key={idx} className="point-item">
+                      <div className="point-header">
+                        <XCircle size={14} className="point-icon negative" />
+                        <span className="point-text">{item.point}</span>
+                      </div>
+                      <span className="point-mentions">
+                        {item.mentions} mentions
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
+            ) : (
+              <div className="empty-state-small">No data available</div>
+            )}
+          </div>
 
-              {/* Metric Content */}
-              <div className="metric-content">
-                {activeMetricTab === "satisfaction" && (
-                  <div className="metric-detail">
-                    <div className="metric-info">
-                      <div className="metric-header">
-                        <span className="metric-label">Satisfaction Score</span>
-                        {data.metrics.trend === "up" ? (
-                          <ArrowUp size={14} className="trend-icon up" />
-                        ) : (
-                          <ArrowDown size={14} className="trend-icon down" />
-                        )}
-                      </div>
-                      <div className="metric-values">
-                        <span className="metric-current">
-                          {data.metrics.satisfactionScore}
-                        </span>
-                        <span className="metric-previous">
-                          / {data.metrics.previousScore}
-                        </span>
-                        <span className="metric-improvement positive">
-                          +{data.metrics.improvement}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="metric-chart">
-                      <MiniAreaChart
-                        data={data.metrics.history.satisfaction}
-                        color="#8b5cf6"
-                      />
-                    </div>
-                  </div>
-                )}
+          {/* Metrics Widget */}
+          <div className="dashboard-widget-card">
+            <div className="widget-card-header">
+              <Activity className="widget-icon metrics" size={20} />
+              <h4 className="widget-card-title">Performance Metrics</h4>
+            </div>
+            {isLoading ? (
+              <SkeletonLoader className="card-skeleton" />
+            ) : data ? (
+              <div className="widget-card-content">
+                {/* Metric Tabs */}
+                <div className="metric-tabs">
+                  <button
+                    className={`metric-tab ${activeMetricTab === "satisfaction" ? "active" : ""}`}
+                    onClick={() => setActiveMetricTab("satisfaction")}
+                  >
+                    Satisfaction
+                  </button>
+                  <button
+                    className={`metric-tab ${activeMetricTab === "response" ? "active" : ""}`}
+                    onClick={() => setActiveMetricTab("response")}
+                  >
+                    Response Time
+                  </button>
+                  <button
+                    className={`metric-tab ${activeMetricTab === "volume" ? "active" : ""}`}
+                    onClick={() => setActiveMetricTab("volume")}
+                  >
+                    Volume
+                  </button>
+                </div>
 
-                {activeMetricTab === "response" && (
-                  <div className="metric-detail">
-                    <div className="metric-info">
-                      <div className="metric-header">
-                        <span className="metric-label">Avg. Response Time</span>
-                        <ArrowDown size={14} className="trend-icon up" />
-                      </div>
-                      <div className="metric-values">
-                        <span className="metric-current">
-                          {data.metrics.responseTime}
-                        </span>
-                        <span className="metric-previous">
-                          / {data.metrics.previousResponseTime}
-                        </span>
-                        <span className="metric-improvement positive">
-                          Improved
-                        </span>
-                      </div>
-                    </div>
-                    <div className="metric-chart">
-                      <MiniAreaChart
-                        data={data.metrics.history.responseTime}
-                        color="#22c55e"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {activeMetricTab === "volume" && (
-                  <div className="metric-detail">
-                    <div className="metric-info">
-                      <div className="metric-header">
-                        <span className="metric-label">Feedback Volume</span>
-                        <ArrowUp size={14} className="trend-icon up" />
-                      </div>
-                      <div className="metric-values">
-                        <span className="metric-current">
-                          {data.metrics.feedbackVolume}
-                        </span>
-                        <span className="metric-previous">
-                          / {data.metrics.previousVolume}
-                        </span>
-                        <span className="metric-improvement positive">
-                          +
-                          {Math.round(
-                            ((data.metrics.feedbackVolume -
-                              data.metrics.previousVolume) /
-                              data.metrics.previousVolume) *
-                              100,
+                {/* Metric Content */}
+                <div className="metric-content">
+                  {activeMetricTab === "satisfaction" && (
+                    <div className="metric-detail">
+                      <div className="metric-info">
+                        <div className="metric-header">
+                          <span className="metric-label">Satisfaction Score</span>
+                          {data.metrics.trend === "up" ? (
+                            <ArrowUp size={14} className="trend-icon up" />
+                          ) : (
+                            <ArrowDown size={14} className="trend-icon down" />
                           )}
-                          %
-                        </span>
+                        </div>
+                        <div className="metric-values">
+                          <span className="metric-current">
+                            {data.metrics.satisfactionScore}
+                          </span>
+                          <span className="metric-previous">
+                            / {data.metrics.previousScore}
+                          </span>
+                          <span className="metric-improvement positive">
+                            +{data.metrics.improvement}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="metric-chart">
+                        <MiniAreaChart
+                          data={data.metrics.history.satisfaction}
+                          color="#8b5cf6"
+                        />
                       </div>
                     </div>
-                    <div className="metric-chart">
-                      <MiniAreaChart
-                        data={data.metrics.history.volume}
-                        color="#3b82f6"
-                      />
+                  )}
+
+                  {activeMetricTab === "response" && (
+                    <div className="metric-detail">
+                      <div className="metric-info">
+                        <div className="metric-header">
+                          <span className="metric-label">Avg. Response Time</span>
+                          <ArrowDown size={14} className="trend-icon up" />
+                        </div>
+                        <div className="metric-values">
+                          <span className="metric-current">
+                            {data.metrics.responseTime}
+                          </span>
+                          <span className="metric-previous">
+                            / {data.metrics.previousResponseTime}
+                          </span>
+                          <span className="metric-improvement positive">
+                            Improved
+                          </span>
+                        </div>
+                      </div>
+                      <div className="metric-chart">
+                        <MiniAreaChart
+                          data={data.metrics.history.responseTime}
+                          color="#22c55e"
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+
+                  {activeMetricTab === "volume" && (
+                    <div className="metric-detail">
+                      <div className="metric-info">
+                        <div className="metric-header">
+                          <span className="metric-label">Feedback Volume</span>
+                          <ArrowUp size={14} className="trend-icon up" />
+                        </div>
+                        <div className="metric-values">
+                          <span className="metric-current">
+                            {data.metrics.feedbackVolume}
+                          </span>
+                          <span className="metric-previous">
+                            / {data.metrics.previousVolume}
+                          </span>
+                          <span className="metric-improvement positive">
+                            +
+                            {Math.round(
+                              ((data.metrics.feedbackVolume -
+                                data.metrics.previousVolume) /
+                                data.metrics.previousVolume) *
+                                100,
+                            )}
+                            %
+                          </span>
+                        </div>
+                      </div>
+                      <div className="metric-chart">
+                        <MiniAreaChart
+                          data={data.metrics.history.volume}
+                          color="#3b82f6"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="empty-state-small">No data available</div>
-          )}
+            ) : (
+              <div className="empty-state-small">No data available</div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Feedback Sources Line Chart */}
-      <div className="feedback-sources-chart">
-        <div className="chart-header">
-          <Layers className="widget-icon neutral" size={20} />
-          <h3 className="chart-title">Source Breakdown</h3>
-        </div>
-        {isLoading ? (
-          <SkeletonLoader className="chart-skeleton" />
-        ) : data ? (
-          <div className="chart-container">
-            <LineChart
-              xAxis={[
-                {
-                  data: data.feedbackSources.months,
-                  scaleType: "point",
-                },
-              ]}
-              series={[
-                {
-                  data: data.feedbackSources.sources.twitter,
-                  label: "Twitter (X)",
-                  color: "#1DA1F2",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-                {
-                  data: data.feedbackSources.sources.playstore,
-                  label: "Play Store",
-                  color: "#34A853",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-                {
-                  data: data.feedbackSources.sources.appstore,
-                  label: "App Store",
-                  color: "#007AFF",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-                {
-                  data: data.feedbackSources.sources.email,
-                  label: "Email",
-                  color: "#EA4335",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-                {
-                  data: data.feedbackSources.sources.customData,
-                  label: "Custom Data (.csv)",
-                  color: "#FBBC04",
-                  curve: "catmullRom",
-                  showMark: false,
-                },
-              ]}
-              height={400}
-              margin={{ top: 20, right: 20, bottom: 30, left: 60 }}
-              sx={{
-                "& .MuiLineElement-root": {
-                  strokeWidth: 3,
-                },
-                "& .MuiChartsAxis-root": {
-                  "& .MuiChartsAxis-line": {
-                    stroke: "rgba(255, 255, 255, 0.2)",
-                  },
-                  "& .MuiChartsAxis-tick": {
-                    stroke: "rgba(255, 255, 255, 0.2)",
-                  },
-                  "& .MuiChartsAxis-tickLabel": {
-                    fill: "rgba(255, 255, 255, 0.7)",
-                  },
-                },
-                "& .MuiChartsLegend-root": {
-                  "& .MuiChartsLegend-label": {
-                    fill: "rgba(255, 255, 255, 0.8)",
-                  },
-                },
-                "& .MuiChartsGrid-line": {
-                  stroke: "rgba(255, 255, 255, 0.1)",
-                },
-              }}
-              grid={{ vertical: true, horizontal: true }}
-            />
+      {!hasNoData && (
+        <div className="feedback-sources-chart">
+          <div className="chart-header">
+            <Layers className="widget-icon neutral" size={20} />
+            <h3 className="chart-title">Source Breakdown</h3>
           </div>
-        ) : (
-          <div className="empty-state">No data available</div>
-        )}
-      </div>
+          {isLoading ? (
+            <SkeletonLoader className="chart-skeleton" />
+          ) : data ? (
+            <div className="chart-container">
+              <LineChart
+                xAxis={[
+                  {
+                    data: data.feedbackSources.months,
+                    scaleType: "point",
+                  },
+                ]}
+                series={[
+                  {
+                    data: data.feedbackSources.sources.twitter,
+                    label: "Twitter (X)",
+                    color: "#1DA1F2",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                  {
+                    data: data.feedbackSources.sources.playstore,
+                    label: "Play Store",
+                    color: "#34A853",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                  {
+                    data: data.feedbackSources.sources.appstore,
+                    label: "App Store",
+                    color: "#007AFF",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                  {
+                    data: data.feedbackSources.sources.email,
+                    label: "Email",
+                    color: "#EA4335",
+                    curve: "catmullRom",
+                    showMark: false,
+                  },
+                ]}
+                height={400}
+                margin={{ top: 20, right: 20, bottom: 30, left: 60 }}
+                sx={{
+                  "& .MuiLineElement-root": {
+                    strokeWidth: 3,
+                  },
+                  "& .MuiChartsAxis-root": {
+                    "& .MuiChartsAxis-line": {
+                      stroke: "rgba(255, 255, 255, 0.2)",
+                    },
+                    "& .MuiChartsAxis-tick": {
+                      stroke: "rgba(255, 255, 255, 0.2)",
+                    },
+                    "& .MuiChartsAxis-tickLabel": {
+                      fill: "rgba(255, 255, 255, 0.7)",
+                    },
+                  },
+                  "& .MuiChartsLegend-root text": {
+                    fill: "#ffffff !important",
+                  },
+                  "& .MuiChartsLegend-label": {
+                    fill: "#ffffff !important",
+                  },
+                  "& .MuiChartsGrid-line": {
+                    stroke: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+                grid={{ vertical: true, horizontal: true }}
+              />
+            </div>
+          ) : (
+            <div className="empty-state">No data available</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

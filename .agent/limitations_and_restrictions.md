@@ -12,9 +12,9 @@ The following files are managed by another teammate. Under no circumstances shou
 * **[gmailUser.model.js](file:///c:/Coding%20Workspace/prysm/backend/src/models/users/gmailUser.model.js)**: Contains secondary user modeling. Do not modify.
 
 ### B. Scoped Dashboard Ingestion
-* The Fetch Data button on the Dashboard is strictly scoped to execute scrapes for X (Twitter) and the Apple App Store only.
-* Do NOT trigger automated Gmail API fetches from the dashboard. Gmail syncing is handled separately by the teammate's Gmail button flows on the Connect page.
-* Gmail feedbacks are loaded from the database and filtered by timeframe dates, but the dashboard must never make active requests to Google API.
+* The Fetch Data button on the Dashboard is responsible for executing ingestion sweeps across all connected apps (X, App Store, Play Store, and Gmail).
+* The dashboard backend controller has been updated to trigger automated Gmail API fetches and Play Store syncs directly when requested.
+* All data is persisted into the database, after which it is filtered by timeframe for the analysis workflow.
 
 ---
 
@@ -43,8 +43,9 @@ The following files are managed by another teammate. Under no circumstances shou
 ## 3. Route Protection & Layout Rules
 
 ### A. Layout Separation
-* **Authenticated vs Public**: Unauthenticated routes (`/`, `/login`, `/terms`, `/privacy`) must be kept completely separate from the authenticated sidebar layout wrapper. Any layout leaks (such as the sidebar appearing on the landing page) are prohibited.
+* **Authenticated vs Public**: The root route (`/`) is auth-aware: unauthenticated users see the Landing Page, while authenticated users see the Dashboard inside the authenticated sidebar layout. Public pages (`/login`, `/terms`, `/privacy`, and public documentation views) must remain separate from the authenticated sidebar layout. Any layout leaks (such as the sidebar appearing on the landing page) are prohibited.
 * **Redirection Rules**:
-  * Unauthenticated users hitting `/` see the Landing Page, `/login` see the LoginPage, `/terms` see the TermsPage, `/privacy` see the PrivacyPage. Any other route redirects to `/`.
-  * Authenticated users hitting `/` or `/login` are automatically redirected to `/dashboard`. Any invalid subpath redirects to `/dashboard`.
+  * Unauthenticated users hitting `/` see the Landing Page, `/login` see the LoginPage, `/terms` see the TermsPage, `/privacy` see the PrivacyPage. Any protected route redirects to `/`. Any invalid route now renders a dedicated 404 Not Found page.
+  * Authenticated users hitting `/` see the Dashboard as the home page. Authenticated users hitting `/login` are redirected to `/`, while any invalid route renders the 404 Not Found page.
+  * Do not reintroduce a frontend `/dashboard` route. Dashboard API endpoints under `/api/dashboard` remain valid backend routes and should not be renamed as part of frontend navigation changes.
 * **Sidebar Integrity**: The sidebar footer must dynamically fetch active session data from `useAuthStore` rather than relying on static placeholders. Sizing of the sidebar container is fixed via `className="w-64 shrink-0"` to prevent dynamic layout shifts caused by user email/name text length.

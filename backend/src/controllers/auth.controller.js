@@ -1,6 +1,8 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/users/user.model.js";
 import bcrypt from "bcryptjs";
+import Feedback from "../models/raw_feedbacks/feedback.model.js";
+import AnalysisHistory from "../models/analysis/analysisHistory.model.js";
 
 /**
  * @route POST /auth/signup
@@ -140,6 +142,27 @@ export const updateProfile = async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("❌ Error in updateProfile controller:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+/**
+ * @route POST /auth/clear-history
+ */
+export const clearHistory = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const feedbackResult = await Feedback.deleteMany({ userId });
+    const historyResult = await AnalysisHistory.deleteMany({ userId });
+
+    res.status(200).json({
+      message: "History cleared successfully",
+      feedbacksDeleted: feedbackResult.deletedCount,
+      reportsDeleted: historyResult.deletedCount,
+    });
+  } catch (error) {
+    console.error("❌ Error in clearHistory controller:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

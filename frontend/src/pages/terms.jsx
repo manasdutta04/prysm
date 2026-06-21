@@ -38,7 +38,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-xs font-mono uppercase tracking-widest text-[#CCFF00]" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
-            Last updated: June 2026 // Platform Policy
+            Last updated: June 14, 2026 // Platform Policy
           </p>
         </div>
 

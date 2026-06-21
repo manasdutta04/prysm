@@ -21,12 +21,21 @@ import DocsPage from "./pages/docs";
 import SettingsPage from "./pages/settings";
 import AccountPage from "./pages/account";
 import { NotificationModal } from "./components/notification-modal";
+import NotFoundPage from "./components/ui/404-page-not-found";
 
 import { useAuthStore } from "./store/useAuthStore";
 import { useNotificationStore } from "./store/useNotificationStore";
 
-function PrivateLayout() {
+function PrivateLayout({ children }) {
   return (
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        overflow: "hidden",
+        background: "#0A0A0A",
+      }}
+    >
     <div
       style={{
         display: "flex",
@@ -76,7 +85,7 @@ function PrivateLayout() {
                 padding: "2rem",
               }}
             >
-              <Outlet />
+              {children || <Outlet />}
             </div>
           </SidebarInset>
         </div>
@@ -88,6 +97,11 @@ function PrivateLayout() {
 function HamsterLoader() {
   return (
     <div className="prysm-loader-container">
+      <div
+        aria-label="Orange and tan hamster running in a metal wheel"
+        role="img"
+        className="wheel-and-hamster"
+      >
       <div
         aria-label="Orange and tan hamster running in a metal wheel"
         role="img"
@@ -119,7 +133,21 @@ function ProtectedRoute({ children }) {
   if (isCheckingAuth) {
     return <HamsterLoader />;
   }
-  return authUser ? children : <Navigate to="/login" replace />;
+  return authUser ? children : <Navigate to="/" replace />;
+}
+
+function HomeRoute() {
+  const { authUser, isCheckingAuth } = useAuthStore();
+  if (isCheckingAuth) {
+    return <HamsterLoader />;
+  }
+  return authUser ? (
+    <PrivateLayout>
+      <DashboardPage />
+    </PrivateLayout>
+  ) : (
+    <LandingPage />
+  );
 }
 
 function LoginPageWrapper() {
@@ -127,7 +155,7 @@ function LoginPageWrapper() {
   if (isCheckingAuth) {
     return <HamsterLoader />;
   }
-  return authUser ? <Navigate to="/dashboard" replace /> : <LoginPage />;
+  return authUser ? <Navigate to="/" replace /> : <LoginPage />;
 }
 
 function App() {
@@ -185,7 +213,6 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/connect-apps" element={<ConnectAppsPage />} />
           <Route path="/custom-data" element={<CustomDataPage />} />
           <Route path="/history" element={<HistoryPage />} />

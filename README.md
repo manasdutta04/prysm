@@ -12,6 +12,9 @@ Conventional feedback analysis often involves manual reading and categorization 
 - "Emerging issues" alerts before they blow up
 - Department-specific reports (Support, Product, Marketing)
 - Slack & email notifications
+- Exportable PDF Reports with Strategic Priority Matrix
+- Data history clearing capabilities
+- SEO optimized with Open Graph metadata for social sharing
 - Unique Angle: Goes beyond sentiment → actually tells teams what to fix
 - Target Users: Product managers, Large organisations, customer success teams
 
@@ -84,6 +87,9 @@ You can run both the frontend and backend of Prysm in a single unified Docker en
    docker compose down
    ```
 
+### Deploying with Vercel
+The frontend is configured for deployment on Vercel as a Single Page Application (SPA). The repository includes `vercel.json` files with rewrite rules to support client-side routing and the dedicated 404 error page.
+
 ### Manual Installation & Local Dev Setup
 
 ### User Registration
@@ -98,14 +104,15 @@ You can run both the frontend and backend of Prysm in a single unified Docker en
 
 1. Navigate to the Login page.
 2. Enter your registered email ID and password.
-3. Upon successful authentication, you will be redirected to the main dashboard.
+3. Upon successful authentication, `/` becomes the main dashboard. Logged-out users at `/` see the Landing Page with interactive demos and feature highlights, and logged-in users at `/` go straight to the dashboard.
 
 ### Navigation Overview
 
 After logging in, users can access all major features through the left-hand navigation panel. The navigation menu includes the following options:
 
-- **Dashboard**: Displays real-time analytics, sentiment summaries, trending topics, and AI-generated insights.
-- **Connect Apps**: Integrates Prysm with third-party platforms such as Gmail, Slack, Twitter (X), Facebook, Google Play, and the App Store.
+- **Connect Apps**: Integrates Prysm with third-party platforms such as Gmail, Slack, Twitter (X), Facebook, Google Play, and the App Store. Play Store integration includes store state management.
+
+- **Dashboard**: Displays real-time analytics, sentiment summaries, trending topics, and AI-generated insights. Features a premium glassmorphic UI.
 - **Custom Data**: Allows users to upload manual feedback files in CSV or Excel format.
 - **History**: Provides a chronological record of processed feedback sessions and alerts.
 - **Settings**: Allows users to configure application preferences and manage API keys for LLM integrations.
@@ -168,6 +175,7 @@ Key components include:
 
 Ensures all critical feedback trends are communicated promptly.
 
+- **In-App Notification Modal**: A built-in UI component alerting users of trends and updates directly within the application.
 - **Slack Alerts**: Integrated via Slack API to deliver messages directly to channels.
 - **Email Alerts**: Sent automatically through Gmail or Microsoft Graph APIs.
 - **Custom Thresholds**: Admins can set trigger limits, e.g., alert when negative feedback exceeds 100 mentions per day.

@@ -215,7 +215,7 @@ export default function DocsPage() {
             Prysm
           </span>
         </Link>
-        <Link to="/login">
+        <Link to="/">
           <LiquidButton size="sm" className="text-white font-bold tracking-wide">
             Open App
           </LiquidButton>
@@ -265,7 +265,7 @@ export default function DocsPage() {
                 Step-by-step guide for the live web app — connect sources, add your AI key, and run feedback analysis from the dashboard.
               </p>
             </div>
-            <Link to="/login" className="docs-intro-cta">
+            <Link to="/" className="docs-intro-cta">
               Get started <ArrowRight size={16} />
             </Link>
           </div>

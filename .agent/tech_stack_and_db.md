@@ -9,7 +9,7 @@ Prysm is built on a React, Express.js, and MongoDB stack.
 * **Frontend Framework**: React.js configured with Vite.
 * **Backend Framework**: Node.js and Express.js.
 * **Database Access**: MongoDB Atlas queried via Mongoose.
-* **Zustand Store**: Session JWT storage and profile updates handled client-side inside [useAuthStore.js](file:///c:/Coding%20Workspace/prysm/frontend/src/store/useAuthStore.js).
+* **Zustand Store**: Session JWT storage and profile updates handled client-side inside [useAuthStore.js](file:///c:/Coding%20Workspace/prysm/frontend/src/store/useAuthStore.js) alongside `usePlaystoreStore.js`.
 * **Charts & Icons**: Lucide Icons and `@mui/x-charts` for dashboard comparison trends.
 
 ---
@@ -20,18 +20,22 @@ Prysm is built on a React, Express.js, and MongoDB stack.
 prysm/
 ├── .agent/               # AI Agent documentation files
 ├── frontend/             # Vite React client
+│   ├── index.html    # Frontend entry point containing Open Graph metadata
 │   ├── src/
-│   ├── components/   # Modals (x-connect, app-sidebar)
-│   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy
+│   ├── components/   # Modals (x-connect, app-sidebar, notification-modal, 404-page-not-found)
+│   ├── pages/        # Dashboard, Connect-Apps, Custom-Data, History, Settings, Account, Docs, Help-Support, Login, Terms, Privacy, LandingPage
+│   │   └── components2/ # Page content modules (docContent.js, privacy-content.js, terms-content.js)
 │   ├── store/        # Zustand stores
 │   └── lib/          # axios.js instance pointing to backend
+│   └── vercel.json   # Vercel rewrite configuration for SPA routing
 ├── backend/              # Express API server
 │   ├── src/
 │   │   ├── controllers/  # auth, customData, google, appstore, dashboard controllers
 │   │   ├── routes/       # API routes
 │   │   ├── lib/          # db, xScraper, appStoreScraper utilities
 │   │   └── models/       # Mongoose Schemas (feedback, user, analysisHistory)
-└── agents.md             # High-level entry index pointing here
+├── agents.md             # High-level entry index pointing here
+└── vercel.json           # Root Vercel rewrite configuration
 ```
 
 ---

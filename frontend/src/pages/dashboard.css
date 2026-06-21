@@ -423,8 +423,8 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1.25rem !important;
+  gap: 1rem;
+  padding: 1.5rem !important;
   border-radius: 0.75rem !important;
   box-sizing: border-box;
 }
@@ -444,15 +444,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 0;
+  gap: 1.25rem;
+  padding: 1.25rem 0;
 }
 
 .gauge-chart {
   width: 100%;
-  max-width: 200px;
+  max-width: 240px;
   height: auto;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.35));
 }
 
 .gauge-segment {
@@ -466,14 +466,14 @@
 }
 
 .gauge-center-number {
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 800;
   fill: #CCFF00;
   font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .gauge-center-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   fill: rgba(255, 255, 255, 0.6);
   font-family: 'IBM Plex Mono', monospace;
@@ -484,7 +484,7 @@
 /* Gauge Legend */
 .gauge-legend {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.25rem;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -1005,3 +1005,450 @@
   outline: none;
   background: rgba(255, 255, 255, 0.08);
 }
+
+/* Dashboard Onboarding Widget (No Data State) */
+.dashboard-onboarding-widget {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  border-radius: 1.25rem !important;
+  padding: 2rem !important;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.dashboard-onboarding-widget::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 1px;
+  border-radius: inherit;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.08) 25%, rgba(255, 255, 255, 0.22) 48%, rgba(255, 255, 255, 0.06) 70%, rgba(255, 255, 255, 0.38)),
+    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.44), transparent 24%),
+    radial-gradient(circle at 86% 94%, rgba(255, 255, 255, 0.22), transparent 28%);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.76;
+  pointer-events: none;
+}
+
+.dashboard-onboarding-widget:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.025) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.42),
+    0 0 18px rgba(255, 255, 255, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.065);
+}
+
+.onboarding-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 650px;
+}
+
+.onboarding-icon {
+  margin-bottom: 0.25rem;
+  filter: drop-shadow(0 0 8px rgba(204, 255, 0, 0.5));
+}
+
+.onboarding-title {
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.onboarding-subtitle {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+.onboarding-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.onboarding-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.onboarding-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(204, 255, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.onboarding-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.onboarding-card-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background: rgba(204, 255, 0, 0.1);
+  border: 1px solid rgba(204, 255, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.onboarding-card:hover .onboarding-card-icon-container {
+  background: rgba(204, 255, 0, 0.2);
+  border-color: rgba(204, 255, 0, 0.4);
+  transform: scale(1.05);
+}
+
+.onboarding-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.onboarding-card-desc {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.onboarding-card-link {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #CCFF00;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.onboarding-card-link:hover {
+  color: #ddff33;
+  transform: translateX(4px);
+  text-shadow: 0 0 8px rgba(204, 255, 0, 0.4);
+}
+
+/* Onboarding widget responsive styles */
+@media (max-width: 768px) {
+  .onboarding-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* ─── Fetch Data Full-Page Overlay ─── */
+.fetch-overlay-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  background: rgba(10, 10, 10, 0.45); /* Transparent dark overlay */
+  backdrop-filter: blur(14px) saturate(160%); /* Dynamic glass blur */
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.fetch-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  padding: 0;
+  background: transparent; /* Totally transparent background, no card wrapper */
+  border: none;
+  box-shadow: none;
+}
+
+.fetch-overlay-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.fetch-progress-pct {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 3.5rem;
+  color: #CCFF00;
+  line-height: 1;
+  text-shadow: 0 0 15px rgba(204, 255, 0, 0.25);
+  margin-bottom: -0.25rem;
+}
+
+.fetch-status-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #F5F5F0;
+  min-height: 1.25rem;
+  text-align: center;
+  animation: statusPulse 2s infinite ease-in-out;
+}
+
+.fetch-progress-wrap {
+  width: 80%;
+  margin: 0.5rem 0;
+}
+
+.fetch-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15); /* Slightly brighter so visible on dark blur */
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.fetch-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #CCFF00 0%, #a2cc00 100%);
+  border-radius: 99px;
+  box-shadow: 0 0 8px rgba(204, 255, 0, 0.6);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fetch-subtext {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  max-width: 320px;
+  line-height: 1.5;
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+    color: #CCFF00;
+  }
+}
+
+/* Style all text elements in the main line chart to be white */
+.feedback-sources-chart svg text,
+.feedback-sources-chart svg tspan,
+.feedback-sources-chart svg .MuiChartsLegend-root text,
+.feedback-sources-chart svg .MuiChartsLegend-root tspan,
+.feedback-sources-chart svg .MuiChartsLegend-label,
+.MuiChartsLegend-root text,
+.MuiChartsLegend-root tspan,
+.MuiChartsLegend-label {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* Dashboard Left Column Wrapper */
+.dashboard-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Strategic Priority & Action Matrix */
+.dashboard-action-matrix-widget {
+  border-radius: 1.25rem !important;
+  padding: 0.75rem 1rem !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.dashboard-action-matrix-widget:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.025) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.42),
+    0 0 18px rgba(255, 255, 255, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.065);
+}
+
+/* Quadrants Grid */
+.matrix-quadrants {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .matrix-quadrants {
+    grid-template-columns: 1fr;
+  }
+}
+
+.matrix-quadrant {
+  position: relative;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.35rem;
+  min-height: 72px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.matrix-quadrant:hover {
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
+}
+
+/* Specific Quadrant Variations */
+.matrix-quadrant.critical {
+  border-left: 3px solid #ef4444;
+}
+.matrix-quadrant.critical:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  border-left-color: #ef4444;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.08);
+}
+
+.matrix-quadrant.leverage {
+  border-left: 3px solid #CCFF00;
+}
+.matrix-quadrant.leverage:hover {
+  border-color: rgba(204, 255, 0, 0.4);
+  border-left-color: #CCFF00;
+  box-shadow: 0 0 15px rgba(204, 255, 0, 0.08);
+}
+
+.matrix-quadrant.quick-win {
+  border-left: 3px solid #3b82f6;
+}
+.matrix-quadrant.quick-win:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  border-left-color: #3b82f6;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.08);
+}
+
+.matrix-quadrant.monitor {
+  border-left: 3px solid #6b7280;
+}
+.matrix-quadrant.monitor:hover {
+  border-color: rgba(107, 114, 128, 0.4);
+  border-left-color: #6b7280;
+  box-shadow: 0 0 15px rgba(107, 114, 128, 0.08);
+}
+
+/* Quadrant Inner Elements */
+.quadrant-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.critical .quadrant-badge {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.leverage .quadrant-badge {
+  background: rgba(204, 255, 0, 0.1);
+  color: #CCFF00;
+}
+
+.quick-win .quadrant-badge {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.monitor .quadrant-badge {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.quadrant-text {
+  font-size: 0.775rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.quadrant-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.02em;
+}
+
+
+
