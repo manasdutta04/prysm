@@ -1,5 +1,13 @@
 # Prysm - AI-Driven Customer Feedback Analyzer
 
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License MIT"></a>
+  <a href="#"><img src="https://img.shields.io/badge/LLM%20Architecture-BYOK-orange?style=flat-square&logo=openai&logoColor=white" alt="BYOK"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Open%20Source-Yes-brightgreen?style=flat-square&logo=github" alt="Open Source"></a>
+  <a href="#"><img src="https://img.shields.io/badge/PRs-Welcome-4efc13?style=flat-square&logo=git" alt="PRs Welcome"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Integrations-Play%20Store%20%7C%20Gmail%20%7C%20App%20Store%20%7C%20Twitter-blueviolet?style=flat-square" alt="Integrations"></a>
+</p>
+
 ## Overview
 
 Prysm is an AI-driven system designed to automatically collect, analyze, and interpret customer feedback from multiple digital sources such as emails, support tickets, app reviews, and social media platforms. The system transforms unstructured feedback data into meaningful insights that help businesses understand customer sentiment, detect emerging issues, and make informed product or service improvements.
