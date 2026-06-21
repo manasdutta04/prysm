@@ -8,6 +8,7 @@ import LoginPage from "./pages/login";
 import TermsPage from "./pages/terms";
 import PrivacyPage from "./pages/privacy";
 import DashboardPage from "./pages/dashboard";
+import DemoDashboardPage from "./pages/demo";
 import ConnectAppsPage from "./pages/connect-apps";
 import CustomDataPage from "./pages/custom-data";
 import HistoryPage from "./pages/history";
@@ -189,6 +190,15 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/account" element={<AccountPage />} />
         </Route>
+
+        <Route
+          path="/demo"
+          element={
+            <PrivateLayout>
+              <DemoDashboardPage />
+            </PrivateLayout>
+          }
+        />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
