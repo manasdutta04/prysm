@@ -120,6 +120,10 @@ export function NavUser({
                   </span>
                 )}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/demo")}>
+                <Sparkles />
+                <span>Try Demo</span>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
