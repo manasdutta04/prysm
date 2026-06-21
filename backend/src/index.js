@@ -19,12 +19,42 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const normalizeOrigin = (value) => {
+  if (!value) return "";
+  try {
+    return new URL(value).origin;
+  } catch {
+    return value.replace(/\/+$/, "");
+  }
+};
+
+const allowedOrigins = new Set(
+  [
+    process.env.FRONTEND_URL,
+    "https://getprysm.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+  ]
+    .filter(Boolean)
+    .map(normalizeOrigin),
+);
+
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      const normalizedOrigin = normalizeOrigin(origin);
+
+      if (!origin || allowedOrigins.has(normalizedOrigin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
