@@ -1,13 +1,8 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import {
-  SidebarProvider,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Separator } from "@/components/ui/separator";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/login";
 import TermsPage from "./pages/terms";
@@ -36,14 +31,6 @@ function PrivateLayout({ children }) {
         background: "#0A0A0A",
       }}
     >
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        overflow: "hidden",
-        background: "#0A0A0A",
-      }}
-    >
       <SidebarProvider>
         <AppSidebar />
         <div
@@ -63,19 +50,6 @@ function PrivateLayout({ children }) {
               overflow: "hidden",
             }}
           >
-            <header className="flex h-16 shrink-0 items-center justify-between px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger className="-ml-1" />
-                <Separator orientation="vertical" className="mr-2 h-4" />
-              </div>
-              <div
-                className="text-2xl font-bold"
-                style={{ fontFamily: "Borel, cursive" }}
-              >
-                prysm
-              </div>
-              <div></div>
-            </header>
             <div
               style={{
                 flex: 1,
@@ -97,11 +71,6 @@ function PrivateLayout({ children }) {
 function HamsterLoader() {
   return (
     <div className="prysm-loader-container">
-      <div
-        aria-label="Orange and tan hamster running in a metal wheel"
-        role="img"
-        className="wheel-and-hamster"
-      >
       <div
         aria-label="Orange and tan hamster running in a metal wheel"
         role="img"
@@ -200,7 +169,7 @@ function App() {
       <NotificationModal />
 
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<LoginPageWrapper />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
@@ -221,10 +190,7 @@ function App() {
           <Route path="/account" element={<AccountPage />} />
         </Route>
 
-        <Route
-          path="*"
-          element={<Navigate to={authUser ? "/dashboard" : "/"} replace />}
-        />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );
