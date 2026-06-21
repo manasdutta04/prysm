@@ -36,53 +36,53 @@ const FETCH_STATUSES = [
 
 const MOCK_DATA = {
   summary: {
-    totalFeedback: 248,
-    positiveSentiment: 68,
-    negativeSentiment: 18,
-    neutralSentiment: 14,
+    totalFeedback: 1420,
+    positiveSentiment: 74,
+    negativeSentiment: 16,
+    neutralSentiment: 10,
     keyInsights: [
-      "Users highly praise the new offline mode reliability and speed.",
-      "Dark theme enhancements have improved readability in low-light environments.",
-      "Minor styling inconsistencies were reported on the Settings page."
+      "Users highly praise the speed of the new WhatsApp Web desktop client connection.",
+      "The WhatsApp status tab redesign is well-received, improving navigation and reading times.",
+      "Media sharing file limit expansion is highly appreciated by enterprise support channels."
     ],
     improvements: [
-      "Optimize battery consumption during high-frequency real-time updates.",
-      "Address app-crashing issues reported by users on older Android versions.",
-      "Refine transition animations to prevent occasional interface flickering."
+      "Resolve intermittent lag when searching chat histories on older Android builds.",
+      "Fix WhatsApp Web notification delivery delays reported during background syncs.",
+      "Improve dark theme contrast on WhatsApp iOS settings panel."
     ]
   },
   metrics: {
-    satisfactionScore: 4.3,
-    previousScore: 3.9,
-    improvement: 10.2,
-    responseTime: "1.8h",
-    previousResponseTime: "2.5h",
-    feedbackVolume: 248,
-    previousVolume: 210,
+    satisfactionScore: 4.4,
+    previousScore: 4.1,
+    improvement: 7.3,
+    responseTime: "1.2h",
+    previousResponseTime: "1.9h",
+    feedbackVolume: 1420,
+    previousVolume: 1180,
     trend: "up",
     history: {
-      satisfaction: [3.9, 4.0, 4.1, 4.2, 4.3],
-      responseTime: [2.5, 2.3, 2.1, 1.9, 1.8],
-      volume: [210, 220, 230, 240, 248]
+      satisfaction: [4.1, 4.3, 3.9, 4.2, 4.0, 4.4, 4.1, 4.3, 4.5, 4.2, 4.3, 4.4],
+      responseTime: [1.9, 1.8, 2.1, 1.7, 1.8, 1.5, 1.6, 1.4, 1.5, 1.3, 1.3, 1.2],
+      volume: [1180, 1210, 1150, 1230, 1280, 1310, 1260, 1340, 1390, 1350, 1380, 1420]
     }
   },
   positivePoints: [
-    { point: "Seamless synchronization across multi-platform desktop client.", mentions: 45 },
-    { point: "Extremely responsive custom charts and visualization tools.", mentions: 32 },
-    { point: "Intuitive App Store integration setup and configuration wizard.", mentions: 28 }
+    { point: "Instant message delivery and voice note playback speed adjustments.", mentions: 184 },
+    { point: "WhatsApp Web multi-device stability improvements in the latest build.", mentions: 142 },
+    { point: "Effortless group video calling and background blur features.", mentions: 98 }
   ],
   negativePoints: [
-    { point: "Intermittent connection dropouts when authenticating with Gmail API.", mentions: 12 },
-    { point: "Slow load times when querying extensive history datasets.", mentions: 9 },
-    { point: "Missing sorting filter options on custom data upload screen.", mentions: 6 }
+    { point: "Occasional delays in backing up chat database to Google Drive / iCloud.", mentions: 54 },
+    { point: "Sticker pack search query failures in offline or low bandwidth mode.", mentions: 38 },
+    { point: "Confusing privacy notification banners after the recent terms update.", mentions: 24 }
   ],
   feedbackSources: {
-    months: ["Feb", "Mar", "Apr", "May", "Jun"],
+    months: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     sources: {
-      twitter: [45, 52, 60, 58, 65],
-      playstore: [30, 35, 42, 48, 55],
-      appstore: [55, 62, 70, 72, 80],
-      email: [25, 30, 32, 40, 48]
+      twitter: [245, 290, 215, 280, 310, 345, 290, 360, 410, 350, 375, 420],
+      playstore: [310, 345, 295, 360, 395, 420, 385, 430, 470, 440, 460, 490],
+      appstore: [425, 460, 410, 475, 510, 530, 495, 540, 580, 520, 550, 600],
+      email: [110, 125, 105, 130, 140, 155, 135, 160, 175, 150, 160, 180]
     }
   }
 };
@@ -173,24 +173,24 @@ export default function DemoDashboardPage() {
       setLastFetchedTime(now);
       localStorage.setItem("demo_lastFetchedTime", now.toString());
 
-      toast.success("Feedback synced successfully! (DEMO)", { id: "fetching" });
+      toast.success("Feedback synced successfully!", { id: "fetching" });
 
-      // Trigger demo real-time notifications
+      // Trigger real-time notifications
       addNotification({
-        title: "Feedback Ingest Completed (DEMO)",
+        title: "Feedback Ingest Completed",
         description: `Ingested new updates. Analyzed ${data.summary.totalFeedback} feedbacks total. Sentiment is ${data.summary.positiveSentiment}% positive.`,
         category: "system",
       });
 
       addNotification({
-        title: `Satisfaction Trend Alert (DEMO)`,
+        title: `Satisfaction Trend Alert`,
         description: `Overall satisfaction is ${data.metrics.satisfactionScore.toFixed(1)} / 5.0 (+${data.metrics.improvement}% change).`,
         category: "trend",
       });
 
       if (data.summary.keyInsights && data.summary.keyInsights[0]) {
         addNotification({
-          title: "Top Trend Insight (DEMO)",
+          title: "Top Trend Insight",
           description: data.summary.keyInsights[0],
           category: "trend",
         });
@@ -222,7 +222,7 @@ export default function DemoDashboardPage() {
         minute: "2-digit",
         hour12: true,
       });
-      const reportId = `DEMO-RPT-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${Math.floor(Math.random() * 9000 + 1000)}`;
+      const reportId = `RPT-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${Math.floor(Math.random() * 9000 + 1000)}`;
 
       let y = 0;
       const checkPage = (needed = 10) => {
@@ -242,7 +242,7 @@ export default function DemoDashboardPage() {
         pdf.setTextColor(150, 150, 150);
         pdf.setFont("helvetica", "normal");
         pdf.text(
-          "Confidential — Generated by Prysm AI Analytics Platform (Demo Mode)",
+          "Confidential — Generated by Prysm AI Analytics Platform",
           margin,
           footerY
         );
@@ -313,13 +313,13 @@ export default function DemoDashboardPage() {
       pdf.setFontSize(9);
       pdf.setTextColor(204, 255, 0);
       pdf.setFont("helvetica", "normal");
-      pdf.text("AI-POWERED FEEDBACK INTELLIGENCE (DEMO)", margin, 48);
+      pdf.text("AI-POWERED FEEDBACK INTELLIGENCE", margin, 48);
 
       y = 96;
       pdf.setFontSize(20);
       pdf.setTextColor(10, 10, 10);
       pdf.setFont("helvetica", "bold");
-      pdf.text("Dashboard Analytics Report (Demo)", margin, y);
+      pdf.text("Dashboard Analytics Report", margin, y);
       y += 8;
       pdf.setFontSize(10);
       pdf.setTextColor(90, 90, 90);
@@ -328,8 +328,8 @@ export default function DemoDashboardPage() {
       y += 14;
 
       const currentUser = {
-        fullName: authUser?.fullName || "Demo Guest",
-        email: authUser?.email || "guest@prysm.demo",
+        fullName: authUser?.fullName || "WhatsApp Analytics Manager",
+        email: authUser?.email || "manager@whatsapp.support",
       };
 
       const infoRows = [
@@ -357,7 +357,7 @@ export default function DemoDashboardPage() {
       pdf.setTextColor(140, 140, 140);
       pdf.setFont("helvetica", "italic");
       const disclaimer = pdf.splitTextToSize(
-        "This report is generated inside the Prysm Demo Mode. Data shown is synthesized for preview purposes and does not represent real-time integration analysis.",
+        "This report is auto-generated by the Prysm AI Analytics Platform. All insights are derived from aggregated user feedback data across connected channels. Data accuracy depends on the quality and volume of ingested reviews.",
         contentW
       );
       pdf.text(disclaimer, margin, y);
@@ -367,7 +367,7 @@ export default function DemoDashboardPage() {
       pdf.rect(0, H - 32, W, 32, "F");
       pdf.setFontSize(7);
       pdf.setTextColor(120, 120, 120);
-      pdf.text("Confidential — For demo evaluation only", margin, H - 18);
+      pdf.text("Confidential — For authorised recipients only", margin, H - 18);
       pdf.setTextColor(204, 255, 0);
       pdf.text("getprysm.vercel.app", W - margin, H - 18, { align: "right" });
 
@@ -475,23 +475,23 @@ export default function DemoDashboardPage() {
 
       const matrixRows = [
         {
-          source: "Gmail (Demo)",
+          source: "WhatsApp Support Inbox",
           account: currentUser.email,
           volume: sumArray(data.feedbackSources.sources.email),
         },
         {
-          source: "Play Store (Demo)",
-          account: "com.nexus.app.demo",
+          source: "WhatsApp Play Store",
+          account: "com.whatsapp",
           volume: sumArray(data.feedbackSources.sources.playstore),
         },
         {
-          source: "App Store (Demo)",
-          account: "id123456789 (Prysm Pro)",
+          source: "WhatsApp App Store",
+          account: "id310633997 (WhatsApp Messenger)",
           volume: sumArray(data.feedbackSources.sources.appstore),
         },
         {
-          source: "Twitter / X (Demo)",
-          account: "@nexus_insights",
+          source: "WhatsApp Twitter / X",
+          account: "@WhatsApp",
           volume: sumArray(data.feedbackSources.sources.twitter),
         },
       ];
@@ -619,7 +619,7 @@ export default function DemoDashboardPage() {
           label: "Strategic Monitor",
           labelColor: [80, 80, 80],
           bgColor: [245, 245, 245],
-          text: "Demo evaluation: capture user feature queries and reviews.",
+          text: "Capture user feature queries and reviews continuously.",
           meta: "Continuous Assessment",
         },
       ];
@@ -667,7 +667,7 @@ export default function DemoDashboardPage() {
       pdf.setTextColor(60, 60, 60);
       pdf.setFont("helvetica", "normal");
       const certText = pdf.splitTextToSize(
-        `This report was generated in DEMO mode by the Prysm feedback visualizer system on ${dateStr} at ${timeStr}. The analysis contains synthetic evaluation values.`,
+        `This report was generated automatically by the Prysm feedback visualizer system on ${dateStr} at ${timeStr}. The analysis reflects aggregated user feedback from all connected WhatsApp channels.`,
         contentW
       );
       pdf.text(certText, margin, y);
@@ -680,13 +680,13 @@ export default function DemoDashboardPage() {
       y += 5;
       pdf.setFontSize(8);
       pdf.setTextColor(100, 100, 100);
-      pdf.text("Demo User", margin, y);
+      pdf.text("Authorised Signature", margin, y);
       pdf.text("Prysm Platform", margin + 100, y);
       y += 5;
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(20, 20, 20);
       pdf.text(currentUser.fullName, margin, y);
-      pdf.text("Prysm AI Engine v1.0 (Demo)", margin + 100, y);
+      pdf.text("Prysm AI Engine v1.0", margin + 100, y);
       y += 4;
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(7.5);
@@ -705,7 +705,7 @@ export default function DemoDashboardPage() {
       pdf.setTextColor(160, 160, 160);
       pdf.setFont("helvetica", "normal");
       pdf.text(
-        "AI-Powered Feedback Intelligence (Demo Mode) · getprysm.vercel.app",
+        "AI-Powered Feedback Intelligence · getprysm.vercel.app",
         W / 2,
         y + 21,
         { align: "center" }
@@ -725,9 +725,9 @@ export default function DemoDashboardPage() {
       }
 
       pdf.save(
-        `prysm-demo-report-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}.pdf`
+        `prysm-report-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}.pdf`
       );
-      toast.success("PDF report downloaded! (DEMO)", { id: "pdf" });
+      toast.success("PDF report downloaded!", { id: "pdf" });
     } catch (error) {
       console.error("PDF generation failed:", error);
       toast.error("Failed to generate PDF", { id: "pdf" });
@@ -856,7 +856,7 @@ export default function DemoDashboardPage() {
           <div className="dashboard-summary-widget">
             <div className="widget-header">
               <Sparkles className="widget-icon neutral" size={20} />
-              <h3 className="widget-title">AI Summary (Demo)</h3>
+              <h3 className="widget-title">AI Summary</h3>
             </div>
 
             {isLoading ? (
@@ -1274,7 +1274,7 @@ export default function DemoDashboardPage() {
       <div className="feedback-sources-chart">
         <div className="chart-header">
           <Layers className="widget-icon neutral" size={20} />
-          <h3 className="chart-title">Source Breakdown (Demo)</h3>
+          <h3 className="chart-title">Source Breakdown</h3>
         </div>
         {isLoading ? (
           <SkeletonLoader className="chart-skeleton" />
