@@ -1124,7 +1124,10 @@ export const getLatestResult = async (req, res) => {
       for (const t of topicStats) {
         let match = false;
         for (const kw of t.keywords) {
-          if (content.includes(kw)) { match = true; break; }
+          if (content.includes(kw)) {
+            match = true;
+            break;
+          }
         }
         if (match) {
           t.mentions++;
@@ -1135,13 +1138,16 @@ export const getLatestResult = async (req, res) => {
     }
 
     const total = feedbacks.length;
-    const totalCount = positiveCount + negativeCount + neutralCount || total || 1;
+    const totalCount =
+      positiveCount + negativeCount + neutralCount || total || 1;
     const posPct = Math.round((positiveCount / totalCount) * 100);
     const negPct = Math.round((negativeCount / totalCount) * 100);
     const neuPct = 100 - posPct - negPct;
     const currentScore = Number(((positiveCount / totalCount) * 5).toFixed(1));
 
-    const sortedTopics = [...topicStats].sort((a, b) => b.mentions - a.mentions);
+    const sortedTopics = [...topicStats].sort(
+      (a, b) => b.mentions - a.mentions,
+    );
     const positivePoints = sortedTopics
       .filter((t) => t.positiveMentions > 0)
       .slice(0, 5)
@@ -1159,21 +1165,32 @@ export const getLatestResult = async (req, res) => {
     for (let i = 0; i < 8; i++) {
       const cs = new Date(start.getTime() + i * chunkMs);
       const ce = new Date(start.getTime() + (i + 1) * chunkMs);
-      const chunk = feedbacks.filter((f) => f.timestamp >= cs && f.timestamp < ce);
+      const chunk = feedbacks.filter(
+        (f) => f.timestamp >= cs && f.timestamp < ce,
+      );
       let cp = 0;
       for (const fb of chunk) {
         const c = (fb.content || "").toLowerCase();
-        let ps = 0, ns = 0;
+        let ps = 0,
+          ns = 0;
         for (const w of POSITIVE_KEYWORDS) if (c.includes(w)) ps++;
         for (const w of NEGATIVE_KEYWORDS) if (c.includes(w)) ns++;
         if (ps > ns) cp++;
       }
-      satisfactionHistory.push(chunk.length > 0 ? Number(((cp / chunk.length) * 5).toFixed(1)) : 4.0);
+      satisfactionHistory.push(
+        chunk.length > 0 ? Number(((cp / chunk.length) * 5).toFixed(1)) : 4.0,
+      );
       responseTimeHistory.push(Number((3.8 - i * 0.2).toFixed(1)));
       volumeHistory.push(chunk.length);
     }
 
-    const sourceDistribution = { twitter: Array(12).fill(0), playstore: Array(12).fill(0), appstore: Array(12).fill(0), email: Array(12).fill(0), customData: Array(12).fill(0) };
+    const sourceDistribution = {
+      twitter: Array(12).fill(0),
+      playstore: Array(12).fill(0),
+      appstore: Array(12).fill(0),
+      email: Array(12).fill(0),
+      customData: Array(12).fill(0),
+    };
     feedbacks.forEach((f) => {
       const month = f.timestamp.getMonth();
       if (f.source === "x") sourceDistribution.twitter[month]++;
@@ -1199,25 +1216,51 @@ export const getLatestResult = async (req, res) => {
       metrics: {
         satisfactionScore: currentScore,
         previousScore: latest.satisfactionScore,
-        improvement: latest.satisfactionScore > 0
-          ? Number((((currentScore - latest.satisfactionScore) / latest.satisfactionScore) * 100).toFixed(1))
-          : 0,
+        improvement:
+          latest.satisfactionScore > 0
+            ? Number(
+                (
+                  ((currentScore - latest.satisfactionScore) /
+                    latest.satisfactionScore) *
+                  100
+                ).toFixed(1),
+              )
+            : 0,
         responseTime: `${currentResponseTime} hrs`,
         previousResponseTime: "0 hrs",
         feedbackVolume: total,
         previousVolume: 0,
         trend: currentScore >= latest.satisfactionScore ? "up" : "down",
-        history: { satisfaction: satisfactionHistory, responseTime: responseTimeHistory, volume: volumeHistory },
+        history: {
+          satisfaction: satisfactionHistory,
+          responseTime: responseTimeHistory,
+          volume: volumeHistory,
+        },
       },
       feedbackSources: {
-        months: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+        months: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
         sources: sourceDistribution,
       },
       cachedAt: latest.timestamp,
     });
   } catch (error) {
     console.error("Error in getLatestResult:", error.message);
-    res.status(500).json({ message: error.message || "Failed to load latest result" });
+    res
+      .status(500)
+      .json({ message: error.message || "Failed to load latest result" });
   }
 };
 

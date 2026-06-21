@@ -1,10 +1,7 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import {
-  SidebarProvider,
-  SidebarInset,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/login";
@@ -193,10 +190,7 @@ function App() {
           <Route path="/account" element={<AccountPage />} />
         </Route>
 
-        <Route
-          path="*"
-          element={<NotFoundPage />}
-        />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

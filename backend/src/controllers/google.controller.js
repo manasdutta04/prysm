@@ -56,7 +56,8 @@ export const googleCallback = async (req, res) => {
 
     await user.save();
 
-    res.redirect(`http://localhost:5173/?gmail=connected`);
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    res.redirect(`${frontendUrl}/connect-apps?gmail=connected`);
   } catch (err) {
     console.error("Google OAuth Error:", err.response?.data || err.message);
     res.status(500).json({ error: "Failed to connect Gmail" });
