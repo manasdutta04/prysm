@@ -1,7 +1,12 @@
 import axios from "axios";
 
+const apiBaseURL =
+  (import.meta.env.VITE_API_URL || "https://prysm-backend-8a87.onrender.com/api")
+    .replace(/\/$/, "")
+    .trim();
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: apiBaseURL,
   withCredentials: true,
 });
 

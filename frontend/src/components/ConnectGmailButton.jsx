@@ -2,7 +2,13 @@ import React from "react";
 
 export default function ConnectGmailButton() {
   const handleConnect = () => {
-    window.location.href = "http://localhost:5000/api/auth/google/connect";
+    const apiBase =
+      (import.meta.env.VITE_API_URL ||
+        "https://prysm-backend-8a87.onrender.com/api")
+        .replace(/\/$/, "")
+        .trim();
+
+    window.location.href = `${apiBase}/auth/google/connect`;
   };
 
   return (

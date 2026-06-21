@@ -162,8 +162,13 @@ export default function ConnectAppsPage() {
   const handleConnectClick = (appName) => {
     if (appName === "Gmail") {
       const apiBase =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        (import.meta.env.VITE_API_URL ||
+          "https://prysm-backend-8a87.onrender.com/api")
+          .replace(/\/$/, "")
+          .trim();
+
       window.location.href = `${apiBase}/auth/google/connect`;
+      return;
     } else if (appName === "App Store") {
       setIsAppStoreModalOpen(true);
     } else if (appName === "Play Store") {
